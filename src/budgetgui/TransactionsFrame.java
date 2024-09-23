@@ -964,28 +964,29 @@ public class TransactionsFrame extends javax.swing.JFrame {
         if (selectionStr.equals(optionsArr[0])) {
             //Prefill month and year
             //Ask for day of month
-            String[] monthInfo = month.split("\t");
-            String monthName = monthInfo[0];
-            String year = monthInfo[1];
-            String output = "Enter the Day of the Month: " +
+            String[] dateArr = origDate.split(" ");
+            String monthName = dateArr[0];
+            String dayOfMonth = dateArr[1];
+            String year = dateArr[2];
+            String output = "Edit the Day of the Month: " +
                     "\n" + monthName + " _ " + year;
-            String input = JOptionPane.showInputDialog(output);
+            String input = JOptionPane.showInputDialog(null, output, dayOfMonth);
             
-            if (input == null) {
+           if (input == null || input.equals(dayOfMonth)) {
                 return;
             }
             
             //Check if its a number
-            int dayOfMonth = 0;
+            int tempDay = 0;
             try {
-                dayOfMonth = Integer.parseInt(input);
+                tempDay = Integer.parseInt(input);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Invalid Input.");
                 return;
             }
             
             //Check if the day is valid for the month
-            date = monthName + " " + dayOfMonth + " " + year;
+            date = monthName + " " + tempDay + " " + year;
             System.out.println("DATE: " + date);
             
             try {
@@ -1001,9 +1002,10 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Change Description
         if (selectionStr.equals(optionsArr[1])) {
             //Ask for description
-            description = JOptionPane.showInputDialog("Enter a Description:");
+            description = JOptionPane.showInputDialog(null, "Edit the Description:", description);
             
-            if (description == null) {
+            //If null or if value does not change
+            if (description == null || description.equals(origDescription)) {
                 return;
             }
             
@@ -1023,9 +1025,14 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Change Amount
         if (selectionStr.equals(optionsArr[2])) {
             //Ask for amount
-            amountStr = JOptionPane.showInputDialog("Enter an Amount:");
+            amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStr);
             
-            if (amountStr == null) 
+            DecimalFormat df = new DecimalFormat("0.00");
+            System.out.println("AMOUNT STR: " + amountStr);
+            String tempFormatStr = df.format(Double.parseDouble(amountStr));
+            
+            //If null or if value does not change
+            if (amountStr == null || tempFormatStr.equals(df.format(Double.parseDouble(origAmountStr)))) 
                 return;
             
             double amount = 0.0;
