@@ -88,7 +88,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         if (indexOfMonth == months.size() - 1) {
             nextMonthButton.setEnabled(false);
         }
-        
+
         //Hide Recurring Button
         makeRecurringButton.setVisible(false);
 
@@ -442,6 +442,10 @@ public class TransactionsFrame extends javax.swing.JFrame {
         double amount = 0.0;
         while (true) {
             amountStr = JOptionPane.showInputDialog("Enter an Amount:");
+
+            if (amountStr == null) {
+                return;
+            }
 
             try {
                 amount = Double.parseDouble(amountStr);
@@ -917,8 +921,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
     }
 
     private void editTransaction(String marker, String selectedLine) {
-        //Ask for category
 
+        //Ask what user wants to edit for the transaction
         String[] optionsArr = new String[5 - Integer.parseInt(marker)];
         if (marker.equals("1")) {
             optionsArr[0] = "Change Date";
@@ -956,94 +960,108 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String origAmountStr = transactionInfo[2].trim().replaceAll("\\$", "");
         String origCategory = transactionInfo[3].trim();
 
-        //Change Date
+        //Ask for date until input is valid
         if (selectionStr.equals(optionsArr[0])) {
-            //Prefill month and year
-            //Ask for day of month
-            String[] dateArr = origDate.split(" ");
-            String monthName = dateArr[0];
-            String dayOfMonth = dateArr[1];
-            String year = dateArr[2];
-            String output = "Edit the Day of the Month: "
-                    + "\n" + monthName + " _ " + year;
-            String input = JOptionPane.showInputDialog(null, output, dayOfMonth);
+            while (true) {
+                //Prefill month and year
+                //Ask for day of month
+                String[] dateArr = origDate.split(" ");
+                String monthName = dateArr[0];
+                String dayOfMonth = dateArr[1];
+                String year = dateArr[2];
+                String output = "Edit the Day of the Month: "
+                        + "\n" + monthName + " _ " + year;
+                String input = JOptionPane.showInputDialog(null, output, dayOfMonth);
 
-            if (input == null || input.equals(dayOfMonth)) {
-                return;
-            }
-
-            //Check if its a number
-            int tempDay = 0;
-            try {
-                tempDay = Integer.parseInt(input);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Invalid Input.");
-                return;
-            }
-
-            //Check if the day is valid for the month
-            date = monthName + " " + tempDay + " " + year;
-            System.out.println("DATE: " + date);
-
-            try {
-                DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
-                df.setLenient(false);
-                df.parse(date);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Invalid Date.");
-                return;
-            }
-        }
-
-        //Change Description
-        if (selectionStr.equals(optionsArr[1])) {
-            //Ask for description
-            description = JOptionPane.showInputDialog(null, "Edit the Description:", description);
-
-            //If null or if value does not change
-            if (description == null || description.equals(origDescription)) {
-                return;
-            }
-
-            if (description.equals("")) {
-                JOptionPane.showMessageDialog(null, "Invalid Input");
-                return;
-            }
-
-            //Check for --
-            int indexOfForbiddenCharacters = description.indexOf("--");
-            if (indexOfForbiddenCharacters != -1) {
-                JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
-                return;
-            }
-        }
-
-        //Change Amount
-        if (selectionStr.equals(optionsArr[2])) {
-            //Ask for amount
-            amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStr);
-
-            DecimalFormat df = new DecimalFormat("0.00");
-            System.out.println("AMOUNT STR: " + amountStr);
-            String tempFormatStr = df.format(Double.parseDouble(amountStr));
-
-            //If null or if value does not change
-            if (amountStr == null || tempFormatStr.equals(df.format(Double.parseDouble(origAmountStr)))) {
-                return;
-            }
-
-            double amount = 0.0;
-            try {
-                amount = Double.parseDouble(amountStr);
-
-                if (amount <= 0.0) {
-                    JOptionPane.showMessageDialog(null, "Invalid Amount.");
+                if (input == null || input.equals(dayOfMonth)) {
                     return;
                 }
 
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Invalid Amount.");
-                return;
+                //Check if its a number
+                int tempDay = 0;
+                try {
+                    tempDay = Integer.parseInt(input);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                    continue;
+                }
+
+                //Check if the day is valid for the month
+                date = monthName + " " + tempDay + " " + year;
+                System.out.println("DATE: " + date);
+
+                try {
+                    DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
+                    df.setLenient(false);
+                    df.parse(date);
+                    break;
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Invalid date. Please try again.");
+                    continue;
+                }
+            }
+        }
+
+        //Ask for description until input is valid
+        String descCopy = description;
+        if (selectionStr.equals(optionsArr[1])) {
+            while (true) {
+                description = JOptionPane.showInputDialog(null, "Edit the Description:", descCopy);
+
+                //If null or if value does not change
+                if (description == null || description.equals(origDescription)) {
+                    return;
+                }
+
+                if (description.equals("")) {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                    continue;
+                }
+
+                //Check for --
+                int indexOfForbiddenCharacters = description.indexOf("--");
+                if (indexOfForbiddenCharacters != -1) {
+                    JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
+                    continue;
+                }
+                break;
+            }
+        }
+
+        //Ask for amount until input is valid
+        if (selectionStr.equals(optionsArr[2])) {
+            while (true) {
+                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStr);
+
+                DecimalFormat df = new DecimalFormat("0.00");
+                String tempFormatStr = "";
+                try {
+                    System.out.println("AMOUNT STR: " + amountStr);
+                    tempFormatStr = df.format(Double.parseDouble(amountStr));
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                    continue;
+                }
+
+                //If null or if value does not change
+                if (amountStr == null || tempFormatStr.equals(df.format(Double.parseDouble(origAmountStr)))) {
+                    return;
+                }
+
+                double amount = 0.0;
+                System.out.println("AMOUNT: " + amountStr);
+                try {
+                    amount = Double.parseDouble(amountStr);
+
+                    if (amount <= 0.0) {
+                        JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                        continue;
+                    }
+                    break;
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                    continue;
+                }
             }
         }
 
