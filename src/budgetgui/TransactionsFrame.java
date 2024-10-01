@@ -40,6 +40,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private double totalSpending = 0.0;
     private double totalIncome = 0.0;
     private String curYear;
+    private int indexOfMonth;
 
     /**
      * Creates new form TransactionsFrame
@@ -64,6 +65,30 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         updateIncomeList();
 
+        //Check if prevMonth / nextMonth button should be active
+        MainFrame obj = new MainFrame();
+        months = obj.getMonths();
+
+        //Sort months
+        Collections.sort(months, (String o1, String o2) -> {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("MMM" + "\t" + "yyyy");
+                return sdf.parse(o1).compareTo(sdf.parse(o2));  //sdf.parse returns date - So, Compare Date with date
+            } catch (ParseException ex) {
+                return o1.compareTo(o2);
+            }
+        });
+
+        indexOfMonth = months.indexOf(month);
+        //Prev month button should be disabled
+        if (indexOfMonth == 0) {
+            prevMonthButton.setEnabled(false);
+        }
+        //Next button button should be disabled
+        if (indexOfMonth == months.size() - 1) {
+            nextMonthButton.setEnabled(false);
+        }
+        
         //Hide Recurring Button
         makeRecurringButton.setVisible(false);
 
@@ -781,27 +806,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
     private void prevMonthButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prevMonthButtonActionPerformed
         // TODO add your handling code here:
-
-        //Get all months
-        MainFrame obj = new MainFrame();
-        months = obj.getMonths();
-
-        //Sort months
-        Collections.sort(months, (String o1, String o2) -> {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("MMM" + "\t" + "yyyy");
-                return sdf.parse(o1).compareTo(sdf.parse(o2));  //sdf.parse returns date - So, Compare Date with date
-            } catch (ParseException ex) {
-                return o1.compareTo(o2);
-            }
-        });
-
-        int indexOfMonth = months.indexOf(month);
-        if (indexOfMonth == 0) {
-            JOptionPane.showMessageDialog(null, "There is nothing to go back to!");
-            return;
-        }
-
         indexOfMonth--;
 
         //Update cur year
@@ -813,26 +817,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
     private void nextMonthButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextMonthButtonActionPerformed
         // TODO add your handling code here:
-        //Get all months
-        MainFrame obj = new MainFrame();
-        months = obj.getMonths();
-
-        //Sort months
-        Collections.sort(months, (String o1, String o2) -> {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat("MMM" + "\t" + "yyyy");
-                return sdf.parse(o1).compareTo(sdf.parse(o2));  //sdf.parse returns date - So, Compare Date with date
-            } catch (ParseException ex) {
-                return o1.compareTo(o2);
-            }
-        });
-
-        int indexOfMonth = months.indexOf(month);
-        if (indexOfMonth == months.size() - 1) {
-            JOptionPane.showMessageDialog(null, "There is nothing to go forward to!");
-            return;
-        }
-
         indexOfMonth++;
 
         //Update cur year
