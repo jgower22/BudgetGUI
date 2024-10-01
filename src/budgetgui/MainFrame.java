@@ -808,7 +808,7 @@ public class MainFrame extends javax.swing.JFrame {
         
         int index = 0;
         for (String s: months) {
-            listArr[index] = s;
+            listArr[index] = s.replaceAll("\t", " ");
             index++;
         }
         
