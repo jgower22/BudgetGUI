@@ -123,7 +123,7 @@ public class SettingsFrame extends javax.swing.JFrame {
         titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         titleLabel.setText("Settings");
 
-        editCategoryButton.setText("Edit Category");
+        editCategoryButton.setText("Edit Category Name");
         editCategoryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 editCategoryButtonActionPerformed(evt);

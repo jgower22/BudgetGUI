@@ -157,7 +157,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="editCategoryButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Edit Category"/>
+        <Property name="text" type="java.lang.String" value="Edit Category Name"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="editCategoryButtonActionPerformed"/>
