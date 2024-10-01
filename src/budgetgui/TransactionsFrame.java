@@ -58,8 +58,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         this.setResizable(false);
         String formattedMonth = month.replaceAll("\t", " ");
         this.setTitle("Transactions For " + formattedMonth);
-
-        updateMonthLabel();
+        monthLabel.setText(formattedMonth);
 
         updateTransactionsList();
 
@@ -1232,10 +1231,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
             System.out.println("File not found.");
         }
         return null;
-    }
-
-    private void updateMonthLabel() {
-        monthLabel.setText(month);
     }
 
     private void updateNumTransactionsLabel(int numTransactions) {
