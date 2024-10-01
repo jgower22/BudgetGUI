@@ -30,6 +30,7 @@ import javax.swing.JOptionPane;
  * @author jacksongower
  */
 public class TransactionsFrame extends javax.swing.JFrame {
+
     private String month;
     private ArrayList<String> months = new ArrayList<>();
     private ArrayList<String> transactions = new ArrayList<>();
@@ -39,32 +40,33 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private double totalSpending = 0.0;
     private double totalIncome = 0.0;
     private String curYear;
+
     /**
      * Creates new form TransactionsFrame
      */
     public TransactionsFrame(String month, String curYear) {
         initComponents();
-        
+
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
+
         this.month = month;
         this.curYear = curYear;
-        
+
         this.setVisible(true);
         this.setResizable(false);
         String formattedMonth = month.replaceAll("\t", " ");
         this.setTitle("Transactions For " + formattedMonth);
-        
+
         updateMonthLabel();
-        
+
         updateTransactionsList();
-        
+
         updateIncomeList();
-        
+
         //Hide Recurring Button
         makeRecurringButton.setVisible(false);
-        
+
     }
 
     /**
@@ -344,80 +346,93 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
     private void addTransactionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTransactionButtonActionPerformed
         // TODO add your handling code here:
-        
+
         //Ask for Date, Description, Amount and Category
-        
         //Prefill month and year
         //Ask for day of month
         String[] monthInfo = month.split("\t");
         String monthName = monthInfo[0];
         String year = monthInfo[1];
-        String output = "Enter the Day of the Month: " + 
-                        "\n" + monthName + " _ " + year;
-        String input = JOptionPane.showInputDialog(output);
-        
-        if (input == null) {
-            return;
-        }
-        
-        //Check if its a number
-        int dayOfMonth = 0;
-        try {
-            dayOfMonth = Integer.parseInt(input);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Invalid Input.");
-            return;
-        }
-        
-        //Check if the day is valid for the month
-        String date = monthName + " " + dayOfMonth + " " + year;
-        System.out.println("DATE: " + date);
-         
-        try {
-            DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
-            df.setLenient(false);
-            df.parse(date);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Invalid Date.");
-            return;
-        }
-        
-        //Ask for description
-        String description = JOptionPane.showInputDialog("Enter a Description:");
-        
-        if (description == null) {
-            return;
-        }
-        
-        if (description.equals("")) {
-            JOptionPane.showMessageDialog(null, "Invalid Input");
-            return;
-        }
-        
-        //Check for --
-        int indexOfForbiddenCharacters = description.indexOf("--");
-        if (indexOfForbiddenCharacters != -1) {
-            JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
-            return;
-        }
-        
-        //Ask for amount
-        String amountStr = JOptionPane.showInputDialog("Enter an Amount:");
-        
-        double amount = 0.0;
-        try {
-            amount = Double.parseDouble(amountStr);
-            
-            if (amount <= 0.0) {
-                JOptionPane.showMessageDialog(null, "Invalid Amount.");
+        String output = "Enter the Day of the Month: "
+                + "\n" + monthName + " _ " + year;
+        String input = "", date = "";
+
+        //Ask for date until valid
+        while (true) {
+            input = JOptionPane.showInputDialog(output);
+
+            if (input == null) {
                 return;
             }
-            
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Invalid Amount.");
-            return;
+
+            //Check for integer input
+            int dayOfMonth = 0;
+            try {
+                dayOfMonth = Integer.parseInt(input);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                continue;
+            }
+
+            date = monthName + " " + dayOfMonth + " " + year;
+            System.out.println("DATE: " + date);
+
+            //Check if day is valid with month/year
+            try {
+                DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
+                df.setLenient(false);
+                df.parse(date);
+                break;
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Invalid date. Please try again.");
+                continue;
+            }
         }
-        
+
+        //Ask for description until valid
+        String description = "";
+        while (true) {
+            description = JOptionPane.showInputDialog("Enter a Description:");
+
+            if (description == null) {
+                return;
+            }
+
+            if (description.equals("")) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                continue;
+            }
+
+            //Check for --
+            int indexOfForbiddenCharacters = description.indexOf("--");
+            if (indexOfForbiddenCharacters != -1) {
+                JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        //Ask for amount until valid
+        String amountStr = "";
+        double amount = 0.0;
+        while (true) {
+            amountStr = JOptionPane.showInputDialog("Enter an Amount:");
+
+            try {
+                amount = Double.parseDouble(amountStr);
+
+                if (amount <= 0.0) {
+                    JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                    continue;
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                continue;
+            }
+            break;
+        }
+
         //Ask for category
         //Read categories from text file
         String category = "";
@@ -428,58 +443,57 @@ public class TransactionsFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error 405");
             return;
         }
-        
+
         //If no categories have been added, make the transaction uncategorized
         if (categories.isEmpty()) {
             category = "UNCATEGORIZED";
         } else {
             //Convert categories array list to array
             String[] categoriesArr = new String[categories.size()];
-            
+
             int index = 0;
-            for (String s: categories) {
+            for (String s : categories) {
                 categoriesArr[index] = s;
                 index++;
             }
-            
+
             //Ask for category
             Object[] categoriesObjArr = categoriesArr;
             Object selection = JOptionPane.showInputDialog(null,
-                           "Select a Category", "Categories",
-                           JOptionPane.INFORMATION_MESSAGE, null,
-                           categoriesObjArr, categoriesObjArr[0]);
+                    "Select a Category", "Categories",
+                    JOptionPane.INFORMATION_MESSAGE, null,
+                    categoriesObjArr, categoriesObjArr[0]);
             category = (String) selection;
-            
+
             if (category == null) {
                 return;
             }
         }
-            
-        System.out.println("MONTH: " + month);
+
+        /*System.out.println("MONTH: " + month);
         System.out.println("DATE: " + date);
         System.out.println("DESCRIPTION: " + description);
         System.out.println("AMOUNT: " + amount);
-        System.out.println("CATEGORY: " + category);
-        
+        System.out.println("CATEGORY: " + category);*/
         //Format amount
         DecimalFormat df = new DecimalFormat("#,##0.00");
         String tempFormattedAmountStr = Double.toString(amount);
         String formattedAmountStr = df.format(amount);
         amount = Double.parseDouble(tempFormattedAmountStr);
-        
+
         String marker = "1";
         addTransaction(month, date, description, amount, category, marker);
-        
+
     }//GEN-LAST:event_addTransactionButtonActionPerformed
 
     private void removeTransactionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeTransactionButtonActionPerformed
         // TODO add your handling code here:
-        
+
         //If something is selected
         if (!(transactionsList.isSelectionEmpty())) {
             String selectedTransaction = transactionsList.getSelectedValue();
             System.out.println(selectedTransaction);
-            
+
             String[] lineInfo = selectedTransaction.split("--");
             String date = lineInfo[0].trim();
             String description = lineInfo[1].trim();
@@ -496,34 +510,33 @@ public class TransactionsFrame extends javax.swing.JFrame {
             } catch (Exception e) {
                 System.out.println("ERROR");
             }
-            
+
             //Remove $ from amount
             amount = amount.substring(1, amount.length());
-            
+
             String lineToRemove = "#" + date + "\t" + description + "\t" + amount + "\t" + category + "\t" + "1";
             removeTransaction(lineToRemove);
         }
-        
+
     }//GEN-LAST:event_removeTransactionButtonActionPerformed
 
     private void addTransactionIncomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTransactionIncomeButtonActionPerformed
         // TODO add your handling code here:
-        
+
         //Ask for Date, Description, Amount and Category
-        
         //Prefill month and year
         //Ask for day of month
         String[] monthInfo = month.split("\t");
         String monthName = monthInfo[0];
         String year = monthInfo[1];
-        String output = "Enter the Day of the Month: " + 
-                        "\n" + monthName + " _ " + year;
+        String output = "Enter the Day of the Month: "
+                + "\n" + monthName + " _ " + year;
         String input = JOptionPane.showInputDialog(output);
-        
+
         if (input == null) {
             return;
         }
-        
+
         //Check if its a number
         int dayOfMonth = 0;
         try {
@@ -532,11 +545,11 @@ public class TransactionsFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Invalid Input.");
             return;
         }
-        
+
         //Check if the day is valid for the month
         String date = monthName + " " + dayOfMonth + " " + year;
         System.out.println("DATE: " + date);
-         
+
         try {
             DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
             df.setLenient(false);
@@ -545,72 +558,71 @@ public class TransactionsFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Invalid Date.");
             return;
         }
-        
+
         //Ask for description
         String description = JOptionPane.showInputDialog("Enter a Description:");
-        
+
         if (description == null) {
             return;
         }
-        
+
         //Check for --
         int indexOfForbiddenCharacters = description.indexOf("--");
         if (indexOfForbiddenCharacters != -1) {
             JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
             return;
         }
-        
+
         //Ask for amount
         String amountStr = JOptionPane.showInputDialog("Enter an Amount:");
-        
+
         double amount = 0.0;
         try {
             amount = Double.parseDouble(amountStr);
-            
+
             if (amount <= 0.0) {
                 JOptionPane.showMessageDialog(null, "Invalid Amount.");
                 return;
             }
-            
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Invalid Amount.");
             return;
         }
-        
+
         //Ask for category
         //Read categories from text file
         String category = "INCOME";
 
         String marker = "2";
-        
+
         //Format amount
         /*DecimalFormat df = new DecimalFormat("#,##0.00");
         String formattedAmountStr = df.format(amount);
         amount = Double.parseDouble(formattedAmountStr);*/
-        
         addTransaction(month, date, description, amount, category, marker);
     }//GEN-LAST:event_addTransactionIncomeButtonActionPerformed
 
     private void removeTransactionIncomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeTransactionIncomeButtonActionPerformed
         // TODO add your handling code here:
-        
+
         //If something is selected
         if (!(incomeList.isSelectionEmpty())) {
             String selectedTransaction = incomeList.getSelectedValue();
             System.out.println(selectedTransaction);
-            
+
             String[] lineInfo = selectedTransaction.split("--");
             String date = lineInfo[0].trim();
             String description = lineInfo[1].trim();
             String amount = lineInfo[2].trim();
             String category = lineInfo[3].trim();
-            
+
             //Remove $ from amount
             amount = amount.substring(1, amount.length());
-            
+
             String lineToRemove = "#" + date + "\t" + description + "\t" + amount + "\t" + category + "\t" + "2";
             removeTransaction(lineToRemove);
-            
+
             updateIncomeList();
         }
     }//GEN-LAST:event_removeTransactionIncomeButtonActionPerformed
@@ -619,18 +631,18 @@ public class TransactionsFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         //JComboBox -- Ask user what they want to change
         //Change Date, Change Description, Change Amount, Change Category
-       
+
         //If something is selected
         if (!(transactionsList.isSelectionEmpty())) {
             String selectedLine = transactionsList.getSelectedValue();
             editTransaction("1", selectedLine);
         }
-        
+
     }//GEN-LAST:event_editDetailsSpendingButtonActionPerformed
 
     private void editDetailsIncomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDetailsIncomeButtonActionPerformed
         // TODO add your handling code here:
-        
+
         //If something is selected
         if (!(incomeList.isSelectionEmpty())) {
             String selectedLine = incomeList.getSelectedValue();
@@ -642,14 +654,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         //Show a JOptionPane Message Dialog with all of the budgets
         //Include the limits and the amount spent
-        
+
         //Key and values
         //Key = Category/Limit
         //Value = Spending
-        
         getCategoryLimits();
         System.out.println("CATEGORY LIMITS: " + categoryLimits);
-        
+
         if (categoryLimits == null) {
             JOptionPane.showMessageDialog(null, "Error: You have added no categories.");
             return;
@@ -658,52 +669,52 @@ public class TransactionsFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Error: You have added no categories.");
             return;
         }
-        
+
         getTransactions();
         System.out.println("TRANSACTIONS: " + transactions);
-        
-        for (String s: transactions) {
+
+        for (String s : transactions) {
             String[] transactionInfo = s.split("--");
             String amountStr = transactionInfo[2].trim();
             String category = transactionInfo[3].trim();
-            
+
             //Remove $
             amountStr = amountStr.substring(1, amountStr.length());
             String tempAmountStr = amountStr.replaceAll(",", "");
             double amount = Double.parseDouble(tempAmountStr);
-            
+
             if (!(category.equalsIgnoreCase("uncategorized"))) {
                 //Get current spending for the category from the hashmap
                 double currentValue = categorySpending.get(category);
                 System.out.println("CURRENT SPENDING: " + currentValue);
-                
+
                 //Update the key by adding the new amount
                 double newValue = currentValue + amount;
                 categorySpending.put(category, newValue);
                 System.out.println("CATEGORY SPENDING: " + categorySpending);
             }
-            
+
         }
-        
+
         //Format JOptionPane Message Dialog
         String output = "";
-        
+
         ArrayList<String> sortedOutput = new ArrayList<>();
         //Look at hashmap for category spending first
         //Then category limits
-        for (String s: categorySpending.keySet()) {
+        for (String s : categorySpending.keySet()) {
             String budgetMetric = "";
             if (categorySpending.get(s) > categoryLimits.get(s)) {
                 budgetMetric = " (OVER)";
             }
-            
+
             DecimalFormat df = new DecimalFormat("#,##0.00");
             String formattedCategorySpending = df.format(categorySpending.get(s));
-            
-            sortedOutput.add(s + ": $" + formattedCategorySpending + " of $" + df.format(categoryLimits.get(s)) + 
-                             budgetMetric);
+
+            sortedOutput.add(s + ": $" + formattedCategorySpending + " of $" + df.format(categoryLimits.get(s))
+                    + budgetMetric);
         }
-        
+
         Collections.sort(sortedOutput);
 
         int maxCategoriesPerDialogBox = 5;
@@ -712,27 +723,27 @@ public class TransactionsFrame extends javax.swing.JFrame {
         System.out.println("SORTED OUTPUT SIZE: " + sortedOutput.size());
         System.out.println("MAX CATEGORIES PER DIALOG BOX: " + maxCategoriesPerDialogBox);
         System.out.println("NUM DIALOG BOXES: " + numDialogBoxes);
-        
+
         if (((double) sortedOutput.size() / (double) maxCategoriesPerDialogBox) % 2 == 0.0) {
             numDialogBoxes--;
         }
         for (int i = 0; i <= numDialogBoxes; i++) {
-             output = "Budgets: (" + (i+1) + " of " + (numDialogBoxes+1) + ")\n";
-             output += "--------------------\n";
-             try {
-                 for (int j = 0; j < maxCategoriesPerDialogBox; j++) {
-                     output += sortedOutput.get(indexTracker) + "\n";
-                     
-                     output += "--------------------\n";
-                     indexTracker++;
-                 }
-             } catch (IndexOutOfBoundsException e) {
-                 
-             }
-             JOptionPane.showMessageDialog(null, output);
+            output = "Budgets: (" + (i + 1) + " of " + (numDialogBoxes + 1) + ")\n";
+            output += "--------------------\n";
+            try {
+                for (int j = 0; j < maxCategoriesPerDialogBox; j++) {
+                    output += sortedOutput.get(indexTracker) + "\n";
+
+                    output += "--------------------\n";
+                    indexTracker++;
+                }
+            } catch (IndexOutOfBoundsException e) {
+
+            }
+            JOptionPane.showMessageDialog(null, output);
         }
-        
-        
+
+
     }//GEN-LAST:event_viewBudgetsButtonActionPerformed
 
     private void makeRecurringButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_makeRecurringButtonActionPerformed
@@ -765,16 +776,16 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String transactionLine = addRecurringTransactionToFile(selectedTransaction);
         updateRecurringTransactionOnList(transactionLine, true);
         JOptionPane.showMessageDialog(null, "Transaction is now recurring.");*/
-            
+
     }//GEN-LAST:event_makeRecurringButtonActionPerformed
 
     private void prevMonthButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prevMonthButtonActionPerformed
         // TODO add your handling code here:
-      
+
         //Get all months
         MainFrame obj = new MainFrame();
         months = obj.getMonths();
-        
+
         //Sort months
         Collections.sort(months, (String o1, String o2) -> {
             try {
@@ -784,18 +795,18 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 return o1.compareTo(o2);
             }
         });
-        
+
         int indexOfMonth = months.indexOf(month);
         if (indexOfMonth == 0) {
             JOptionPane.showMessageDialog(null, "There is nothing to go back to!");
             return;
         }
-                
+
         indexOfMonth--;
-        
+
         //Update cur year
         curYear = months.get(indexOfMonth).split("\t")[1];
-        
+
         this.dispose();
         TransactionsFrame transactionsFrame = new TransactionsFrame(months.get(indexOfMonth), curYear);
     }//GEN-LAST:event_prevMonthButtonActionPerformed
@@ -805,7 +816,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Get all months
         MainFrame obj = new MainFrame();
         months = obj.getMonths();
-        
+
         //Sort months
         Collections.sort(months, (String o1, String o2) -> {
             try {
@@ -815,22 +826,22 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 return o1.compareTo(o2);
             }
         });
-        
+
         int indexOfMonth = months.indexOf(month);
         if (indexOfMonth == months.size() - 1) {
             JOptionPane.showMessageDialog(null, "There is nothing to go forward to!");
             return;
         }
-        
+
         indexOfMonth++;
-        
+
         //Update cur year
         curYear = months.get(indexOfMonth).split("\t")[1];
-        
+
         this.dispose();
         TransactionsFrame transactionsFrame = new TransactionsFrame(months.get(indexOfMonth), curYear);
     }//GEN-LAST:event_nextMonthButtonActionPerformed
-    
+
     private void updateRecurringTransactionOnList(String transactionLine, boolean makeRecurring) {
         //Add back transaction with recurring marker (-- ***)
         //Get current details
@@ -840,39 +851,40 @@ public class TransactionsFrame extends javax.swing.JFrame {
         description = transactionInfo[1].trim();
         amountStr = transactionInfo[2].trim().replaceAll("\\$", "");
         category = transactionInfo[3].trim();
-        
+
         if (makeRecurring) {
             category = category + " -- ***";
         }
-        
+
         //Copy of current details
         String origDate = transactionInfo[0].trim();
         String origDescription = transactionInfo[1].trim();
         String origAmountStr = transactionInfo[2].trim().replaceAll("\\$", "");
-        String origCategory = transactionInfo[3].trim(); 
+        String origCategory = transactionInfo[3].trim();
 
         //Format amount
         DecimalFormat df = new DecimalFormat("0.00");
         System.out.println(amountStr);
         String tempAmountStr = amountStr.replaceAll(",", "");
         String formattedAmountStr = df.format(Double.parseDouble(tempAmountStr));
-        
+
         addTransaction(month, date, description, Double.parseDouble(formattedAmountStr), category, "1");
-           
+
         String lineToRemove = "#" + origDate + "\t" + origDescription + "\t" + origAmountStr + "\t" + origCategory + "\t" + 1;
         removeTransaction(lineToRemove);
-        
+
     }
-    
-    private String addRecurringTransactionToFile (String transactionToAdd) {
+
+    private String addRecurringTransactionToFile(String transactionToAdd) {
         transactionToAdd = transactionToAdd + " -- ***";
         PrintWriter printer = null;
         try {
             ArrayList<String> recurringTransactions = getRecurringTransactions();
             printer = new PrintWriter(new File("recurring.txt"));
-            for (String s: recurringTransactions) {
+            for (String s : recurringTransactions) {
                 printer.println(s);
-            }   printer.println(transactionToAdd);
+            }
+            printer.println(transactionToAdd);
             printer.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(TransactionsFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -881,7 +893,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         }
         return transactionToAdd;
     }
-    
+
     private ArrayList<String> getRecurringTransactions() {
         try {
             Scanner sc = new Scanner(new File("recurring.txt"));
@@ -896,33 +908,33 @@ public class TransactionsFrame extends javax.swing.JFrame {
             return null;
         }
     }
-    
+
     private void getCategoryLimits() {
         try {
             Scanner sc = new Scanner(new File("categorylimits.txt"));
-            
+
             String line = "";
             categoryLimits.clear();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
-                
+
                 String[] lineInfo = line.split("\t");
                 String categoryName = lineInfo[0];
                 String categoryLimit = lineInfo[1];
                 categoryLimits.put(categoryName, Double.parseDouble(categoryLimit));
                 categorySpending.put(categoryName, 0.0);
             }
-            
+
             sc.close();
 
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
         }
     }
-    
+
     private void editTransaction(String marker, String selectedLine) {
         //Ask for category
-        
+
         String[] optionsArr = new String[5 - Integer.parseInt(marker)];
         if (marker.equals("1")) {
             optionsArr[0] = "Change Date";
@@ -934,32 +946,32 @@ public class TransactionsFrame extends javax.swing.JFrame {
             optionsArr[1] = "Change Description";
             optionsArr[2] = "Change Amount";
         }
-        
+
         Object[] options = optionsArr;
         Object selection = JOptionPane.showInputDialog(null,
                 "Select an Option", "Options",
                 JOptionPane.INFORMATION_MESSAGE, null,
                 options, options[0]);
-        
+
         String selectionStr = (String) selection;
-        
+
         if (selectionStr == null) {
             return;
         }
-        
+
         //Get current details
         String[] transactionInfo = selectedLine.split("--");
         String date = transactionInfo[0].trim();
         String description = transactionInfo[1].trim();
         String amountStr = transactionInfo[2].trim().replaceAll("\\$", "");
         String category = transactionInfo[3].trim();
-        
+
         //Copy of current details
         String origDate = transactionInfo[0].trim();
         String origDescription = transactionInfo[1].trim();
         String origAmountStr = transactionInfo[2].trim().replaceAll("\\$", "");
-        String origCategory = transactionInfo[3].trim(); 
-        
+        String origCategory = transactionInfo[3].trim();
+
         //Change Date
         if (selectionStr.equals(optionsArr[0])) {
             //Prefill month and year
@@ -968,14 +980,14 @@ public class TransactionsFrame extends javax.swing.JFrame {
             String monthName = dateArr[0];
             String dayOfMonth = dateArr[1];
             String year = dateArr[2];
-            String output = "Edit the Day of the Month: " +
-                    "\n" + monthName + " _ " + year;
+            String output = "Edit the Day of the Month: "
+                    + "\n" + monthName + " _ " + year;
             String input = JOptionPane.showInputDialog(null, output, dayOfMonth);
-            
-           if (input == null || input.equals(dayOfMonth)) {
+
+            if (input == null || input.equals(dayOfMonth)) {
                 return;
             }
-            
+
             //Check if its a number
             int tempDay = 0;
             try {
@@ -984,11 +996,11 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Invalid Input.");
                 return;
             }
-            
+
             //Check if the day is valid for the month
             date = monthName + " " + tempDay + " " + year;
             System.out.println("DATE: " + date);
-            
+
             try {
                 DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
                 df.setLenient(false);
@@ -998,22 +1010,22 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 return;
             }
         }
-        
+
         //Change Description
         if (selectionStr.equals(optionsArr[1])) {
             //Ask for description
             description = JOptionPane.showInputDialog(null, "Edit the Description:", description);
-            
+
             //If null or if value does not change
             if (description == null || description.equals(origDescription)) {
                 return;
             }
-            
+
             if (description.equals("")) {
                 JOptionPane.showMessageDialog(null, "Invalid Input");
                 return;
             }
-            
+
             //Check for --
             int indexOfForbiddenCharacters = description.indexOf("--");
             if (indexOfForbiddenCharacters != -1) {
@@ -1021,35 +1033,36 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 return;
             }
         }
-        
+
         //Change Amount
         if (selectionStr.equals(optionsArr[2])) {
             //Ask for amount
             amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStr);
-            
+
             DecimalFormat df = new DecimalFormat("0.00");
             System.out.println("AMOUNT STR: " + amountStr);
             String tempFormatStr = df.format(Double.parseDouble(amountStr));
-            
+
             //If null or if value does not change
-            if (amountStr == null || tempFormatStr.equals(df.format(Double.parseDouble(origAmountStr)))) 
+            if (amountStr == null || tempFormatStr.equals(df.format(Double.parseDouble(origAmountStr)))) {
                 return;
-            
+            }
+
             double amount = 0.0;
             try {
                 amount = Double.parseDouble(amountStr);
-                
+
                 if (amount <= 0.0) {
                     JOptionPane.showMessageDialog(null, "Invalid Amount.");
                     return;
                 }
-                
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Invalid Amount.");
                 return;
             }
         }
-        
+
         //Change Category
         if (marker.equals("1")) {
             if (selectionStr.equals(optionsArr[3])) {
@@ -1061,7 +1074,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Error 405");
                     return;
                 }
-                
+
                 //If no categories have been added, make the transaction uncategorized
                 if (categories.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "ERROR: No categories have been added.");
@@ -1070,13 +1083,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     //Convert categories array list to array
                     Collections.sort(categories);
                     String[] categoriesArr = new String[categories.size()];
-                    
+
                     int index = 0;
-                    for (String s: categories) {
+                    for (String s : categories) {
                         categoriesArr[index] = s;
                         index++;
                     }
-                    
+
                     //Ask for category
                     Object[] categoriesObjArr = categoriesArr;
                     Object selection2 = JOptionPane.showInputDialog(null,
@@ -1084,40 +1097,40 @@ public class TransactionsFrame extends javax.swing.JFrame {
                             JOptionPane.INFORMATION_MESSAGE, null,
                             categoriesObjArr, categoriesObjArr[0]);
                     category = (String) selection2;
-                    
+
                     if (category == null) {
                         return;
                     }
                 }
             }
         }
-        
+
         //Format amount
         DecimalFormat df = new DecimalFormat("0.00");
         System.out.println(amountStr);
         String tempAmountStr = amountStr.replaceAll(",", "");
         String formattedAmountStr = df.format(Double.parseDouble(tempAmountStr));
-        
+
         addTransaction(month, date, description, Double.parseDouble(formattedAmountStr), category, marker);
-           
+
         String lineToRemove = "#" + origDate + "\t" + origDescription + "\t" + origAmountStr + "\t" + origCategory + "\t" + marker;
         removeTransaction(lineToRemove);
-        
+
     }
-    
-    private void addTransaction(String month, String date, String description, 
-                                double amount, String category, String marker) {
+
+    private void addTransaction(String month, String date, String description,
+            double amount, String category, String marker) {
         DecimalFormat df = new DecimalFormat("#,##0.00");
         String newTransaction = "#" + date + "\t" + description + "\t" + df.format(amount) + "\t" + category + "\t" + marker;
         try {
             Scanner sc = new Scanner(new File("months.txt"));
-            
+
             String line = "";
             ArrayList<String> lines = new ArrayList<>();
             boolean addedTransaction = false;
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
-                
+
                 //Check for month
                 if (line.charAt(0) != '#') {
                     if (line.equals(month)) {
@@ -1134,17 +1147,17 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     lines.add(line);
                 }
             }
-            
+
             sc.close();
-            
+
             PrintWriter printer = new PrintWriter(new File("months.txt"));
-            
-            for (String s: lines) {
+
+            for (String s : lines) {
                 printer.println(s);
             }
-            
+
             printer.close();
-            
+
             if (marker.equals("1")) {
                 updateTransactionsList();
             }
@@ -1155,20 +1168,20 @@ public class TransactionsFrame extends javax.swing.JFrame {
             System.out.println("File not found");
         }
     }
-    
+
     private void removeTransaction(String lineToRemove) {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
-            
+
             ArrayList<String> lines = new ArrayList<>();
             boolean removedLine = false;
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
-                
+
                 System.out.println("LINE TO REMOVE: " + lineToRemove);
                 System.out.println("FOUND LINE: " + line);
                 System.out.println("********************************");
-                
+
                 if (line.equals(lineToRemove)) {
                     if (removedLine) {
                         lines.add(line);
@@ -1177,65 +1190,63 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     removedLine = true;
                 } else {
                     lines.add(line);
-                } 
+                }
             }
             System.out.println("*****TRANSACTION REMOVED******");
-            
+
             sc.close();
-            
+
             PrintWriter printer = new PrintWriter(new File("months.txt"));
-            
-            for (String s: lines) {
+
+            for (String s : lines) {
                 printer.println(s);
             }
-            
+
             printer.close();
-            
+
             updateTransactionsList();
             updateIncomeList();
         } catch (FileNotFoundException ex) {
-            
+
         }
     }
-    
+
     private ArrayList<String> getCategories() {
         try {
             Scanner sc = new Scanner(new File("categories.txt"));
-            
+
             String line = "";
             ArrayList<String> categories = new ArrayList<>();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
                 categories.add(line);
             }
-            
+
             sc.close();
-            
+
             return categories;
-            
+
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
         }
         return null;
     }
-    
+
     private void updateMonthLabel() {
         monthLabel.setText(month);
     }
-    
+
     private void updateNumTransactionsLabel(int numTransactions) {
         numTransactionsLabel.setText("# Transactions: " + numTransactions);
     }
-    
+
     private void updateTransactionsList() {
         getTransactions();
-        
+
         //Format of Line:
         //Aug 10, 2020 (tab) Description (tab) $10.00 (tab) Category
-        
-        
         //Sort transactions by date
-        Collections.sort(transactions,  new Comparator<String>() {
+        Collections.sort(transactions, new Comparator<String>() {
             public int compare(String o1, String o2) {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("MMM " + "dd " + "yyyy");
@@ -1245,29 +1256,28 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 }
             }
         });
-        
+
         //Format transactions
-        
         String[] listArr = new String[transactions.size()];
-        
+
         int index = 0;
-        for (String s: transactions) {
+        for (String s : transactions) {
             listArr[index] = s;
             index++;
         }
-        
+
         transactionsList.setListData(listArr);
-        
+
         updateNumTransactionsLabel(transactions.size());
         updateTotalLabel();
         updateCashFlowLabel();
         updatePercentageIncomeSavedLabel();
     }
-    
+
     private void updateIncomeList() {
         getIncome();
-        
-        Collections.sort(income,  new Comparator<String>() {
+
+        Collections.sort(income, new Comparator<String>() {
             public int compare(String o1, String o2) {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("MMM " + "dd " + "yyyy");
@@ -1277,48 +1287,47 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 }
             }
         });
-        
+
         //Convert array list to array
         String[] listArr = new String[income.size()];
-        
+
         int index = 0;
-        for (String s: income) {
+        for (String s : income) {
             listArr[index] = s;
             index++;
         }
-        
+
         incomeList.setListData(listArr);
-        
+
         updateIncomeTotalLabel();
         updateNumTransactionsIncomeLabel(income.size());
         updateCashFlowLabel();
         updatePercentageIncomeSavedLabel();
     }
-  
+
     private void getTransactions() {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
-            
+
             transactions.clear();
             String line = "";
             boolean foundMonth = false;
-            
+
             totalSpending = 0.0;
-            
+
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
-                
+
                 //MONTHS DONT HAVE MARKERS
                 //TRANSACTIONS DO HAVE THE # MARKERS
-                
                 if (line.charAt(0) != '#') {
                     foundMonth = false;
                 }
-                
+
                 if (foundMonth) {
                     //Remove #
                     String formattedLine = line.substring(1, line.length());
-                    
+
                     String[] lineInfo = formattedLine.split("\t");
                     String date = lineInfo[0];
                     String description = lineInfo[1];
@@ -1327,23 +1336,22 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     //System.out.println("AMOUNT: "  + amount);
                     String category = lineInfo[3];
                     String marker = lineInfo[4];
-                    
+
                     //1 is spending
                     //2 is income
-                    
                     //Add --
-                    
                     formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category;
-                    
+
                     if (marker.equals("1")) {
                         //Remove commas from amount
                         String amountStr = amount.replaceAll(",", "");
-                        if (!category.equalsIgnoreCase("retirement")) 
+                        if (!category.equalsIgnoreCase("retirement")) {
                             totalSpending += Double.parseDouble(amountStr);
+                        }
                         transactions.add(formattedLine);
                     }
                 }
-                
+
                 if (line.charAt(0) != '#') {
                     if (line.equals(month)) {
                         foundMonth = true;
@@ -1351,58 +1359,55 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     }
                 }
             }
-            
+
             sc.close();
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
         }
     }
-    
+
     private void getIncome() {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
-            
+
             income.clear();
             String line = "";
             boolean foundMonth = false;
-            
+
             totalIncome = 0.0;
-            
+
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
-                
+
                 //MONTHS DONT HAVE MARKERS
                 //TRANSACTIONS DO HAVE THE # MARKERS
-                
                 if (line.charAt(0) != '#') {
                     foundMonth = false;
                 }
-                
+
                 if (foundMonth) {
                     //Remove #
                     String formattedLine = line.substring(1, line.length());
-                    
+
                     String[] lineInfo = formattedLine.split("\t");
                     String date = lineInfo[0];
                     String description = lineInfo[1];
                     String amount = lineInfo[2];
                     String category = lineInfo[3];
                     String marker = lineInfo[4];
-                    
+
                     //1 is spending
                     //2 is income
-                    
                     //Add --
-                    
                     formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category;
-                    
+
                     if (marker.equals("2")) {
                         String amountStr = amount.replaceAll(",", "");
                         totalIncome += Double.parseDouble(amountStr);
                         income.add(formattedLine);
                     }
                 }
-                
+
                 if (line.charAt(0) != '#') {
                     if (line.equals(month)) {
                         System.out.println("MONTH: " + month);
@@ -1411,52 +1416,52 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     }
                 }
             }
-            
+
             sc.close();
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
         }
     }
-    
+
     private void updateTotalLabel() {
         DecimalFormat df = new DecimalFormat("#,##0.00");
         String totalAmountStr = df.format(totalSpending);
-        
+
         totalLabel.setText("Total: $" + totalAmountStr);
     }
-    
+
     private void updateIncomeTotalLabel() {
         DecimalFormat df = new DecimalFormat("#,##0.00");
         String totalIncomeStr = df.format(totalIncome);
-        
+
         totalIncomeLabel.setText("Total: $" + totalIncomeStr);
     }
-    
+
     private void updateNumTransactionsIncomeLabel(int numTransactions) {
         numTransactionsIncomeLabel.setText("# Transactions: " + numTransactions);
     }
-    
+
     private void updateCashFlowLabel() {
         double cashFlow = totalIncome - totalSpending;
         DecimalFormat df = new DecimalFormat("#,##0.00");
         String cashFlowStr = df.format(cashFlow);
-        
+
         cashFlowLabel.setText("Cash Flow: $" + cashFlowStr);
     }
-    
+
     private void updatePercentageIncomeSavedLabel() {
         double cashFlow = totalIncome - totalSpending;
-        
+
         double percentageIncomeSaved = 0.0;
         if (totalIncome != 0.0 && cashFlow > 0.0) {
             percentageIncomeSaved = (cashFlow / totalIncome) * 100.0;
         }
-        
+
         DecimalFormat df = new DecimalFormat("#,##0.00");
         String percentageIncomeSavedStr = df.format(percentageIncomeSaved);
-        
+
         percentageIncomeSavedLabel.setText("Percentage of Income Saved: " + percentageIncomeSavedStr + "%");
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
