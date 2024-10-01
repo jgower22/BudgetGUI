@@ -353,7 +353,9 @@ public class MainFrame extends javax.swing.JFrame {
         
         //If something is selected
         if (!(monthsList.isSelectionEmpty())) {
-            String selectedMonth = monthsList.getSelectedValue();
+            int indexOfMonth = monthsList.getSelectedIndex();
+            String selectedMonth = months.get(indexOfMonth);
+            System.out.println("SELECTED MONTH: " + selectedMonth);
             
             this.dispose();
             TransactionsFrame transactionsFrame = new TransactionsFrame(selectedMonth, curYear);
