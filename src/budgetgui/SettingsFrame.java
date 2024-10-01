@@ -21,22 +21,24 @@ import javax.swing.JOptionPane;
  * @author jacksongower
  */
 public class SettingsFrame extends javax.swing.JFrame {
+
     private ArrayList<String> categories = new ArrayList<>();
     private ArrayList<String> categoryLimits = new ArrayList<>();
     private double defaultLimit = 0.0;
+
     /**
      * Creates new form SettingsFrame
      */
     public SettingsFrame() {
         initComponents();
-        
+
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
+
         this.setVisible(true);
         this.setTitle("Settings");
         this.setResizable(false);
-        
+
     }
 
     /**
@@ -186,46 +188,47 @@ public class SettingsFrame extends javax.swing.JFrame {
     private void viewCategoriesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewCategoriesButtonActionPerformed
         // TODO add your handling code here:
         getCategories();
-        
+
         if (categories.isEmpty()) {
             JOptionPane.showMessageDialog(null, "You have added no categories.");
             return;
         }
-        
+
         Collections.sort(categories);
-        
+
         String output = "";
-        for (String s: categories) {
+        for (String s : categories) {
             output += s + "\n";
         }
-        
+
         JOptionPane.showMessageDialog(null, output);
     }//GEN-LAST:event_viewCategoriesButtonActionPerformed
 
     private void addCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCategoryButtonActionPerformed
         // TODO add your handling code here:
         String newCategory = JOptionPane.showInputDialog("Enter a new category:");
-        if (newCategory == null)
+        if (newCategory == null) {
             return;
-        
+        }
+
         newCategory = newCategory.toUpperCase().trim();
-        
-        if (newCategory.equalsIgnoreCase("INCOME") || newCategory.equalsIgnoreCase("UNCATEGORIZED") 
-           || newCategory.equalsIgnoreCase("ALL")) {
+
+        if (newCategory.equalsIgnoreCase("INCOME") || newCategory.equalsIgnoreCase("UNCATEGORIZED")
+                || newCategory.equalsIgnoreCase("ALL")) {
             JOptionPane.showMessageDialog(null, "Error: Category Name Is Not Allowed.");
             return;
         }
-        
+
         if (newCategory.equals("")) {
             JOptionPane.showMessageDialog(null, "Invalid Input.");
             return;
         }
-        
+
         if (newCategory.indexOf("--") != -1) {
             JOptionPane.showMessageDialog(null, "-- is not allowed to be used.");
             return;
         }
-        
+
         if (newCategory != null) {
             if (categories.contains(newCategory)) {
                 JOptionPane.showMessageDialog(null, newCategory + " has already been added.");
@@ -240,28 +243,53 @@ public class SettingsFrame extends javax.swing.JFrame {
 
     private void removeCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCategoryButtonActionPerformed
         // TODO add your handling code here:
-        String categoryToRemove = JOptionPane.showInputDialog("Enter the category you wish to remove:");
-        if (categoryToRemove == null)
-            return;
-                
-        categoryToRemove = categoryToRemove.toUpperCase();
-        
-        if (categoryToRemove.equals("")) {
-            JOptionPane.showMessageDialog(null, "Invalid Input.");
+        String categoryToRemove = "";
+        getCategories();
+        Collections.sort(categories);
+        System.out.println("CATEGORIES: " + categories);
+        if (categories == null) {
+            JOptionPane.showMessageDialog(null, "Error 405");
             return;
         }
-        
-        if (categoryToRemove != null) {
-            getCategories();
-            if (categories.contains(categoryToRemove)) {
-                categories.remove(categoryToRemove);
-                removeCategoryLimit(categoryToRemove);
-                updateCategoriesTextFile();
-                updateTransactionsWithCategory(categoryToRemove, "UNCATEGORIZED");
-                JOptionPane.showMessageDialog(null, categoryToRemove + " successfully removed.");
-            } else {
-                JOptionPane.showMessageDialog(null, categoryToRemove + " not found.");
+
+        //If no categories have been added, return
+        if (categories.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "You have added no categories.");
+            return;
+        } else {
+            //Convert categories array list to array
+            String[] categoriesArr = new String[categories.size()];
+
+            int index = 0;
+            for (String s : categories) {
+                categoriesArr[index] = s;
+                index++;
             }
+
+            //Ask for category
+            Object[] categoriesObjArr = categoriesArr;
+            Object selection = JOptionPane.showInputDialog(null,
+                    "Select a Category", "Categories",
+                    JOptionPane.INFORMATION_MESSAGE, null,
+                    categoriesObjArr, categoriesObjArr[0]);
+            categoryToRemove = (String) selection;
+
+            if (categoryToRemove == null) {
+                return;
+            }
+        }
+
+        categoryToRemove = categoryToRemove.toUpperCase();
+
+        getCategories();
+        if (categories.contains(categoryToRemove)) {
+            categories.remove(categoryToRemove);
+            removeCategoryLimit(categoryToRemove);
+            updateCategoriesTextFile();
+            updateTransactionsWithCategory(categoryToRemove, "UNCATEGORIZED");
+            JOptionPane.showMessageDialog(null, categoryToRemove + " successfully removed.");
+        } else {
+            JOptionPane.showMessageDialog(null, categoryToRemove + " not found.");
         }
     }//GEN-LAST:event_removeCategoryButtonActionPerformed
 
@@ -274,76 +302,102 @@ public class SettingsFrame extends javax.swing.JFrame {
     private void viewLimitsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewLimitsButtonActionPerformed
         // TODO add your handling code here:
         getCategoryLimits();
-        
+
         if (categoryLimits.isEmpty()) {
             JOptionPane.showMessageDialog(null, "You have added no categories.");
             return;
         }
-        
+
         double totalBudgetLimit = 0.0;
-        
+
         //Add $ symbol
         ArrayList<String> categoryLimitsOutput = new ArrayList<>();
-        
+
         DecimalFormat df = new DecimalFormat("#,##0.00");
-        
-        for (String s: categoryLimits) {
+
+        for (String s : categoryLimits) {
             String[] lineInfo = s.split("\t");
             String categoryName = lineInfo[0];
             double categoryLimit = Double.parseDouble(lineInfo[1]);
-            
-            if (!categoryName.equalsIgnoreCase("retirement"))
+
+            if (!categoryName.equalsIgnoreCase("retirement")) {
                 totalBudgetLimit += categoryLimit;
-            
+            }
+
             categoryLimitsOutput.add(categoryName + " --  $" + df.format(categoryLimit));
         }
-        
+
         Collections.sort(categoryLimitsOutput);
-        
+
         categoryLimitsOutput.add("----------");
         categoryLimitsOutput.add("Total: $" + df.format(totalBudgetLimit));
-        
+
         String output = "";
-        
-        for (String s: categoryLimitsOutput) {
+
+        for (String s : categoryLimitsOutput) {
             output += s + "\n";
         }
-        
+
         JOptionPane.showMessageDialog(null, output);
     }//GEN-LAST:event_viewLimitsButtonActionPerformed
 
     private void editLimitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editLimitButtonActionPerformed
         // TODO add your handling code here:
-        String categoryToEdit = JOptionPane.showInputDialog("Enter the category you wish to change the limit for:");
-        
-        if (categoryToEdit == null) {
+        String categoryName = "";
+        getCategories();
+        Collections.sort(categories);
+        System.out.println("CATEGORIES: " + categories);
+        if (categories == null) {
+            JOptionPane.showMessageDialog(null, "Error 405");
             return;
         }
-        
-        categoryToEdit = categoryToEdit.toUpperCase();
-        
-        if (categoryToEdit.equals("")) {
-            JOptionPane.showMessageDialog(null, "Invalid Input");
+
+        //If no categories have been added, return
+        if (categories.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "You have added no categories.");
             return;
+        } else {
+            //Convert categories array list to array
+            String[] categoriesArr = new String[categories.size()];
+
+            int index = 0;
+            for (String s : categories) {
+                categoriesArr[index] = s;
+                index++;
+            }
+
+            //Ask for category
+            Object[] categoriesObjArr = categoriesArr;
+            Object selection = JOptionPane.showInputDialog(null,
+                    "Select a Category", "Categories",
+                    JOptionPane.INFORMATION_MESSAGE, null,
+                    categoriesObjArr, categoriesObjArr[0]);
+            categoryName = (String) selection;
+
+            if (categoryName == null) {
+                return;
+            }
         }
-        
+
+        categoryName = categoryName.toUpperCase();
+
         double newLimit = 0.0;
         boolean foundCategory = false;
         int indexToRemove = 0;
-        
+
         getCategoryLimits();
-        
-        for (String s: categoryLimits) {
+
+        for (String s : categoryLimits) {
             String[] lineInfo = s.split("\t");
             String category = lineInfo[0];
             String limit = lineInfo[1];
-            
-            if (category.equals(categoryToEdit)) {
+
+            if (category.equals(categoryName)) {
                 foundCategory = true;
-                String message = "Enter a new limit for " + categoryToEdit 
-                                  + "    " + "Current Limit: $" + limit;
+                String message = "Enter a new limit for " + categoryName
+                        + "    " + "Current Limit: $" + limit;
                 String input = JOptionPane.showInputDialog(message);
-                
+
                 try {
                     newLimit = Double.parseDouble(input);
                     if (newLimit < 0.0) {
@@ -359,26 +413,26 @@ public class SettingsFrame extends javax.swing.JFrame {
             indexToRemove++;
             System.out.println("INDEX TO REMOVE: " + indexToRemove);
         }
-        
+
         if (!foundCategory) {
-            JOptionPane.showMessageDialog(null, categoryToEdit + " not found.");
+            JOptionPane.showMessageDialog(null, categoryName + " not found.");
             return;
         }
-        
+
         //Remove old limit
         categoryLimits.remove(indexToRemove);
-        
+
         //Format new limit
         DecimalFormat df = new DecimalFormat("0.00");
         String newLimitStr = df.format(newLimit);
-        
+
         //Add new limit
-        String newLine = categoryToEdit + "\t" + newLimitStr;
+        String newLine = categoryName + "\t" + newLimitStr;
         System.out.println("NEW LINE: " + newLine);
         categoryLimits.add(newLine);
         updateCategoryLimitsTextFile();
-        String output = "New Limit Created For:" + 
-                        "   " + newLine;
+        String output = "New Limit Created For:"
+                + "   " + newLine;
         JOptionPane.showMessageDialog(null, output);
     }//GEN-LAST:event_editLimitButtonActionPerformed
 
@@ -390,23 +444,23 @@ public class SettingsFrame extends javax.swing.JFrame {
 
     private void importTipsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importTipsButtonActionPerformed
         // TODO add your handling code here:
-        String message = "The Format for Importing is:\n" +
-                         "Date (tab) Description (tab) Amount (tab) Category\n" +
-                         "-------------------------\n" +
-                         "Date Format Example: Aug 10 2020\n" +
-                         "Description Format Example: Target\n" +
-                         "Amount Format Example: 17.45\n" +
-                         "Category Format Example: Shopping\n" +
-                         "-------------------------\n" +
-                         "NOTE: Each transaction must be on a separate line.\n" +
-                         "Each category must be added in settings for a transaction to be accepted. (Except for Income)\n" +
-                         "Each month must be added for a transaction to be accepted.";
+        String message = "The Format for Importing is:\n"
+                + "Date (tab) Description (tab) Amount (tab) Category\n"
+                + "-------------------------\n"
+                + "Date Format Example: Aug 10 2020\n"
+                + "Description Format Example: Target\n"
+                + "Amount Format Example: 17.45\n"
+                + "Category Format Example: Shopping\n"
+                + "-------------------------\n"
+                + "NOTE: Each transaction must be on a separate line.\n"
+                + "Each category must be added in settings for a transaction to be accepted. (Except for Income)\n"
+                + "Each month must be added for a transaction to be accepted.";
         JOptionPane.showMessageDialog(null, message);
     }//GEN-LAST:event_importTipsButtonActionPerformed
 
     private void editCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCategoryButtonActionPerformed
         // TODO add your handling code here:
-        String categoryToEdit = JOptionPane.showInputDialog("Enter the category you wish to edit:");
+        /*String categoryToEdit = JOptionPane.showInputDialog("Enter the category you wish to edit:");
         if (categoryToEdit == null)
             return;
         categoryToEdit = categoryToEdit.toUpperCase();
@@ -418,26 +472,65 @@ public class SettingsFrame extends javax.swing.JFrame {
         if (!categories.contains(categoryToEdit)) {
             JOptionPane.showMessageDialog(null, categoryToEdit + " not found.");
             return;
-        }
-        String newCategoryName = JOptionPane.showInputDialog("Enter the new name for category: " + categoryToEdit).toUpperCase().trim();
-        if (newCategoryName == null)
+        }*/
+        String categoryToEdit = "";
+        getCategories();
+        Collections.sort(categories);
+        System.out.println("CATEGORIES: " + categories);
+        if (categories == null) {
+            JOptionPane.showMessageDialog(null, "Error 405");
             return;
+        }
+
+        //If no categories have been added, return
+        if (categories.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "You have added no categories.");
+            return;
+        } else {
+            //Convert categories array list to array
+            String[] categoriesArr = new String[categories.size()];
+
+            int index = 0;
+            for (String s : categories) {
+                categoriesArr[index] = s;
+                index++;
+            }
+
+            //Ask for category
+            Object[] categoriesObjArr = categoriesArr;
+            Object selection = JOptionPane.showInputDialog(null,
+                    "Select a Category", "Categories",
+                    JOptionPane.INFORMATION_MESSAGE, null,
+                    categoriesObjArr, categoriesObjArr[0]);
+            categoryToEdit = (String) selection;
+
+            if (categoryToEdit == null) {
+                return;
+            }
+        }
+
+        String newCategoryName = JOptionPane.showInputDialog("Enter the new name for category: " + categoryToEdit).toUpperCase().trim();
+        if (newCategoryName == null) {
+            return;
+        }
         if (newCategoryName.equals("")) {
-            JOptionPane.showMessageDialog(null, "Error: Invalid Input.");
+            JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+            return;
         }
         if (newCategoryName.equalsIgnoreCase(categoryToEdit)) {
-            JOptionPane.showMessageDialog(null, "Error: New category name cannot be the same as old category name.");
+            JOptionPane.showMessageDialog(null, "Invalid input. New category name cannot be the same as old category name.");
             return;
         }
         //Get old limit and update it for the new category name
         double categoryLimit = getCategoryLimit(categoryToEdit);
         if (categoryLimit == -1.0) {
             JOptionPane.showMessageDialog(null, "Error Updating Category Limit.");
+            return;
         }
         String newLine = newCategoryName + "\t" + categoryLimit;
         categoryLimits.add(newLine);
         updateCategoryLimitsTextFile();
-        
+
         //Everything is valid up to this point
         categories.remove(categoryToEdit);
         System.out.println("CATEGORIES: " + categories);
@@ -446,15 +539,15 @@ public class SettingsFrame extends javax.swing.JFrame {
         System.out.println("CATEGORIES: " + categories);
         updateTransactionsWithCategory(categoryToEdit, newCategoryName);
         addCategory(newCategoryName, false);
-        JOptionPane.showMessageDialog(null, categoryToEdit + " successfully changed to " + newCategoryName + 
-                                     "\nAll Transactions With the Old Category Name Have Been Changed to the New Category Name.");
-     
+        JOptionPane.showMessageDialog(null, categoryToEdit + " successfully changed to " + newCategoryName
+                + "\nAll Transactions With the Old Category Name Have Been Changed to the New Category Name.");
+
     }//GEN-LAST:event_editCategoryButtonActionPerformed
 
     private void findDuplicateTransactions() {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
-            
+
             ArrayList<String> transactions = new ArrayList<>();
             ArrayList<String> duplicateTransactions = new ArrayList<>();
             String line = "";
@@ -465,42 +558,42 @@ public class SettingsFrame extends javax.swing.JFrame {
                     //If the transaction is already added
                     if (transactions.contains(line)) {
                         //Add to duplicate transactions
-                        
+
                         //Remove # and end of line marker
-                        String formattedLine = line.substring(1, line.length()-1);
+                        String formattedLine = line.substring(1, line.length() - 1);
                         duplicateTransactions.add(formattedLine);
                     } else {
                         transactions.add(line);
                     }
                 }
             }
-            
+
             sc.close();
-            
+
             if (duplicateTransactions.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "No duplicate transactions found.");
                 return;
             }
-            
+
             Collections.sort(duplicateTransactions);
-            
+
             //Split up output dialogs
             int maxTransactionsInOutput = 20;
-            
+
             int indexTracker = 0;
-            
-            int numDialogBoxes = duplicateTransactions.size()/maxTransactionsInOutput;
-            
+
+            int numDialogBoxes = duplicateTransactions.size() / maxTransactionsInOutput;
+
             for (int i = 0; i <= numDialogBoxes; i++) {
-                String output = "Duplicate Transactions: (" + (i+1) + " of " + (numDialogBoxes+1) + ")\n";
-                
+                String output = "Duplicate Transactions: (" + (i + 1) + " of " + (numDialogBoxes + 1) + ")\n";
+
                 try {
                     for (int j = 0; j < maxTransactionsInOutput; j++) {
                         output += duplicateTransactions.get(indexTracker) + "\n";
                         indexTracker++;
                     }
                 } catch (IndexOutOfBoundsException e) {
-                    
+
                 }
                 JOptionPane.showMessageDialog(null, output);
             }
@@ -508,82 +601,82 @@ public class SettingsFrame extends javax.swing.JFrame {
             System.out.println("File not found.");
         }
     }
-    
+
     private double getCategoryLimit(String category) {
         getCategoryLimits();
-        
+
         String categoryToFind = "";
-        for (String s: categoryLimits) {
+        for (String s : categoryLimits) {
             String[] lineInfo = s.split("\t");
             String foundCategory = lineInfo[0];
-            
+
             if (foundCategory.equals(category)) {
                 return Double.parseDouble(lineInfo[1]);
             }
         }
         return -1.0;
     }
-    
+
     private void removeCategoryLimit(String category) {
         getCategoryLimits();
-        
+
         String categoryToRemove = "";
-        for (String s: categoryLimits) {
+        for (String s : categoryLimits) {
             String[] lineInfo = s.split("\t");
             String foundCategory = lineInfo[0];
-            
+
             if (foundCategory.equals(category)) {
                 categoryToRemove = s;
             }
         }
-        
+
         categoryLimits.remove(categoryToRemove);
-        
+
         //Print new data
         updateCategoryLimitsTextFile();
     }
-    
+
     private void updateCategoryLimitsTextFile() {
         try {
             PrintWriter printer = new PrintWriter(new File("categorylimits.txt"));
-            
-            for (String s: categoryLimits) {
+
+            for (String s : categoryLimits) {
                 printer.println(s);
             }
-            
-            printer.close();
-        } catch (FileNotFoundException ex) {
-            System.out.println("File not found.");
-        }
-    }    
-    
-    private void updateCategoriesTextFile() {
-        try {
-            PrintWriter printer = new PrintWriter(new File("categories.txt"));
-            
-            for (String s: categories) {
-                printer.println(s);
-            }
-            
+
             printer.close();
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
         }
     }
-    
+
+    private void updateCategoriesTextFile() {
+        try {
+            PrintWriter printer = new PrintWriter(new File("categories.txt"));
+
+            for (String s : categories) {
+                printer.println(s);
+            }
+
+            printer.close();
+        } catch (FileNotFoundException ex) {
+            System.out.println("File not found.");
+        }
+    }
+
     private void getCategories() {
         try {
             Scanner sc = new Scanner(new File("categories.txt"));
-            
+
             String line = "";
             categories.clear();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
                 categories.add(line);
             }
-            
+
             sc.close();
-            
+
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
         }
@@ -593,17 +686,17 @@ public class SettingsFrame extends javax.swing.JFrame {
         try {
             getCategories();
             PrintWriter printer = new PrintWriter(new File("categories.txt"));
-            
+
             //Print previous categories
-            for (String s: categories) {
+            for (String s : categories) {
                 printer.println(s);
             }
-            
+
             //Add new category
             printer.println(newCategory);
-            
+
             printer.close();
-            
+
             if (addLimit) {
                 //Print category limits
                 getCategoryLimits();
@@ -618,47 +711,48 @@ public class SettingsFrame extends javax.swing.JFrame {
 
                 printer2.close();
             }
-           
-            
+
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
         }
     }
-   
+
     /**
      * This method retrieves the limits for each category
      */
     private void getCategoryLimits() {
         try {
             Scanner sc = new Scanner(new File("categorylimits.txt"));
-            
+
             String line = "";
             categoryLimits.clear();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
                 categoryLimits.add(line);
             }
-            
+
             sc.close();
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
         }
     }
-    
+
     /**
-     * This method changes any transaction with a removed category to the passed in category
-     * @param categoryName 
+     * This method changes any transaction with a removed category to the passed
+     * in category
+     *
+     * @param categoryName
      */
     private void updateTransactionsWithCategory(String categoryName, String newCategoryName) {
-        
+
         try {
             Scanner sc = new Scanner(new File("months.txt"));
-            
+
             String line = "";
             ArrayList<String> lines = new ArrayList<>();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
-                
+
                 //Look at transaction lines only
                 //Lines with #
                 if (line.charAt(0) == '#') {
@@ -668,14 +762,14 @@ public class SettingsFrame extends javax.swing.JFrame {
                     String amount = transactionInfo[2];
                     String foundCategory = transactionInfo[3];
                     String marker = transactionInfo[4];
-                    
+
                     if (marker.equals("1")) {
                         if (foundCategory.equals(categoryName)) {
                             //Change this line
-                            String formattedLine = date + "\t" + transactionName + "\t" +
-                                                   amount + "\t" + newCategoryName + "\t" +
-                                                   marker;
-                            
+                            String formattedLine = date + "\t" + transactionName + "\t"
+                                    + amount + "\t" + newCategoryName + "\t"
+                                    + marker;
+
                             //Add marker 1 lines matching category
                             lines.add(formattedLine);
                         } else {
@@ -691,15 +785,15 @@ public class SettingsFrame extends javax.swing.JFrame {
                     lines.add(line);
                 }
             }
-            
+
             sc.close();
-            
+
             PrintWriter printer = new PrintWriter(new File("months.txt"));
-            
-            for (String s: lines) {
+
+            for (String s : lines) {
                 printer.println(s);
             }
-            
+
             printer.close();
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
