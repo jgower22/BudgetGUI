@@ -564,7 +564,7 @@ public class SettingsFrame extends javax.swing.JFrame {
 
                         //Remove # and end of line marker
                         String formattedLine = line.substring(1, line.length() - 1);
-                        duplicateTransactions.add(formattedLine);
+                        duplicateTransactions.add(formattedLine.replaceAll("\t", " "));
                     } else {
                         transactions.add(line);
                     }
@@ -588,7 +588,7 @@ public class SettingsFrame extends javax.swing.JFrame {
             int numDialogBoxes = duplicateTransactions.size() / maxTransactionsInOutput;
 
             for (int i = 0; i <= numDialogBoxes; i++) {
-                String output = "Duplicate Transactions: (" + (i + 1) + " of " + (numDialogBoxes + 1) + ")\n";
+                String output = "Duplicate Transactions (" + (i + 1) + " of " + (numDialogBoxes + 1) + "):\n";
 
                 try {
                     for (int j = 0; j < maxTransactionsInOutput; j++) {
