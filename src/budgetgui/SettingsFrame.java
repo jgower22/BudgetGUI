@@ -269,7 +269,7 @@ public class SettingsFrame extends javax.swing.JFrame {
             //Ask for category
             Object[] categoriesObjArr = categoriesArr;
             Object selection = JOptionPane.showInputDialog(null,
-                    "Select a Category", "Categories",
+                    "Select a Category to Remove", "Categories",
                     JOptionPane.INFORMATION_MESSAGE, null,
                     categoriesObjArr, categoriesObjArr[0]);
             categoryToRemove = (String) selection;
@@ -369,7 +369,7 @@ public class SettingsFrame extends javax.swing.JFrame {
             //Ask for category
             Object[] categoriesObjArr = categoriesArr;
             Object selection = JOptionPane.showInputDialog(null,
-                    "Select a Category", "Categories",
+                    "Select a Category to Edit the Limit", "Categories",
                     JOptionPane.INFORMATION_MESSAGE, null,
                     categoriesObjArr, categoriesObjArr[0]);
             categoryName = (String) selection;
@@ -397,7 +397,9 @@ public class SettingsFrame extends javax.swing.JFrame {
                 String message = "Enter a new limit for " + categoryName
                         + "    " + "Current Limit: $" + limit;
                 String input = JOptionPane.showInputDialog(message);
-
+                if (input == null)
+                    return;
+                
                 try {
                     newLimit = Double.parseDouble(input);
                     if (newLimit < 0.0) {
@@ -499,7 +501,7 @@ public class SettingsFrame extends javax.swing.JFrame {
             //Ask for category
             Object[] categoriesObjArr = categoriesArr;
             Object selection = JOptionPane.showInputDialog(null,
-                    "Select a Category", "Categories",
+                    "Select a Category to Edit", "Categories",
                     JOptionPane.INFORMATION_MESSAGE, null,
                     categoriesObjArr, categoriesObjArr[0]);
             categoryToEdit = (String) selection;
@@ -509,10 +511,11 @@ public class SettingsFrame extends javax.swing.JFrame {
             }
         }
 
-        String newCategoryName = JOptionPane.showInputDialog("Enter the new name for category: " + categoryToEdit).toUpperCase().trim();
+        String newCategoryName = JOptionPane.showInputDialog("Enter the new name for category: " + categoryToEdit);
         if (newCategoryName == null) {
             return;
         }
+        newCategoryName = newCategoryName.toUpperCase().trim();
         if (newCategoryName.equals("")) {
             JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
             return;
