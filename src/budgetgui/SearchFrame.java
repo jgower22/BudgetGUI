@@ -46,7 +46,8 @@ public class SearchFrame extends javax.swing.JFrame {
         this.setTitle("Search Transactions");
         this.setResizable(false);
         
-        spendingSelected = false;
+        spendingButton.setSelected(true);
+        spendingSelected = true;
         incomeSelected = false;
         
         ArrayList<String> yearsArrList = getSavedYears();

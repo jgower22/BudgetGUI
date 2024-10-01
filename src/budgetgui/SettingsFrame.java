@@ -36,6 +36,7 @@ public class SettingsFrame extends javax.swing.JFrame {
         this.setVisible(true);
         this.setTitle("Settings");
         this.setResizable(false);
+        
     }
 
     /**
@@ -57,7 +58,6 @@ public class SettingsFrame extends javax.swing.JFrame {
         importTipsButton = new javax.swing.JButton();
         titleLabel = new javax.swing.JLabel();
         editCategoryButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -128,13 +128,6 @@ public class SettingsFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Q's on Recurring Transactions");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -143,9 +136,9 @@ public class SettingsFrame extends javax.swing.JFrame {
                 .addGap(124, 124, 124)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
+                        .addGap(23, 23, 23)
                         .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(exitButton, javax.swing.GroupLayout.DEFAULT_SIZE, 112, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -153,11 +146,10 @@ public class SettingsFrame extends javax.swing.JFrame {
                             .addComponent(editLimitButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(viewLimitsButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(addCategoryButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(importTipsButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(importTipsButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 203, Short.MAX_VALUE)
                             .addComponent(findDuplicatesButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(editCategoryButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(removeCategoryButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(removeCategoryButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -185,9 +177,7 @@ public class SettingsFrame extends javax.swing.JFrame {
                 .addComponent(findDuplicatesButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(importTipsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
 
         pack();
@@ -214,7 +204,11 @@ public class SettingsFrame extends javax.swing.JFrame {
 
     private void addCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCategoryButtonActionPerformed
         // TODO add your handling code here:
-        String newCategory = JOptionPane.showInputDialog("Enter a new category:").toUpperCase().trim();
+        String newCategory = JOptionPane.showInputDialog("Enter a new category:");
+        if (newCategory == null)
+            return;
+        
+        newCategory = newCategory.toUpperCase().trim();
         
         if (newCategory.equalsIgnoreCase("INCOME") || newCategory.equalsIgnoreCase("UNCATEGORIZED") 
            || newCategory.equalsIgnoreCase("ALL")) {
@@ -246,7 +240,11 @@ public class SettingsFrame extends javax.swing.JFrame {
 
     private void removeCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCategoryButtonActionPerformed
         // TODO add your handling code here:
-        String categoryToRemove = JOptionPane.showInputDialog("Enter the category you wish to remove:").toUpperCase();
+        String categoryToRemove = JOptionPane.showInputDialog("Enter the category you wish to remove:");
+        if (categoryToRemove == null)
+            return;
+                
+        categoryToRemove = categoryToRemove.toUpperCase();
         
         if (categoryToRemove.equals("")) {
             JOptionPane.showMessageDialog(null, "Invalid Input.");
@@ -408,13 +406,14 @@ public class SettingsFrame extends javax.swing.JFrame {
 
     private void editCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCategoryButtonActionPerformed
         // TODO add your handling code here:
-        String categoryToEdit = JOptionPane.showInputDialog("Enter the category you wish to edit:").toUpperCase();
+        String categoryToEdit = JOptionPane.showInputDialog("Enter the category you wish to edit:");
+        if (categoryToEdit == null)
+            return;
+        categoryToEdit = categoryToEdit.toUpperCase();
         if (categoryToEdit.equals("")) {
             JOptionPane.showMessageDialog(null, "Invalid Input.");
             return;
         }
-        if (categoryToEdit == null)
-            return;
         getCategories();
         if (!categories.contains(categoryToEdit)) {
             JOptionPane.showMessageDialog(null, categoryToEdit + " not found.");
@@ -451,16 +450,6 @@ public class SettingsFrame extends javax.swing.JFrame {
                                      "\nAll Transactions With the Old Category Name Have Been Changed to the New Category Name.");
      
     }//GEN-LAST:event_editCategoryButtonActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        String message = "Recurring transactions can be made in the transactions frame." + "\n" +
-                         "If you try to make a transaction recurring, but one is already recurring with the same name and amount," + "n" +
-                         "there will be an error message." + "\n" +
-                         "If you want two transactions to be recurring with the same amount, please make sure" + "\n" +
-                         "that they have unique names.";
-        JOptionPane.showMessageDialog(null, message);
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     private void findDuplicateTransactions() {
         try {
@@ -723,7 +712,6 @@ public class SettingsFrame extends javax.swing.JFrame {
     private javax.swing.JButton exitButton;
     private javax.swing.JButton findDuplicatesButton;
     private javax.swing.JButton importTipsButton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton removeCategoryButton;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JButton viewCategoriesButton;
