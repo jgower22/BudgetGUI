@@ -310,15 +310,24 @@ public class SearchFrame extends javax.swing.JFrame {
         double maxValue = 0.0;
         if (!(minField.getText().equals("") && maxField.getText().equals(""))) {
             try {
-                minValue = Double.parseDouble(minField.getText());
+                if (minField.getText().equals("")) {
+                    minValue = 0;
+                } else {
+                    minValue = Double.parseDouble(minField.getText());
+                }
+                
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Invalid Min Field.");
+                JOptionPane.showMessageDialog(null, "Invalid min value. Please try again.");
                 return;
             }
             try {
-                maxValue = Double.parseDouble(maxField.getText());
+                if (maxField.getText().equals("")) {
+                    maxValue = Integer.MAX_VALUE;
+                } else {
+                    maxValue = Double.parseDouble(maxField.getText());
+                }
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, "Invalid Max Field.");
+                JOptionPane.showMessageDialog(null, "Invalid max value. Please try again.");
                 return;
             }
             System.out.println("MIN: " + minValue);
