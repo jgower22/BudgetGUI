@@ -23,57 +23,63 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author jgower17
  */
 public class SearchFrame extends javax.swing.JFrame {
+
     private boolean spendingSelected;
     private boolean incomeSelected;
     private String curYear;
+
     /**
      * Creates new form SearchFrame
      */
-    public SearchFrame(String curYear) {
+    public SearchFrame(String curYear, boolean prefillYear) {
         initComponents();
-        
+
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
+
         this.curYear = curYear;
-        
+
         this.setVisible(true);
         this.setTitle("Search Transactions");
         this.setResizable(false);
-        
+
         spendingButton.setSelected(true);
         spendingSelected = true;
         incomeSelected = false;
-        
+
         ArrayList<String> yearsArrList = getSavedYears();
         String[] yearsArr = new String[yearsArrList.size() + 1];
         int index = 1;
         yearsArr[0] = "All";
-        for (String s: yearsArrList) {
+        for (String s : yearsArrList) {
             yearsArr[index] = s;
             index++;
         }
-        
+
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(yearsArr);
         yearComboBox.setModel(model);
-        yearComboBox.setSelectedIndex(java.util.Arrays.asList(yearsArr).indexOf(curYear));
-        
+        //Prefill year
+        if (prefillYear) {
+            yearComboBox.setSelectedIndex(java.util.Arrays.asList(yearsArr).indexOf(curYear));
+        }
+
         ArrayList<String> categoriesArrList = getCategories();
         categoriesArrList.add("UNCATEGORIZED");
         Collections.sort(categoriesArrList);
         String[] categoriesArr = new String[categoriesArrList.size() + 1];
         index = 1;
         categoriesArr[0] = "All";
-        for (String s: categoriesArrList) {
+        for (String s : categoriesArrList) {
             categoriesArr[index] = s;
             index++;
         }
-        
+
         DefaultComboBoxModel<String> model2 = new DefaultComboBoxModel<>(categoriesArr);
         categoriesComboBox.setModel(model2);
     }
@@ -89,32 +95,32 @@ public class SearchFrame extends javax.swing.JFrame {
             sc.close();
             return savedYears;
         } catch (FileNotFoundException ex) {
-            
+
         }
         return null;
     }
-    
+
     private ArrayList<String> getCategories() {
         try {
             Scanner sc = new Scanner(new File("categories.txt"));
-            
+
             String line = "";
             ArrayList<String> categories = new ArrayList<>();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
                 categories.add(line);
             }
-            
+
             sc.close();
-            
+
             return categories;
-            
+
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
         }
         return null;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -283,7 +289,12 @@ public class SearchFrame extends javax.swing.JFrame {
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        MainFrame mainFrame = new MainFrame(curYear);
+        if (curYear != null) {
+            MainFrame mainFrame = new MainFrame(curYear);
+        } else {
+            YearFrame yearFrame = new YearFrame();
+        }
+        
     }//GEN-LAST:event_exitButtonActionPerformed
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
@@ -293,7 +304,7 @@ public class SearchFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Please select spending/income.");
             return;
         }
-        
+
         //Check for valid min/max fields
         double minValue = 0.0;
         double maxValue = 0.0;
@@ -385,13 +396,13 @@ public class SearchFrame extends javax.swing.JFrame {
                     String amountStr = lineInfo[2];
                     String category = lineInfo[3];
                     int transactionType = Integer.parseInt(lineInfo[4]);
-                    
+
                     String formattedLine = date + " -- " + description + " -- $" + amountStr + " -- " + category;
-                    
+
                     //Remove commas from amount
                     amountStr = lineInfo[2].replaceAll(",", "");
                     Double amount = Double.parseDouble(amountStr);
-                    
+
                     //Case doesn't matter for the search
                     String tempFormattedLine = formattedLine.toLowerCase();
                     input = input.toLowerCase();
@@ -404,12 +415,12 @@ public class SearchFrame extends javax.swing.JFrame {
                             String month = dateInfo[0];
                             int day = Integer.parseInt(dateInfo[1]);
                             int year = Integer.parseInt(dateInfo[2]);
-                            
+
                             if (selectedYear != year) {
                                 validTransaction = false;
                             }
                         }
-                        
+
                         //Check min field and max field
                         //Already have valid input
                         if (min != -1) {
@@ -417,7 +428,7 @@ public class SearchFrame extends javax.swing.JFrame {
                                 validTransaction = false;
                             }
                         }
-                        
+
                         //Check category for spending/income selection
                         if (incomeSelected && !category.equalsIgnoreCase("income")) {
                             validTransaction = false;
@@ -425,7 +436,7 @@ public class SearchFrame extends javax.swing.JFrame {
                         if (spendingSelected && category.equalsIgnoreCase("income")) {
                             validTransaction = false;
                         }
-                        
+
                         //Compare category for combo box selection on spending transactions
                         if (spendingSelected) {
                             String selectedCategory = (String) categoriesComboBox.getSelectedItem();
@@ -436,28 +447,29 @@ public class SearchFrame extends javax.swing.JFrame {
                                 }
                             }
                         }
-                        
+
                         if (validTransaction) {
                             returnedTransactions.add(formattedLine);
-                            if (!category.equalsIgnoreCase("retirement"))
+                            if (!category.equalsIgnoreCase("retirement")) {
                                 transactionTotal += amount;
+                            }
                         }
                     }
-                    
+
                 }
             }
             //Sort transactions by date
-            Collections.sort(returnedTransactions,  new Comparator<String>() {
-            public int compare(String o1, String o2) {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("MMM " + "dd " + "yyyy");
-                    return sdf.parse(o1).compareTo(sdf.parse(o2));  //sdf.parse returns date - So, Compare Date with date
-                } catch (ParseException ex) {
-                    return o1.compareTo(o2);
+            Collections.sort(returnedTransactions, new Comparator<String>() {
+                public int compare(String o1, String o2) {
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("MMM " + "dd " + "yyyy");
+                        return sdf.parse(o1).compareTo(sdf.parse(o2));  //sdf.parse returns date - So, Compare Date with date
+                    } catch (ParseException ex) {
+                        return o1.compareTo(o2);
+                    }
                 }
-            }
             });
-            
+
             //Add dividers
             //Monthly subtotals
             //Month headers
@@ -466,12 +478,12 @@ public class SearchFrame extends javax.swing.JFrame {
             int currentYear = 0;
             String currentMonth = "";
             HashMap<Integer, String> dividers = new HashMap<>();
-            
+
             DecimalFormat df = new DecimalFormat("#,##0.00");
-            
+
             ArrayList<String> returnedTransactionsCopy = new ArrayList<>();
             double monthlyTotal = 0.0;
-            for (String s: returnedTransactions) {
+            for (String s : returnedTransactions) {
                 if (currentIndex == 0) {
                     String[] lineInfo = s.split("--");
                     String[] dateInfo = lineInfo[0].split(" ");
@@ -480,9 +492,7 @@ public class SearchFrame extends javax.swing.JFrame {
                     String divider = "----- " + currentMonth + " " + currentYear + " -----";
                     returnedTransactionsCopy.add(divider);
                 }
-                
-                
-                
+
                 String[] lineInfo = s.split("--");
                 String[] dateInfo = lineInfo[0].split(" ");
                 String foundMonth = dateInfo[0];
@@ -492,7 +502,7 @@ public class SearchFrame extends javax.swing.JFrame {
                 amountStr = amountStr.replaceAll(",", "");
                 double amount = Double.parseDouble(amountStr);
                 int foundYear = Integer.parseInt(dateInfo[2]);
-                
+
                 if (!currentMonth.equals(foundMonth) || currentYear != foundYear) {
                     //Add monthly subtotal
                     String subtotalDivider = currentMonth + " " + currentYear + " Total: $" + df.format(monthlyTotal);
@@ -503,11 +513,12 @@ public class SearchFrame extends javax.swing.JFrame {
                     String monthDivider = "----- " + foundMonth + " " + currentYear + " -----";
                     returnedTransactionsCopy.add(monthDivider);
                     currentMonth = foundMonth;
-                    
-                } 
-                if (!category.equalsIgnoreCase("retirement"))
+
+                }
+                if (!category.equalsIgnoreCase("retirement")) {
                     monthlyTotal += amount;
-                
+                }
+
                 returnedTransactionsCopy.add(s);
                 currentIndex++;
                 //End of transactions
@@ -516,15 +527,15 @@ public class SearchFrame extends javax.swing.JFrame {
                     returnedTransactionsCopy.add(subtotalDivider);
                 }
             }
-            
-          
+
             String totalStr = "Spending";
-            if (incomeSelected)
+            if (incomeSelected) {
                 totalStr = "Income";
-            if (!returnedTransactionsCopy.isEmpty())
+            }
+            if (!returnedTransactionsCopy.isEmpty()) {
                 returnedTransactionsCopy.add("Total " + totalStr + ": $" + df.format(transactionTotal));
-            
-            
+            }
+
             String[] listArr = new String[returnedTransactionsCopy.size()];
 
             int index = 0;
@@ -532,16 +543,17 @@ public class SearchFrame extends javax.swing.JFrame {
                 listArr[index] = s;
                 index++;
             }
-            
+
             transactionsList.setListData(listArr);
-            
-            if (returnedTransactions.isEmpty())
+
+            if (returnedTransactions.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "No results found.");
-            
+            }
+
         } catch (FileNotFoundException ex) {
-            
+
         }
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

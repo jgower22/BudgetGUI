@@ -418,7 +418,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        SearchFrame searchFrame = new SearchFrame(curYear);
+        SearchFrame searchFrame = new SearchFrame(curYear, true);
     }//GEN-LAST:event_searchButtonActionPerformed
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
