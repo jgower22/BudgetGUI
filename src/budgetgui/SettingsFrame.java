@@ -387,6 +387,10 @@ public class SettingsFrame extends javax.swing.JFrame {
 
         getCategoryLimits();
 
+        DecimalFormat df1 = new DecimalFormat("$#,##0.00");
+
+        System.out.println("CATEGORY LIMITS: " + categoryLimits);
+        outer:
         for (String s : categoryLimits) {
             String[] lineInfo = s.split("\t");
             String category = lineInfo[0];
@@ -394,23 +398,31 @@ public class SettingsFrame extends javax.swing.JFrame {
 
             if (category.equals(categoryName)) {
                 foundCategory = true;
-                String message = "Enter a new limit for " + categoryName
-                        + "    " + "Current Limit: $" + limit;
-                String input = JOptionPane.showInputDialog(message);
-                if (input == null)
-                    return;
-                
-                try {
-                    newLimit = Double.parseDouble(input);
-                    if (newLimit < 0.0) {
-                        JOptionPane.showMessageDialog(null, "Limit Must Be Greater Or Equal To 0");
+                while (true) {
+                    String message = "Enter a new limit for " + categoryName + "\nCurrent Limit: " + df1.format(Double.valueOf(limit));
+                    String input = JOptionPane.showInputDialog(message);
+                    String tempFormatStr = "";
+                    try {
+                        tempFormatStr = df1.format(Double.parseDouble(input));
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Invalid limit. Please try again.");
+                        continue;
+                    }
+                    if (input == null || tempFormatStr.equals(df1.format(Double.parseDouble(limit)))) {
                         return;
                     }
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "Invalid Limit");
-                    return;
+                    try {
+                        newLimit = Double.parseDouble(input);
+                        if (newLimit < 0.0) {
+                            JOptionPane.showMessageDialog(null, "Limit must be greater than or equal to 0. Please try again.");
+                            continue;
+                        }
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, "Invalid limit. Please try again.");
+                        continue;
+                    }
+                    break outer;
                 }
-                break;
             }
             indexToRemove++;
             System.out.println("INDEX TO REMOVE: " + indexToRemove);
@@ -433,8 +445,7 @@ public class SettingsFrame extends javax.swing.JFrame {
         System.out.println("NEW LINE: " + newLine);
         categoryLimits.add(newLine);
         updateCategoryLimitsTextFile();
-        String output = "New Limit Created For:"
-                + "   " + newLine;
+        String output = "New Limit Created For: " + categoryName + "\nNew Limit: " + df1.format(Double.valueOf(newLimitStr));
         JOptionPane.showMessageDialog(null, output);
     }//GEN-LAST:event_editLimitButtonActionPerformed
 
