@@ -33,7 +33,7 @@ public class YearFrame extends javax.swing.JFrame {
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
         this.setVisible(true);
-        this.setTitle("Years");
+        this.setTitle("Budget Tracker");
         this.setResizable(false);
         
         textFileNames.add("categories.txt");
