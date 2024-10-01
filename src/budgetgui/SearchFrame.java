@@ -61,6 +61,7 @@ public class SearchFrame extends javax.swing.JFrame {
         
         DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(yearsArr);
         yearComboBox.setModel(model);
+        yearComboBox.setSelectedIndex(java.util.Arrays.asList(yearsArr).indexOf(curYear));
         
         ArrayList<String> categoriesArrList = getCategories();
         categoriesArrList.add("UNCATEGORIZED");
