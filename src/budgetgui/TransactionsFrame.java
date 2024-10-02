@@ -546,73 +546,90 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Ask for Date, Description, Amount and Category
         //Prefill month and year
-        //Ask for day of month
         String[] monthInfo = month.split("\t");
         String monthName = monthInfo[0];
         String year = monthInfo[1];
         String output = "Enter the Day of the Month: "
                 + "\n" + monthName + " _ " + year;
-        String input = JOptionPane.showInputDialog(output);
-
-        if (input == null) {
-            return;
-        }
-
-        //Check if its a number
-        int dayOfMonth = 0;
-        try {
-            dayOfMonth = Integer.parseInt(input);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Invalid Input.");
-            return;
-        }
-
-        //Check if the day is valid for the month
-        String date = monthName + " " + dayOfMonth + " " + year;
-        try {
-            DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
-            df.setLenient(false);
-            df.parse(date);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Invalid Date.");
-            return;
-        }
-
-        //Ask for description
-        String description = JOptionPane.showInputDialog("Enter a Description:");
-
-        if (description == null) {
-            return;
-        }
-
-        //Check for --
-        int indexOfForbiddenCharacters = description.indexOf("--");
-        if (indexOfForbiddenCharacters != -1) {
-            JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
-            return;
-        }
-
-        //Ask for amount
-        String amountStr = JOptionPane.showInputDialog("Enter an Amount:");
-
+        
+        String date = "", description = "";
         double amount = 0.0;
-        try {
-            amount = Double.parseDouble(amountStr);
+        
+        //Ask for day of month until valid
+        while (true) {
+            String input = JOptionPane.showInputDialog(output);
 
-            if (amount <= 0.0) {
-                JOptionPane.showMessageDialog(null, "Invalid Amount.");
+            if (input == null) {
                 return;
             }
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Invalid Amount.");
-            return;
+            //Check if its a number
+            int dayOfMonth = 0;
+            try {
+                dayOfMonth = Integer.parseInt(input);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                continue;
+            }
+
+            //Check if the day is valid for the month
+            date = monthName + " " + dayOfMonth + " " + year;
+            try {
+                DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
+                df.setLenient(false);
+                df.parse(date);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Invalid date. Please try again.");
+                continue;
+            }
+            break;
         }
 
-        //Ask for category
-        //Read categories from text file
-        String category = "INCOME";
+        //Ask for description until valid
+        while (true) {
+            description = JOptionPane.showInputDialog("Enter a Description:");
 
+            if (description == null) {
+                return;
+            }
+            if (description.equals("")) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                continue;
+            }
+
+            //Check for --
+            int indexOfForbiddenCharacters = description.indexOf("--");
+            if (indexOfForbiddenCharacters != -1) {
+                JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        //Ask for amount until valid
+        while (true) {
+            String amountStr = JOptionPane.showInputDialog("Enter an Amount:");
+            
+            if (amountStr == null) {
+                return;
+            }
+
+            amount = 0.0;
+            try {
+                amount = Double.parseDouble(amountStr);
+
+                if (amount <= 0.0) {
+                    JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                    continue;
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                continue;
+            }
+            break;
+        }
+
+        String category = "INCOME";
         String marker = "2";
 
         //Format amount
@@ -740,8 +757,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 for (int j = 0; j < maxCategoriesPerDialogBox; j++) {
                     output += sortedOutput.get(indexTracker) + "\n";
 
-                    if (j < maxCategoriesPerDialogBox - 1)
+                    if (j < maxCategoriesPerDialogBox - 1) {
                         output += "--------------------\n";
+                    }
                     indexTracker++;
                 }
             } catch (IndexOutOfBoundsException e) {
@@ -1005,8 +1023,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Ask for amount until input is valid
         if (selectionStr.equals(optionsArr[2])) {
+            String amountStrCopy = amountStr;
             while (true) {
-                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStr);
+                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStrCopy);
+
+                if (amountStr == null || amountStr.equals(amountStrCopy)) {
+                    return;
+                }
 
                 DecimalFormat df = new DecimalFormat("0.00");
                 String tempFormatStr = "";
@@ -1070,7 +1093,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     Object selection2 = JOptionPane.showInputDialog(null,
                             "Select a Category", "Categories",
                             JOptionPane.INFORMATION_MESSAGE, null,
-                            categoriesObjArr, categoriesObjArr[0]);
+                            categoriesObjArr, categoriesObjArr[java.util.Arrays.asList(categoriesObjArr).indexOf(origCategory)]);
                     category = (String) selection2;
 
                     if (category == null) {
