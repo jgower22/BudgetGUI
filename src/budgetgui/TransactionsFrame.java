@@ -364,7 +364,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        System.out.println("CUR YEAR: " + curYear);
         MainFrame mainFrame = new MainFrame(curYear);
     }//GEN-LAST:event_exitButtonActionPerformed
 
@@ -399,7 +398,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
             }
 
             date = monthName + " " + dayOfMonth + " " + year;
-            System.out.println("DATE: " + date);
 
             //Check if day is valid with month/year
             try {
@@ -466,7 +464,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String category = "";
         ArrayList<String> categories = getCategories();
         Collections.sort(categories);
-        System.out.println("CATEGORIES: " + categories);
         if (categories == null) {
             JOptionPane.showMessageDialog(null, "Error 405");
             return;
@@ -498,11 +495,10 @@ public class TransactionsFrame extends javax.swing.JFrame {
             }
         }
 
-        /*System.out.println("MONTH: " + month);
-        System.out.println("DATE: " + date);
-        System.out.println("DESCRIPTION: " + description);
-        System.out.println("AMOUNT: " + amount);
-        System.out.println("CATEGORY: " + category);*/
+        /*
+               escription);
+        );
+        gory);*/
         //Format amount
         DecimalFormat df = new DecimalFormat("#,##0.00");
         String tempFormattedAmountStr = Double.toString(amount);
@@ -520,7 +516,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //If something is selected
         if (!(transactionsList.isSelectionEmpty())) {
             String selectedTransaction = transactionsList.getSelectedValue();
-            System.out.println(selectedTransaction);
 
             String[] lineInfo = selectedTransaction.split("--");
             String date = lineInfo[0].trim();
@@ -532,11 +527,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 amount = amount.substring(1, amount.length());
 
                 String lineToRemove = "#" + date + "\t" + description + "\t" + amount + "\t" + category + "\t" + recurringMarker + "\t" + "1";
-                System.out.println("LINE TO REMOVEXXXX: " + lineToRemove);
                 removeTransaction(lineToRemove);
                 return;
             } catch (Exception e) {
-                System.out.println("ERROR");
             }
 
             //Remove $ from amount
@@ -576,8 +569,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Check if the day is valid for the month
         String date = monthName + " " + dayOfMonth + " " + year;
-        System.out.println("DATE: " + date);
-
         try {
             DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
             df.setLenient(false);
@@ -637,7 +628,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //If something is selected
         if (!(incomeList.isSelectionEmpty())) {
             String selectedTransaction = incomeList.getSelectedValue();
-            System.out.println(selectedTransaction);
 
             String[] lineInfo = selectedTransaction.split("--");
             String date = lineInfo[0].trim();
@@ -687,7 +677,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Key = Category/Limit
         //Value = Spending
         getCategoryLimits();
-        System.out.println("CATEGORY LIMITS: " + categoryLimits);
 
         if (categoryLimits == null) {
             JOptionPane.showMessageDialog(null, "Error: You have added no categories.");
@@ -699,7 +688,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
         }
 
         getTransactions();
-        System.out.println("TRANSACTIONS: " + transactions);
 
         for (String s : transactions) {
             String[] transactionInfo = s.split("--");
@@ -714,14 +702,11 @@ public class TransactionsFrame extends javax.swing.JFrame {
             if (!(category.equalsIgnoreCase("uncategorized"))) {
                 //Get current spending for the category from the hashmap
                 double currentValue = categorySpending.get(category);
-                System.out.println("CURRENT SPENDING: " + currentValue);
 
                 //Update the key by adding the new amount
                 double newValue = currentValue + amount;
                 categorySpending.put(category, newValue);
-                System.out.println("CATEGORY SPENDING: " + categorySpending);
             }
-
         }
 
         //Format JOptionPane Message Dialog
@@ -748,9 +733,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
         int maxCategoriesPerDialogBox = 5;
         int indexTracker = 0;
         int numDialogBoxes = sortedOutput.size() / maxCategoriesPerDialogBox;
-        System.out.println("SORTED OUTPUT SIZE: " + sortedOutput.size());
-        System.out.println("MAX CATEGORIES PER DIALOG BOX: " + maxCategoriesPerDialogBox);
-        System.out.println("NUM DIALOG BOXES: " + numDialogBoxes);
 
         if (((double) sortedOutput.size() / (double) maxCategoriesPerDialogBox) % 2 == 0.0) {
             numDialogBoxes--;
@@ -851,7 +833,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Format amount
         DecimalFormat df = new DecimalFormat("0.00");
-        System.out.println(amountStr);
         String tempAmountStr = amountStr.replaceAll(",", "");
         String formattedAmountStr = df.format(Double.parseDouble(tempAmountStr));
 
@@ -891,7 +872,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
             sc.close();
             return recurringTransactions;
         } catch (FileNotFoundException ex) {
-            System.out.println("File not found.");
+
             return null;
         }
     }
@@ -915,7 +896,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
             sc.close();
 
         } catch (FileNotFoundException ex) {
-            System.out.println("File not found.");
+
         }
     }
 
@@ -987,8 +968,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
                 //Check if the day is valid for the month
                 date = monthName + " " + tempDay + " " + year;
-                System.out.println("DATE: " + date);
-
                 try {
                     DateFormat df = new SimpleDateFormat("MMM " + "dd " + "yyyy");
                     df.setLenient(false);
@@ -1035,7 +1014,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 DecimalFormat df = new DecimalFormat("0.00");
                 String tempFormatStr = "";
                 try {
-                    System.out.println("AMOUNT STR: " + amountStr);
                     tempFormatStr = df.format(Double.parseDouble(amountStr));
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
@@ -1048,7 +1026,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 }
 
                 double amount = 0.0;
-                System.out.println("AMOUNT: " + amountStr);
                 try {
                     amount = Double.parseDouble(amountStr);
 
@@ -1108,7 +1085,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Format amount
         DecimalFormat df = new DecimalFormat("0.00");
-        System.out.println(amountStr);
         String tempAmountStr = amountStr.replaceAll(",", "");
         String formattedAmountStr = df.format(Double.parseDouble(tempAmountStr));
 
@@ -1166,7 +1142,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 updateIncomeList();
             }
         } catch (FileNotFoundException ex) {
-            System.out.println("File not found");
         }
     }
 
@@ -1179,21 +1154,15 @@ public class TransactionsFrame extends javax.swing.JFrame {
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
 
-                System.out.println("LINE TO REMOVE: " + lineToRemove);
-                System.out.println("FOUND LINE: " + line);
-                System.out.println("********************************");
-
                 if (line.equals(lineToRemove)) {
                     if (removedLine) {
                         lines.add(line);
                     }
-                    System.out.println("SKIPPING LINE");
                     removedLine = true;
                 } else {
                     lines.add(line);
                 }
             }
-            System.out.println("*****TRANSACTION REMOVED******");
 
             sc.close();
 
@@ -1228,7 +1197,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
             return categories;
 
         } catch (FileNotFoundException ex) {
-            System.out.println("File not found.");
+
         }
         return null;
     }
@@ -1328,9 +1297,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     String[] lineInfo = formattedLine.split("\t");
                     String date = lineInfo[0];
                     String description = lineInfo[1];
-                    System.out.println(lineInfo[2]);
                     String amount = lineInfo[2];
-                    //System.out.println("AMOUNT: "  + amount);
+                    //t);
                     String category = lineInfo[3];
                     String marker = lineInfo[4];
 
@@ -1352,14 +1320,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 if (line.charAt(0) != '#') {
                     if (line.equals(month)) {
                         foundMonth = true;
-                        //System.out.println("FOUND MONTH");
                     }
                 }
             }
 
             sc.close();
         } catch (FileNotFoundException ex) {
-            System.out.println("File not found.");
+
         }
     }
 
@@ -1407,16 +1374,15 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
                 if (line.charAt(0) != '#') {
                     if (line.equals(month)) {
-                        System.out.println("MONTH: " + month);
+
                         foundMonth = true;
-                        System.out.println("FOUND MONTH");
                     }
                 }
             }
 
             sc.close();
         } catch (FileNotFoundException ex) {
-            System.out.println("File not found.");
+
         }
     }
 
