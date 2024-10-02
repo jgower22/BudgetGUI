@@ -5,6 +5,8 @@
  */
 package budgetgui;
 
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.FlatDarkLaf;
 /**
  *
  * @author jacksongower
@@ -15,6 +17,7 @@ public class BudgetGUI {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        FlatLightLaf.setup();
         YearFrame yearFrame = new YearFrame();
     }
     
