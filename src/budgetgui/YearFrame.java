@@ -13,8 +13,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,28 +20,30 @@ import javax.swing.JOptionPane;
  * @author jgower17
  */
 public class YearFrame extends javax.swing.JFrame {
+
     private ArrayList<String> textFileNames = new ArrayList<>();
+
     /**
      * Creates new form YearFrame
      */
     public YearFrame() {
         initComponents();
-        
+
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
-        
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
+
         this.setVisible(true);
         this.setTitle("Budget Tracker");
         this.setResizable(false);
-        
+
         textFileNames.add("categories.txt");
         textFileNames.add("categorylimits.txt");
         textFileNames.add("months.txt");
         textFileNames.add("years.txt");
         textFileNames.add("recurring.txt");
-        
+
         initTextFiles();
-        
+
         updateList();
     }
 
@@ -61,11 +61,12 @@ public class YearFrame extends javax.swing.JFrame {
         viewYearButton = new javax.swing.JButton();
         addYearButton = new javax.swing.JButton();
         removeYearButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
+        titleLabel = new javax.swing.JLabel();
         settingsButton = new javax.swing.JButton();
         searchButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         yearsList.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jScrollPane1.setViewportView(yearsList);
@@ -91,9 +92,9 @@ public class YearFrame extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Years");
+        titleLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        titleLabel.setText("Years");
 
         settingsButton.setText("Settings");
         settingsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -116,7 +117,7 @@ public class YearFrame extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(jScrollPane1)))
@@ -133,7 +134,7 @@ public class YearFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(settingsButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -153,7 +154,7 @@ public class YearFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void initTextFiles() {
-        for (String s: textFileNames) {
+        for (String s : textFileNames) {
             try {
                 Scanner sc = new Scanner(new File(s));
                 sc.close();
@@ -169,7 +170,7 @@ public class YearFrame extends javax.swing.JFrame {
             }
         }
     }
-    
+
     private void addYearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addYearButtonActionPerformed
         // TODO add your handling code here:
         //Ask for year to be added
@@ -196,17 +197,19 @@ public class YearFrame extends javax.swing.JFrame {
 
     private void removeYearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeYearButtonActionPerformed
         // TODO add your handling code here:
-        if (yearsList.isSelectionEmpty())
+        if (yearsList.isSelectionEmpty()) {
             return;
+        }
         String selectedYear = yearsList.getSelectedValue();
         //Ask for confirmation
-        String input = JOptionPane.showInputDialog("Are you sure you want to delete the year " + selectedYear + "?\n" +
-                                                   "This action will permanently delete all transactions\n" +
-                                                   "associated with this year.\n\n" +
-                                                   "Type Yes to DELETE this year.\n" +
-                                                   "Type No or Press Cancel to KEEP this year.");
-        if (input == null)
+        String input = JOptionPane.showInputDialog("Are you sure you want to delete the year " + selectedYear + "?\n"
+                + "This action will permanently delete all transactions\n"
+                + "associated with this year.\n\n"
+                + "Type Yes to DELETE this year.\n"
+                + "Type No or Press Cancel to KEEP this year.");
+        if (input == null) {
             return;
+        }
         if (input.equalsIgnoreCase("yes")) {
             //Delete the year and all of its transactions
             deleteAllTransactionsFromYear(selectedYear);
@@ -215,13 +218,14 @@ public class YearFrame extends javax.swing.JFrame {
             //Update list
             updateList();
         }
-                                                   
+
     }//GEN-LAST:event_removeYearButtonActionPerformed
 
     private void viewYearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewYearButtonActionPerformed
         // TODO add your handling code here:
-        if (yearsList.isSelectionEmpty())
+        if (yearsList.isSelectionEmpty()) {
             return;
+        }
         this.dispose();
         MainFrame mainFrame = new MainFrame(yearsList.getSelectedValue());
     }//GEN-LAST:event_viewYearButtonActionPerformed
@@ -241,27 +245,27 @@ public class YearFrame extends javax.swing.JFrame {
     private void updateList() {
         ArrayList<String> foundYears = getUniqueYearsFromTransactions();
         ArrayList<String> savedYears = getSavedYears();
-        for (String s: foundYears) {
+        for (String s : foundYears) {
             if (!savedYears.contains(s)) {
                 addYearToYearsFile(s);
             }
         }
-        
+
         savedYears = getSavedYears();
         Collections.sort(savedYears);
         int index = 0;
         String[] listArr = new String[savedYears.size()];
-        for (String s: savedYears) {
+        for (String s : savedYears) {
             listArr[index] = s;
             index++;
         }
         yearsList.setListData(listArr);
     }
-    
+
     private ArrayList<String> getUniqueYearsFromTransactions() {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
-            
+
             String line = "";
             ArrayList<String> uniqueYears = new ArrayList<>();
             while (sc.hasNextLine()) {
@@ -270,15 +274,16 @@ public class YearFrame extends javax.swing.JFrame {
                 if (line.charAt(0) != '#') {
                     String[] lineInfo = line.split("\t");
                     String year = lineInfo[1];
-                    if (!uniqueYears.contains(year))
+                    if (!uniqueYears.contains(year)) {
                         uniqueYears.add(year);
+                    }
                 }
             }
             System.out.println(uniqueYears);
             sc.close();
             return uniqueYears;
         } catch (FileNotFoundException e) {
-            
+
         }
         return null;
     }
@@ -294,26 +299,26 @@ public class YearFrame extends javax.swing.JFrame {
             sc.close();
             return savedYears;
         } catch (FileNotFoundException ex) {
-            
+
         }
         return null;
     }
-    
+
     private void addYearToYearsFile(String newYear) {
         ArrayList<String> previousYears = getSavedYears();
         try {
             PrintWriter printer = new PrintWriter(new File("years.txt"));
-            for (String s: previousYears) {
+            for (String s : previousYears) {
                 printer.println(s);
             }
             printer.println(newYear);
             printer.close();
         } catch (FileNotFoundException ex) {
-            
+
         }
         updateList();
     }
-    
+
     private void removeYearFromYearsFile(String yearToRemove) {
         try {
             Scanner sc = new Scanner(new File("years.txt"));
@@ -321,22 +326,23 @@ public class YearFrame extends javax.swing.JFrame {
             ArrayList<String> yearsToSave = new ArrayList<>();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
-                if (!line.equals(yearToRemove)) 
+                if (!line.equals(yearToRemove)) {
                     yearsToSave.add(line);
+                }
             }
             sc.close();
-            
+
             PrintWriter printer = new PrintWriter(new File("years.txt"));
-            for (String s: yearsToSave) {
+            for (String s : yearsToSave) {
                 printer.println(s);
             }
             printer.close();
         } catch (FileNotFoundException ex) {
-            
+
         }
-       
+
     }
-    
+
     private void deleteAllTransactionsFromYear(String year) {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
@@ -359,29 +365,29 @@ public class YearFrame extends javax.swing.JFrame {
                         linesToKeep.add(line);
                     }
                 }
-                
+
             }
             System.out.println("SCANNER CLOSED");
             sc.close();
-            
+
             PrintWriter printer = new PrintWriter(new File("months.txt"));
-            for (String s: linesToKeep) {
+            for (String s : linesToKeep) {
                 printer.println(s);
             }
             printer.close();
-            
+
         } catch (FileNotFoundException ex) {
-            
+
         }
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addYearButton;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton removeYearButton;
     private javax.swing.JButton searchButton;
     private javax.swing.JButton settingsButton;
+    private javax.swing.JLabel titleLabel;
     private javax.swing.JButton viewYearButton;
     private javax.swing.JList<String> yearsList;
     // End of variables declaration//GEN-END:variables
