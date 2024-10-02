@@ -678,11 +678,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Value = Spending
         getCategoryLimits();
 
-        if (categoryLimits == null) {
-            JOptionPane.showMessageDialog(null, "Error: You have added no categories.");
-            return;
-        }
-        if (categoryLimits.size() == 0) {
+        if (categoryLimits == null || categoryLimits.size() == 0) {
             JOptionPane.showMessageDialog(null, "Error: You have added no categories.");
             return;
         }
@@ -738,19 +734,20 @@ public class TransactionsFrame extends javax.swing.JFrame {
             numDialogBoxes--;
         }
         for (int i = 0; i <= numDialogBoxes; i++) {
-            output = "Budgets: (" + (i + 1) + " of " + (numDialogBoxes + 1) + ")\n";
-            output += "--------------------\n";
+            output = "";
+            //output += "--------------------\n";
             try {
                 for (int j = 0; j < maxCategoriesPerDialogBox; j++) {
                     output += sortedOutput.get(indexTracker) + "\n";
 
-                    output += "--------------------\n";
+                    if (j < maxCategoriesPerDialogBox - 1)
+                        output += "--------------------\n";
                     indexTracker++;
                 }
             } catch (IndexOutOfBoundsException e) {
 
             }
-            JOptionPane.showMessageDialog(null, output);
+            JOptionPane.showMessageDialog(null, output, "Budgets (" + (i + 1) + " of " + (numDialogBoxes + 1) + "):", JOptionPane.INFORMATION_MESSAGE);
         }
 
 
