@@ -662,7 +662,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
             
             //Check for duplicate transactions
-            findDuplicateTransactions();
+            //findDuplicateTransactions();
             
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
@@ -715,7 +715,7 @@ public class MainFrame extends javax.swing.JFrame {
             int numDialogBoxes = duplicateTransactions.size()/maxTransactionsInOutput;
             
             for (int i = 0; i <= numDialogBoxes; i++) {
-                String output = "Duplicate Transactions: (" + (i+1) + " of " + (numDialogBoxes+1) + ")\n";
+                String output = "Duplicate Transactions (" + (i+1) + " of " + (numDialogBoxes+1) + "):\n";
                 
                 try {
                     for (int j = 0; j < maxTransactionsInOutput; j++) {
