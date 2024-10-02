@@ -371,7 +371,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
         Collections.sort(arrList);
 
-        arrList.add("---------------------");
+        arrList.add("--------------------------------------------------------------------------------------------------------");
         arrList.add("Total Spending: $" + formatNumber(totalSpending));
 
         int index = 0;
@@ -662,7 +662,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
                 arrList.add(i.toUpperCase() + ": $" + formatNumber(groupedIncome.get(i)));
             }
             Collections.sort(arrList);
-            arrList.add("---------------------");
+            arrList.add("--------------------------------------------------------------------------------------------------------");
             arrList.add("Total Income: $" + formatNumber(totalIncome));
         }
         String[] listArr = new String[groupedIncome.size() + 2];
