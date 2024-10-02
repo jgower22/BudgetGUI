@@ -757,7 +757,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 for (int j = 0; j < maxCategoriesPerDialogBox; j++) {
                     output += sortedOutput.get(indexTracker) + "\n";
 
-                    if (j < maxCategoriesPerDialogBox - 1) {
+                    if (j < maxCategoriesPerDialogBox - 1 && indexTracker != sortedOutput.size() - 1) {
                         output += "--------------------\n";
                     }
                     indexTracker++;
