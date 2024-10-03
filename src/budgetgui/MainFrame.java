@@ -476,7 +476,7 @@ public class MainFrame extends javax.swing.JFrame {
             boolean foundDuplicate = false;
             boolean includeDuplicates = false;
             while ((line = br.readLine()) != null) {
-                //Check for corret format of line
+                //Check for correct format of line
                 //If the line is correctly formatted, add the transaction
                 //Check if the month is valid
                 //Check if the amount is valid
