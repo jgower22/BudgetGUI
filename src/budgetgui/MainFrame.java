@@ -288,12 +288,11 @@ public class MainFrame extends javax.swing.JFrame {
                                                        "of the associated transactions." + "\n" +
                                                        "This action cannot be undone." + "\n" +
                                                        "Type DELETE to remove the month: " + selectedMonth);
+            selectedMonth = selectedMonth.replaceAll(" ", "\t");
             
             if (!(input.equalsIgnoreCase("delete"))) {
                 return;
             }
-            
-            System.out.println("SELECTED MONTH: " + selectedMonth);
 
             try {
                 Scanner sc = new Scanner(new File("months.txt"));
@@ -319,8 +318,9 @@ public class MainFrame extends javax.swing.JFrame {
                             foundMonth = true;
                         }
                     }
-                    
+
                     if (foundMonth) {
+                        System.out.println("FOUND MONTH");
                         //Skip month line and transactions
                     } else {
                         //Dont want to add the month
@@ -329,7 +329,7 @@ public class MainFrame extends javax.swing.JFrame {
                     
                     
                 }
-                System.out.println("LINES: " + lines);
+                //System.out.println("LINES: " + lines);
                 
                 sc.close();
                 
