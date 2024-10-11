@@ -406,6 +406,7 @@ public class SearchFrame extends javax.swing.JFrame {
         String[] emptyArr = new String[0];
         categoriesComboBox.setEnabled(true);
         transactionsList.setListData(emptyArr);
+        subtotalsCheckBox.setSelected(true);
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
@@ -613,7 +614,7 @@ public class SearchFrame extends javax.swing.JFrame {
     }
 
     private void exportTransactions() {
-
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
