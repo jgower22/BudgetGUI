@@ -322,9 +322,7 @@ public class SettingsFrame extends javax.swing.JFrame {
             String categoryName = lineInfo[0];
             double categoryLimit = Double.parseDouble(lineInfo[1]);
 
-            //if (!categoryName.equalsIgnoreCase("retirement")) {
-                //totalBudgetLimit += categoryLimit;
-            //}
+            totalBudgetLimit += categoryLimit;
 
             categoryLimitsOutput.add(categoryName + " --  $" + df.format(categoryLimit));
         }
