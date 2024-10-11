@@ -402,9 +402,28 @@ public class SearchFrame extends javax.swing.JFrame {
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
         // TODO add your handling code here:
+        exportTransactions();
     }//GEN-LAST:event_exportButtonActionPerformed
 
     private void updateList(String input, double min, double max) {
+        ArrayList<String> returnedTransactions = getSearchResults(input, min, max);
+        
+        String[] listArr = new String[returnedTransactions.size()];
+
+            int index = 0;
+            for (String s : returnedTransactions) {
+                listArr[index] = s;
+                index++;
+            }
+
+            transactionsList.setListData(listArr);
+
+            if (returnedTransactions.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "No results found. Please try again.");
+            }
+    }
+    
+    private ArrayList<String> getSearchResults(String input, double min, double max) {
         //Search through months.txt file
         try {
             Scanner sc = new Scanner(new File("months.txt"));
@@ -504,7 +523,6 @@ public class SearchFrame extends javax.swing.JFrame {
             int currentIndex = 0;
             int currentYear = 0;
             String currentMonth = "";
-            HashMap<Integer, String> dividers = new HashMap<>();
 
             DecimalFormat df = new DecimalFormat("#,##0.00");
 
@@ -562,25 +580,18 @@ public class SearchFrame extends javax.swing.JFrame {
             if (!returnedTransactionsCopy.isEmpty()) {
                 returnedTransactionsCopy.add("Total " + totalStr + ": $" + df.format(transactionTotal));
             }
-
-            String[] listArr = new String[returnedTransactionsCopy.size()];
-
-            int index = 0;
-            for (String s : returnedTransactionsCopy) {
-                listArr[index] = s;
-                index++;
-            }
-
-            transactionsList.setListData(listArr);
-
-            if (returnedTransactions.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "No results found.");
-            }
+            
+            return returnedTransactionsCopy;
 
         } catch (FileNotFoundException ex) {
 
         }
-
+        
+        return null;
+    }
+    
+    private void exportTransactions() {
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
