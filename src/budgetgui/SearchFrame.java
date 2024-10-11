@@ -9,6 +9,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,6 +26,9 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -428,12 +433,6 @@ public class SearchFrame extends javax.swing.JFrame {
 
         transactionsList.setListData(listArr);
 
-        ListModel<String> model = transactionsList.getModel();
-        for (int i = 0; i < model.getSize(); i++) {
-            String item = model.getElementAt(i);
-            System.out.println(item);
-        }
-
         if (returnedTransactions.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No results found. Please try again.");
         }
@@ -511,7 +510,7 @@ public class SearchFrame extends javax.swing.JFrame {
 
                         if (validTransaction) {
                             returnedTransactions.add(formattedLine);
-                               transactionTotal += amount;
+                            transactionTotal += amount;
                         }
                     }
 
@@ -548,10 +547,12 @@ public class SearchFrame extends javax.swing.JFrame {
                     currentYear = Integer.parseInt(dateInfo[2]);
                     currentMonth = dateInfo[0];
                     String divider = null;
-                    if (addDividers)
+                    if (addDividers) {
                         divider = "----- " + currentMonth + " " + currentYear + " -----";
-                    if (divider != null)
+                    }
+                    if (divider != null) {
                         returnedTransactionsCopy.add(divider);
+                    }
                 }
 
                 String[] lineInfo = s.split("--");
@@ -567,18 +568,22 @@ public class SearchFrame extends javax.swing.JFrame {
                 if (!currentMonth.equals(foundMonth) || currentYear != foundYear) {
                     //Add monthly subtotal
                     String subtotalDivider = null;
-                    if (addDividers)
-                        subtotalDivider = currentMonth + " " + currentYear + " Total: $" + df.format(monthlyTotal);
-                    if (subtotalDivider != null)
+                    if (addDividers) {
+                        subtotalDivider = "Subtotal for " + currentMonth + " " + currentYear + ": $" + df.format(monthlyTotal);
+                    }
+                    if (subtotalDivider != null) {
                         returnedTransactionsCopy.add(subtotalDivider);
+                    }
                     monthlyTotal = 0.0;
                     //Need to add divider here
                     currentYear = Integer.parseInt(dateInfo[2]);
                     String monthDivider = null;
-                    if (addDividers)
+                    if (addDividers) {
                         monthDivider = "----- " + foundMonth + " " + currentYear + " -----";
-                    if (monthDivider != null)
+                    }
+                    if (monthDivider != null) {
                         returnedTransactionsCopy.add(monthDivider);
+                    }
                     currentMonth = foundMonth;
 
                 }
@@ -589,10 +594,12 @@ public class SearchFrame extends javax.swing.JFrame {
                 //End of transactions
                 if (currentIndex == returnedTransactions.size()) {
                     String subtotalDivider = null;
-                    if (addDividers)
-                        subtotalDivider = currentMonth + " " + currentYear + " Total: $" + df.format(monthlyTotal);
-                    if (subtotalDivider != null)
+                    if (addDividers) {
+                        subtotalDivider = "Subtotal for " + currentMonth + " " + currentYear + ": $" + df.format(monthlyTotal);
+                    }
+                    if (subtotalDivider != null) {
                         returnedTransactionsCopy.add(subtotalDivider);
+                    }
                 }
             }
 
@@ -614,7 +621,55 @@ public class SearchFrame extends javax.swing.JFrame {
     }
 
     private void exportTransactions() {
+        //Export transcations from transactionsList
         
+        //Get data from transactionsList
+        ArrayList<String> transactions = new ArrayList<>();
+        ListModel<String> model = transactionsList.getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            String line = model.getElementAt(i);
+            //Exclude divider lines (header & subtotal for each month, total spending/income at end)
+            if (line.charAt(0) != '-' && line.charAt(3) != 't' && line.charAt(0) != 'T')
+                transactions.add(line);
+        }
+        
+        //Create Excel file
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Transactions");
+        
+        //Add transactions to sheet
+        int index = 0;
+        for (String item: transactions) {
+            Row row = sheet.createRow(index++);
+            Cell cell0 = row.createCell(0);
+            Cell cell1 = row.createCell(1);
+            Cell cell2 = row.createCell(2);
+            Cell cell3 = row.createCell(3);
+            
+            String[] transactionInfo = item.split("--");
+            cell0.setCellValue(transactionInfo[0]);
+            cell1.setCellValue(transactionInfo[1]);
+            cell2.setCellValue(transactionInfo[2]);
+            cell3.setCellValue(transactionInfo[3]);
+        }
+        
+        //Write output to Excel file
+        try (FileOutputStream file = new FileOutputStream("transactions.xlsx")) {
+            workbook.write(file);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error creating Excel file. Please try again later.");
+            return;
+        }
+        
+        //Close workbook
+        try {
+            workbook.close();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error creating Excel file. Please try again later.");
+            return;
+        }
+
+        JOptionPane.showMessageDialog(null, "Excel file created successfully!");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
