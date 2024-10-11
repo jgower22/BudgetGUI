@@ -1330,9 +1330,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     if (marker.equals("1")) {
                         //Remove commas from amount
                         String amountStr = amount.replaceAll(",", "");
-                        if (!category.equalsIgnoreCase("retirement")) {
-                            totalSpending += Double.parseDouble(amountStr);
-                        }
+                        //if (!category.equalsIgnoreCase("retirement")) {
+                            //totalSpending += Double.parseDouble(amountStr);
+                        //}
                         transactions.add(formattedLine);
                     }
                 }

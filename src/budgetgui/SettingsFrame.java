@@ -206,39 +206,41 @@ public class SettingsFrame extends javax.swing.JFrame {
 
     private void addCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCategoryButtonActionPerformed
         // TODO add your handling code here:
-        String newCategory = JOptionPane.showInputDialog("Enter a new category:");
-        if (newCategory == null) {
-            return;
-        }
-
-        newCategory = newCategory.toUpperCase().trim();
-
-        if (newCategory.equalsIgnoreCase("INCOME") || newCategory.equalsIgnoreCase("UNCATEGORIZED")
-                || newCategory.equalsIgnoreCase("ALL")) {
-            JOptionPane.showMessageDialog(null, "Error: Category Name Is Not Allowed.");
-            return;
-        }
-
-        if (newCategory.equals("")) {
-            JOptionPane.showMessageDialog(null, "Invalid Input.");
-            return;
-        }
-
-        if (newCategory.indexOf("--") != -1) {
-            JOptionPane.showMessageDialog(null, "-- is not allowed to be used.");
-            return;
-        }
-
-        if (newCategory != null) {
-            if (categories.contains(newCategory)) {
-                JOptionPane.showMessageDialog(null, newCategory + " has already been added.");
+        //Ask for new category until valid
+        String newCategory = "";
+        while (true) {
+            newCategory = JOptionPane.showInputDialog("Enter a new category:");
+            if (newCategory == null) {
                 return;
-            } else {
-                addCategory(newCategory, true);
-                categories.add(newCategory);
-                JOptionPane.showMessageDialog(null, newCategory + " added successfully.");
             }
+
+            newCategory = newCategory.toUpperCase().trim();
+
+            if (newCategory.equalsIgnoreCase("INCOME") || newCategory.equalsIgnoreCase("UNCATEGORIZED")
+                    || newCategory.equalsIgnoreCase("ALL")) {
+                JOptionPane.showMessageDialog(null, "Error: Category Name Is Not Allowed.");
+                continue;
+            }
+
+            if (newCategory.equals("")) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                continue;
+            }
+
+            if (newCategory.indexOf("--") != -1) {
+                JOptionPane.showMessageDialog(null, "-- is not allowed to be used.");
+                continue;
+            }
+
+            if (categories.contains(newCategory)) {
+                JOptionPane.showMessageDialog(null, newCategory + " has already been added. Please try again.");
+                continue;
+            }
+            break;
         }
+        addCategory(newCategory, true);
+        categories.add(newCategory);
+        JOptionPane.showMessageDialog(null, newCategory + " added successfully.");
     }//GEN-LAST:event_addCategoryButtonActionPerformed
 
     private void removeCategoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCategoryButtonActionPerformed
@@ -320,9 +322,9 @@ public class SettingsFrame extends javax.swing.JFrame {
             String categoryName = lineInfo[0];
             double categoryLimit = Double.parseDouble(lineInfo[1]);
 
-            if (!categoryName.equalsIgnoreCase("retirement")) {
-                totalBudgetLimit += categoryLimit;
-            }
+            //if (!categoryName.equalsIgnoreCase("retirement")) {
+                //totalBudgetLimit += categoryLimit;
+            //}
 
             categoryLimitsOutput.add(categoryName + " --  $" + df.format(categoryLimit));
         }

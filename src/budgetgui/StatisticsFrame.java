@@ -106,9 +106,9 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
                     String tempAmountStr = amountStr.replaceAll(",", "");
                     if (type.equals("1")) {
-                        if (!categoryName.equalsIgnoreCase("retirement")) {
-                            totalSpending += Double.parseDouble(tempAmountStr);
-                        }
+                        //if (!categoryName.equalsIgnoreCase("retirement")) {
+                            //totalSpending += Double.parseDouble(tempAmountStr);
+                        //}
                     }
                     if (type.equals("2")) {
                         double incomeDouble = Double.parseDouble(tempAmountStr);

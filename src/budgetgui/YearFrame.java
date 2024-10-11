@@ -162,6 +162,19 @@ public class YearFrame extends javax.swing.JFrame {
             } catch (FileNotFoundException e) {
                 try {
                     PrintWriter printer = new PrintWriter(new File(s));
+                    //Add default categories for categories.txt and categorylimits.txt
+                    String[] defaultCategories = {"CAR MAINTENANCE", "CC ANNUAL FEE", "DINING", "ENTERTAINMENT", "GAS", 
+                            "GROCERY", "HOUSING", "INTERNET", "INVESTMENTS", "OTHER", "PHONE", "RETIREMENT", "SHOPPING", "TRAVEL"};
+                    if (s.equals("categories.txt")) {
+                        for (String s2: defaultCategories) {
+                            printer.println(s2);
+                        }
+                    }
+                    if (s.equals("categorylimits.txt")) {
+                        for (String s3: defaultCategories) {
+                            printer.println(s3 + "\t0.0");
+                        }
+                    }
                     System.out.println("NEW FILE CREATED FOR: " + s);
                     printer.close();
                 } catch (FileNotFoundException ex) {
