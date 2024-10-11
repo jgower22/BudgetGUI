@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.ListModel;
 
 /**
  *
@@ -52,6 +53,7 @@ public class SearchFrame extends javax.swing.JFrame {
         spendingButton.setSelected(true);
         spendingSelected = true;
         incomeSelected = false;
+        subtotalsCheckBox.setSelected(true);
 
         ArrayList<String> yearsArrList = getSavedYears();
         String[] yearsArr = new String[yearsArrList.size() + 1];
@@ -147,6 +149,7 @@ public class SearchFrame extends javax.swing.JFrame {
         categoriesComboBox = new javax.swing.JComboBox<>();
         clearButton = new javax.swing.JButton();
         exportButton = new javax.swing.JButton();
+        subtotalsCheckBox = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -210,6 +213,8 @@ public class SearchFrame extends javax.swing.JFrame {
             }
         });
 
+        subtotalsCheckBox.setText("Add Subtotals?");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -237,6 +242,8 @@ public class SearchFrame extends javax.swing.JFrame {
                                         .addComponent(maxField, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(categoriesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(subtotalsCheckBox)
                                         .addGap(0, 0, Short.MAX_VALUE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -249,7 +256,7 @@ public class SearchFrame extends javax.swing.JFrame {
                                                 .addComponent(exportButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 85, Short.MAX_VALUE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 114, Short.MAX_VALUE)
                                                 .addComponent(exitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGap(33, 33, 33)
@@ -282,7 +289,8 @@ public class SearchFrame extends javax.swing.JFrame {
                             .addComponent(yearComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(minField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(maxField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(categoriesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(categoriesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(subtotalsCheckBox))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(searchButton)
@@ -308,7 +316,7 @@ public class SearchFrame extends javax.swing.JFrame {
         } else {
             YearFrame yearFrame = new YearFrame();
         }
-        
+
     }//GEN-LAST:event_exitButtonActionPerformed
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
@@ -329,7 +337,7 @@ public class SearchFrame extends javax.swing.JFrame {
                 } else {
                     minValue = Double.parseDouble(minField.getText());
                 }
-                
+
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Invalid min value. Please try again.");
                 return;
@@ -406,24 +414,31 @@ public class SearchFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_exportButtonActionPerformed
 
     private void updateList(String input, double min, double max) {
-        ArrayList<String> returnedTransactions = getSearchResults(input, min, max);
-        
+        boolean isSubtotalSelected = subtotalsCheckBox.isSelected();
+        ArrayList<String> returnedTransactions = getSearchResults(input, min, max, isSubtotalSelected);
+
         String[] listArr = new String[returnedTransactions.size()];
 
-            int index = 0;
-            for (String s : returnedTransactions) {
-                listArr[index] = s;
-                index++;
-            }
+        int index = 0;
+        for (String s : returnedTransactions) {
+            listArr[index] = s;
+            index++;
+        }
 
-            transactionsList.setListData(listArr);
+        transactionsList.setListData(listArr);
 
-            if (returnedTransactions.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "No results found. Please try again.");
-            }
+        ListModel<String> model = transactionsList.getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            String item = model.getElementAt(i);
+            System.out.println(item);
+        }
+
+        if (returnedTransactions.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No results found. Please try again.");
+        }
     }
-    
-    private ArrayList<String> getSearchResults(String input, double min, double max) {
+
+    private ArrayList<String> getSearchResults(String input, double min, double max, boolean addDividers) {
         //Search through months.txt file
         try {
             Scanner sc = new Scanner(new File("months.txt"));
@@ -486,7 +501,6 @@ public class SearchFrame extends javax.swing.JFrame {
                         //Compare category for combo box selection on spending transactions
                         if (spendingSelected) {
                             String selectedCategory = (String) categoriesComboBox.getSelectedItem();
-                            System.out.println("SELECTED CATEGORY: " + selectedCategory);
                             if (!selectedCategory.equals("All")) {
                                 if (!category.equalsIgnoreCase(selectedCategory)) {
                                     validTransaction = false;
@@ -496,9 +510,7 @@ public class SearchFrame extends javax.swing.JFrame {
 
                         if (validTransaction) {
                             returnedTransactions.add(formattedLine);
-                            if (!category.equalsIgnoreCase("retirement")) {
-                                transactionTotal += amount;
-                            }
+                               transactionTotal += amount;
                         }
                     }
 
@@ -534,8 +546,11 @@ public class SearchFrame extends javax.swing.JFrame {
                     String[] dateInfo = lineInfo[0].split(" ");
                     currentYear = Integer.parseInt(dateInfo[2]);
                     currentMonth = dateInfo[0];
-                    String divider = "----- " + currentMonth + " " + currentYear + " -----";
-                    returnedTransactionsCopy.add(divider);
+                    String divider = null;
+                    if (addDividers)
+                        divider = "----- " + currentMonth + " " + currentYear + " -----";
+                    if (divider != null)
+                        returnedTransactionsCopy.add(divider);
                 }
 
                 String[] lineInfo = s.split("--");
@@ -550,26 +565,33 @@ public class SearchFrame extends javax.swing.JFrame {
 
                 if (!currentMonth.equals(foundMonth) || currentYear != foundYear) {
                     //Add monthly subtotal
-                    String subtotalDivider = currentMonth + " " + currentYear + " Total: $" + df.format(monthlyTotal);
-                    returnedTransactionsCopy.add(subtotalDivider);
+                    String subtotalDivider = null;
+                    if (addDividers)
+                        subtotalDivider = currentMonth + " " + currentYear + " Total: $" + df.format(monthlyTotal);
+                    if (subtotalDivider != null)
+                        returnedTransactionsCopy.add(subtotalDivider);
                     monthlyTotal = 0.0;
                     //Need to add divider here
                     currentYear = Integer.parseInt(dateInfo[2]);
-                    String monthDivider = "----- " + foundMonth + " " + currentYear + " -----";
-                    returnedTransactionsCopy.add(monthDivider);
+                    String monthDivider = null;
+                    if (addDividers)
+                        monthDivider = "----- " + foundMonth + " " + currentYear + " -----";
+                    if (monthDivider != null)
+                        returnedTransactionsCopy.add(monthDivider);
                     currentMonth = foundMonth;
 
                 }
-                if (!category.equalsIgnoreCase("retirement")) {
-                    monthlyTotal += amount;
-                }
+                monthlyTotal += amount;
 
                 returnedTransactionsCopy.add(s);
                 currentIndex++;
                 //End of transactions
                 if (currentIndex == returnedTransactions.size()) {
-                    String subtotalDivider = currentMonth + " " + currentYear + " Total: $" + df.format(monthlyTotal);
-                    returnedTransactionsCopy.add(subtotalDivider);
+                    String subtotalDivider = null;
+                    if (addDividers)
+                        subtotalDivider = currentMonth + " " + currentYear + " Total: $" + df.format(monthlyTotal);
+                    if (subtotalDivider != null)
+                        returnedTransactionsCopy.add(subtotalDivider);
                 }
             }
 
@@ -577,21 +599,21 @@ public class SearchFrame extends javax.swing.JFrame {
             if (incomeSelected) {
                 totalStr = "Income";
             }
-            if (!returnedTransactionsCopy.isEmpty()) {
+            if (addDividers && !returnedTransactionsCopy.isEmpty()) {
                 returnedTransactionsCopy.add("Total " + totalStr + ": $" + df.format(transactionTotal));
             }
-            
+
             return returnedTransactionsCopy;
 
         } catch (FileNotFoundException ex) {
 
         }
-        
+
         return null;
     }
-    
+
     private void exportTransactions() {
-        
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -609,6 +631,7 @@ public class SearchFrame extends javax.swing.JFrame {
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JRadioButton spendingButton;
+    private javax.swing.JCheckBox subtotalsCheckBox;
     private javax.swing.JList<String> transactionsList;
     private javax.swing.JComboBox<String> yearComboBox;
     private javax.swing.JLabel yearLabel;

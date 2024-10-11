@@ -48,6 +48,8 @@
                                       <Component id="maxField" min="-2" pref="89" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="categoriesComboBox" min="-2" pref="134" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="subtotalsCheckBox" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
@@ -64,7 +66,7 @@
                                       </Group>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Group type="102" attributes="0">
-                                              <EmptySpace type="unrelated" pref="85" max="32767" attributes="0"/>
+                                              <EmptySpace type="unrelated" pref="114" max="32767" attributes="0"/>
                                               <Component id="exitButton" min="-2" pref="150" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
@@ -112,6 +114,7 @@
                           <Component id="minField" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="maxField" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="categoriesComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="subtotalsCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -264,6 +267,11 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exportButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="subtotalsCheckBox">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Add Subtotals?"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>
