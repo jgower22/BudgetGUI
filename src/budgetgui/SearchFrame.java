@@ -328,6 +328,8 @@ public class SearchFrame extends javax.swing.JFrame {
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
         // TODO add your handling code here:
         //Check for spending/income selection
+        System.out.println("SPENDING SELECTED: " + spendingSelected);
+        System.out.println("INCOME SELECTED: " + incomeSelected);
         if (!spendingSelected && !incomeSelected) {
             JOptionPane.showMessageDialog(null, "Please select spending or income.");
             return;
@@ -406,7 +408,9 @@ public class SearchFrame extends javax.swing.JFrame {
         maxField.setText("");
         searchTextField.setText("");
         spendingButton.setSelected(false);
+        spendingSelected = false;
         incomeButton.setSelected(false);
+        incomeSelected = false;
         yearComboBox.setSelectedIndex(0);
         categoriesComboBox.setSelectedIndex(0);
         String[] emptyArr = new String[0];
