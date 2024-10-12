@@ -163,15 +163,15 @@ public class YearFrame extends javax.swing.JFrame {
                 try {
                     PrintWriter printer = new PrintWriter(new File(s));
                     //Add default categories for categories.txt and categorylimits.txt
-                    String[] defaultCategories = {"CAR MAINTENANCE", "CC ANNUAL FEE", "DINING", "ENTERTAINMENT", "GAS", 
-                            "GROCERY", "HOUSING", "INTERNET", "INVESTMENTS", "OTHER", "PHONE", "RETIREMENT", "SHOPPING", "TRAVEL"};
+                    String[] defaultCategories = {"CAR MAINTENANCE", "CC ANNUAL FEE", "DINING", "ENTERTAINMENT", "GAS",
+                        "GROCERY", "HOUSING", "INTERNET", "INVESTMENTS", "OTHER", "PHONE", "RETIREMENT", "SHOPPING", "TRAVEL"};
                     if (s.equals("categories.txt")) {
-                        for (String s2: defaultCategories) {
+                        for (String s2 : defaultCategories) {
                             printer.println(s2);
                         }
                     }
                     if (s.equals("categorylimits.txt")) {
-                        for (String s3: defaultCategories) {
+                        for (String s3 : defaultCategories) {
                             printer.println(s3 + "\t0.0");
                         }
                     }
@@ -187,24 +187,31 @@ public class YearFrame extends javax.swing.JFrame {
     private void addYearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addYearButtonActionPerformed
         // TODO add your handling code here:
         //Ask for year to be added
-        String input = JOptionPane.showInputDialog("Enter a year:");
-        int year = 0;
-        try {
-            year = Integer.parseInt(input);
-            if (year < 0) {
-                JOptionPane.showMessageDialog(null, "Invalid Input.");
+        while (true) {
+            String input = JOptionPane.showInputDialog("Enter a year:");
+            if (input == null) {
                 return;
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Invalid Input.");
-            return;
-        }
-        ArrayList<String> savedYears = getSavedYears();
-        if (!savedYears.contains(Integer.toString(year))) {
-            addYearToYearsFile(Integer.toString(year));
-            JOptionPane.showMessageDialog(null, year + " successfully added.");
-        } else {
-            JOptionPane.showMessageDialog(null, "Error: " + year + " already added.");
+            int year = 0;
+            try {
+                year = Integer.parseInt(input);
+                if (year < 0) {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                    continue;
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                continue;
+            }
+            ArrayList<String> savedYears = getSavedYears();
+            if (!savedYears.contains(Integer.toString(year))) {
+                addYearToYearsFile(Integer.toString(year));
+                JOptionPane.showMessageDialog(null, year + " successfully added.");
+                break;
+            } else {
+                JOptionPane.showMessageDialog(null, "Error: " + year + " already added. Please try again.");
+                continue;
+            }
         }
     }//GEN-LAST:event_addYearButtonActionPerformed
 
