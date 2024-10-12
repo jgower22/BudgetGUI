@@ -31,7 +31,13 @@
                       <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
                       <Component id="numMonthsLabel" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="titleLabel" alignment="0" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="prevYearButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="titleLabel" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="nextYearButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
@@ -55,6 +61,8 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="exitButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="titleLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="prevYearButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="nextYearButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -186,6 +194,16 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="prevYearButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Prev Year"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="nextYearButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Next Year"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

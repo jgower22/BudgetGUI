@@ -78,6 +78,8 @@ public class MainFrame extends javax.swing.JFrame {
         importTransactionsButton = new javax.swing.JButton();
         searchButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
+        prevYearButton = new javax.swing.JButton();
+        nextYearButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -148,6 +150,10 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        prevYearButton.setText("Prev Year");
+
+        nextYearButton.setText("Next Year");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -159,7 +165,12 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(numMonthsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(prevYearButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nextYearButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(addMonthButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -178,7 +189,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(exitButton)
-                    .addComponent(titleLabel))
+                    .addComponent(titleLabel)
+                    .addComponent(prevYearButton)
+                    .addComponent(nextYearButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
@@ -888,7 +901,9 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton importTransactionsButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<String> monthsList;
+    private javax.swing.JButton nextYearButton;
     private javax.swing.JLabel numMonthsLabel;
+    private javax.swing.JButton prevYearButton;
     private javax.swing.JButton removeMonthButton;
     private javax.swing.JButton searchButton;
     private javax.swing.JLabel titleLabel;
