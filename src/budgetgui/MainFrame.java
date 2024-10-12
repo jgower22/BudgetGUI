@@ -783,8 +783,10 @@ public class MainFrame extends javax.swing.JFrame {
             
             updateList();
             
+            String[] output = monthAndYear.split("\t");
+            
             if (showConfirmation) {
-                JOptionPane.showMessageDialog(null, monthAndYear + " successfully added.");
+                JOptionPane.showMessageDialog(null, output[0] + " " + output[1] + " successfully added.");
             }
         } catch (FileNotFoundException ex) {
             System.out.println("File not found.");
