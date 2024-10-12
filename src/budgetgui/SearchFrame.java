@@ -59,6 +59,7 @@ public class SearchFrame extends javax.swing.JFrame {
         spendingSelected = true;
         incomeSelected = false;
         subtotalsCheckBox.setSelected(true);
+        exportButton.setEnabled(false);
 
         ArrayList<String> yearsArrList = getSavedYears();
         String[] yearsArr = new String[yearsArrList.size() + 1];
@@ -251,14 +252,9 @@ public class SearchFrame extends javax.swing.JFrame {
                                         .addComponent(subtotalsCheckBox)
                                         .addGap(0, 0, Short.MAX_VALUE))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(minLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(maxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGap(24, 24, 24)
-                                                .addComponent(exportButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(minLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(maxLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createSequentialGroup()
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 114, Short.MAX_VALUE)
@@ -270,7 +266,10 @@ public class SearchFrame extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(searchTextField)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(exportButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -281,8 +280,7 @@ public class SearchFrame extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(exitButton)
-                            .addComponent(clearButton)
-                            .addComponent(exportButton))
+                            .addComponent(clearButton))
                         .addGap(5, 5, 5)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(minLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -306,8 +304,11 @@ public class SearchFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(incomeButton)
                         .addGap(1, 1, 1)))
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 231, Short.MAX_VALUE)
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(exportButton)
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         pack();
@@ -328,7 +329,7 @@ public class SearchFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         //Check for spending/income selection
         if (!spendingSelected && !incomeSelected) {
-            JOptionPane.showMessageDialog(null, "Please select spending/income.");
+            JOptionPane.showMessageDialog(null, "Please select spending or income.");
             return;
         }
 
@@ -412,6 +413,7 @@ public class SearchFrame extends javax.swing.JFrame {
         categoriesComboBox.setEnabled(true);
         transactionsList.setListData(emptyArr);
         subtotalsCheckBox.setSelected(true);
+        exportButton.setEnabled(false);
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
@@ -435,6 +437,9 @@ public class SearchFrame extends javax.swing.JFrame {
 
         if (returnedTransactions.isEmpty()) {
             JOptionPane.showMessageDialog(null, "No results found. Please try again.");
+            exportButton.setEnabled(false);
+        } else {
+            exportButton.setEnabled(true);
         }
     }
 
