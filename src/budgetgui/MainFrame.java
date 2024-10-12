@@ -53,8 +53,8 @@ public class MainFrame extends javax.swing.JFrame {
         
         titleLabel.setText(year);
         curYear = year;
-        
-        updateList();
+         
+        updateList();       
     }
 
     /**
@@ -272,9 +272,7 @@ public class MainFrame extends javax.swing.JFrame {
             return;
         } else {
             addMonth(monthAndYear, true);
-        }
-        
-        
+        }    
     }//GEN-LAST:event_addMonthButtonActionPerformed
 
     private void removeMonthButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeMonthButtonActionPerformed
@@ -365,6 +363,11 @@ public class MainFrame extends javax.swing.JFrame {
     private void autoCompleteYearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoCompleteYearButtonActionPerformed
         // TODO add your handling code here
         
+        if (monthsList.getModel().getSize() == 12) {
+            JOptionPane.showMessageDialog(null, "All months have already been added.");
+            return;
+        }
+        
         //Ask for confirmation
         String input = JOptionPane.showInputDialog(null, "Autocomplete year " + curYear + "? \nType Yes to Autocomplete the Year.");
         if (input == null)
@@ -393,6 +396,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         }
         JOptionPane.showMessageDialog(null, "Request Complete.");
+        autoCompleteYearButton.setEnabled(false);
     }//GEN-LAST:event_autoCompleteYearButtonActionPerformed
 
     private void viewYearlyStatisticsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewYearlyStatisticsActionPerformed
@@ -815,6 +819,12 @@ public class MainFrame extends javax.swing.JFrame {
         }
         
         monthsList.setListData(listArr);
+        
+        if (monthsList.getModel().getSize() == 12) {
+            autoCompleteYearButton.setEnabled(false);
+        } else {
+            autoCompleteYearButton.setEnabled(true);
+        }
     }
     
     private void updateNumMonthsLabel(int numMonths) {
