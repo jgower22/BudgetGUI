@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -45,6 +47,19 @@ public class YearFrame extends javax.swing.JFrame {
         initTextFiles();
 
         updateList();
+
+        removeYearButton.setEnabled(false);
+        viewYearButton.setEnabled(false);
+
+        yearsList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    removeYearButton.setEnabled(true);
+                    viewYearButton.setEnabled(true);
+                }
+            }
+        });
     }
 
     /**
@@ -237,6 +252,10 @@ public class YearFrame extends javax.swing.JFrame {
             removeYearFromYearsFile(selectedYear);
             //Update list
             updateList();
+
+            //Disable remove/view year buttons since nothing on list will be selected
+            removeYearButton.setEnabled(false);
+            viewYearButton.setEnabled(false);
         }
 
     }//GEN-LAST:event_removeYearButtonActionPerformed
