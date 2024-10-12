@@ -1114,7 +1114,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
                 //If no categories have been added, make the transaction uncategorized
                 if (categories.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "ERROR: No categories have been added.");
+                    JOptionPane.showMessageDialog(null, "Error: No categories have been added.");
                     return;
                 } else {
                     //Convert categories array list to array
@@ -1135,7 +1135,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                             categoriesObjArr, categoriesObjArr[java.util.Arrays.asList(categoriesObjArr).indexOf(origCategory)]);
                     category = (String) selection2;
 
-                    if (category == null) {
+                    if (category == null || category.equals(origCategory)) {
                         return;
                     }
                 }
