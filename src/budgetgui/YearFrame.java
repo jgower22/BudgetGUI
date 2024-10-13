@@ -5,7 +5,9 @@
  */
 package budgetgui;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,6 +62,7 @@ public class YearFrame extends javax.swing.JFrame {
                 }
             }
         });
+        
     }
 
     /**
