@@ -5,7 +5,9 @@
  */
 package budgetgui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.RenderingHints.Key;
 import java.awt.Toolkit;
 import java.io.File;
@@ -17,7 +19,15 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  *
@@ -49,20 +59,56 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
         this.setVisible(true);
         this.setTitle("Statistics");
-        this.setResizable(false);
+        //this.setResizable(false);
 
         //Ask for year
         //Or set year
         this.year = year;
-        getStatistics();
 
+        setLayout(new BorderLayout());
+        
+        addBarChart();
+
+    }
+
+    private void addBarChart() {
+        MonthlyData[] monthlyDataArr = getStatistics();
+
+        CategoryDataset dataset = createDataset(monthlyDataArr);
+
+        // Create a bar chart using the dataset
+        JFreeChart barChart = ChartFactory.createBarChart(
+                "Spending/Income per Month", // Chart title
+                "Month", // X-axis label
+                "Amount ($)", // Y-axis label
+                dataset, // Dataset
+                PlotOrientation.VERTICAL, // Orientation
+                true, // Include legend
+                true, // Tooltips
+                false // URLs
+        );
+        ChartPanel chartPanel = new ChartPanel(barChart);
+        add(chartPanel, BorderLayout.SOUTH);
+    }
+
+    private CategoryDataset createDataset(MonthlyData[] arr) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Add data to the dataset
+        for (int i = 0; i < arr.length; i++) {
+            MonthlyData monthData = arr[i];
+            dataset.addValue(monthData.getSpending(), "Spending", monthData.getMonth());
+            dataset.addValue(monthData.getIncome(), "Income", monthData.getMonth());
+        }
+
+        return dataset;
     }
 
     /**
      * This method obtains all of the statistics for any given year Total Income
      * Total Spending Total Cash Flow Avg Spending/Month Avg Income/Month
      */
-    private void getStatistics() {
+    private MonthlyData[] getStatistics() {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
 
@@ -80,6 +126,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
             highestIncomeMonth = "N/A";
 
             ArrayList<String> monthsArrList = new ArrayList<>();
+            HashMap<String, Double> spendingPerMonth = new HashMap<>();
             HashMap<String, Double> incomePerMonth = new HashMap<>();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
@@ -92,7 +139,6 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
                 if (foundMonth) {
                     //Look at these lines
-                    System.out.println("FOUND LINE: " + line);
                     //Look at lines with marker 1 for spending
                     //Look at lines with marker 2 for income
                     String[] transactionInfo = line.split("\t");
@@ -105,12 +151,19 @@ public class StatisticsFrame extends javax.swing.JFrame {
                     amountStr = amountStr.replaceAll(",", "");
 
                     String tempAmountStr = amountStr.replaceAll(",", "");
+                    String curMonth = dateStr.substring(1, 4);
                     if (type.equals("1")) {
-                        totalSpending += Double.parseDouble(tempAmountStr);
+                        double spendingDouble = Double.parseDouble(tempAmountStr);
+                        totalSpending += spendingDouble;
+                        if (!spendingPerMonth.containsKey(curMonth)) {
+                            spendingPerMonth.put(curMonth, spendingDouble);
+                        } else {
+                            double prevSpendingForMonth = spendingPerMonth.get(curMonth);
+                            spendingPerMonth.put(curMonth, prevSpendingForMonth + spendingDouble);
+                        }
                     }
                     if (type.equals("2")) {
                         double incomeDouble = Double.parseDouble(tempAmountStr);
-                        String curMonth = dateStr.substring(1, 4);
                         totalIncome += incomeDouble;
                         if (!incomePerMonth.containsKey(curMonth)) {
                             incomePerMonth.put(curMonth, incomeDouble);
@@ -150,6 +203,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
                         String monthAndYear = foundMonthStr + " " + foundYear;
                         if (!(monthsArrList.contains(monthAndYear))) {
                             monthsArrList.add(monthAndYear);
+                            System.out.println("MONTHS ARR LIST: " + monthsArrList);
                         }
                     }
                 }
@@ -159,6 +213,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
             System.out.println("BUDGET SPENDING: " + budgetsSpending);
 
+            System.out.println("SPENDING PER MONTH: " + spendingPerMonth);
             System.out.println("INCOME PER MONTH: " + incomePerMonth);
 
             if (!incomePerMonth.isEmpty()) {
@@ -183,15 +238,28 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
             numMonths = monthsArrList.size();
             System.out.println("NUM MONTHS: " + numMonths);
+            MonthlyData[] monthlyDataArray = new MonthlyData[12];
+
+            int index = 0;
+            String[] allMonths = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            for (String month : allMonths) {
+                System.out.println("MONTH HERE: " + month);
+                double spending = spendingPerMonth.getOrDefault(month, 0.0);
+                double income = incomePerMonth.getOrDefault(month, 0.0);
+                MonthlyData monthData = new MonthlyData(month, spending, income);
+                monthlyDataArray[index++] = monthData;
+            }
 
             updateSpendingSummary();
             updateAllLabels();
             System.out.println("LABELS UPDATED");
             System.out.println("TOTAL INCOME AFTER GET STATISTICS:" + totalIncome);
+            return monthlyDataArray;
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(null, "Error 17.");
+            JOptionPane.showMessageDialog(null, "Error: File not found.");
             this.dispose();
         }
+        return null;
     }
 
     private void updateAllLabels() {
@@ -380,7 +448,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
         summaryLabel.setText("Spending Summary");
         summaryButton.setText("View Income Summary");
-        summaryList.setListData(listArr);
+        //summaryList.setListData(listArr);
         isShowingSpendingSummary = true;
     }
 
@@ -428,8 +496,6 @@ public class StatisticsFrame extends javax.swing.JFrame {
         averageIncomeLabel = new javax.swing.JLabel();
         numMonthsLabel = new javax.swing.JLabel();
         averageCashFlowLabel = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        summaryList = new javax.swing.JList<>();
         summaryLabel = new javax.swing.JLabel();
         percentageIncomeSavedLabel = new javax.swing.JLabel();
         projectedIncomeLabel = new javax.swing.JLabel();
@@ -485,9 +551,6 @@ public class StatisticsFrame extends javax.swing.JFrame {
         averageCashFlowLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         averageCashFlowLabel.setText("Avg. Cash Flow/Month: $0.00");
 
-        summaryList.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        jScrollPane1.setViewportView(summaryList);
-
         summaryLabel.setFont(new java.awt.Font("Lucida Grande", 1, 18)); // NOI18N
         summaryLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         summaryLabel.setText("Spending Summary");
@@ -524,34 +587,42 @@ public class StatisticsFrame extends javax.swing.JFrame {
                 .addComponent(exitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(changeYearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(highestIncomeLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(titleLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(averageIncomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(averageSpendingLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(totalCashFlowLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(totalIncomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(totalSpendingLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(172, 172, 172)
+                                .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(140, 140, 140))
                             .addComponent(numMonthsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(averageCashFlowLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1)
                             .addComponent(projectedIncomeLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(percentageIncomeSavedLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(summaryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 352, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(summaryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(lowestIncomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(lowestIncomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(changeYearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(174, 174, 174))))
+                    .addComponent(averageIncomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(totalSpendingLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(totalIncomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(26, 26, 26))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(totalCashFlowLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(200, 200, 200))
+                    .addComponent(averageSpendingLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(percentageIncomeSavedLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -559,12 +630,12 @@ public class StatisticsFrame extends javax.swing.JFrame {
                 .addComponent(exitButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
                 .addComponent(changeYearButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(totalSpendingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(totalIncomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(totalSpendingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(totalIncomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(totalCashFlowLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -579,17 +650,15 @@ public class StatisticsFrame extends javax.swing.JFrame {
                 .addComponent(numMonthsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(projectedIncomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(highestIncomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lowestIncomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(summaryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(summaryButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(18, 18, 18))
         );
 
         pack();
@@ -635,7 +704,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         }
 
         if (year != null) {
-            getStatistics();
+            addBarChart();
         }
     }//GEN-LAST:event_changeYearButtonActionPerformed
 
@@ -670,7 +739,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
             System.out.println(s);
             index++;
         }
-        summaryList.setListData(listArr);
+        //summaryList.setListData(listArr);
         summaryLabel.setText("Income Summary");
         summaryButton.setText("View Spending Summary");
         isShowingSpendingSummary = false;
@@ -766,14 +835,12 @@ public class StatisticsFrame extends javax.swing.JFrame {
     private javax.swing.JButton changeYearButton;
     private javax.swing.JButton exitButton;
     private javax.swing.JLabel highestIncomeLabel;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lowestIncomeLabel;
     private javax.swing.JLabel numMonthsLabel;
     private javax.swing.JLabel percentageIncomeSavedLabel;
     private javax.swing.JLabel projectedIncomeLabel;
     private javax.swing.JButton summaryButton;
     private javax.swing.JLabel summaryLabel;
-    private javax.swing.JList<String> summaryList;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JLabel totalCashFlowLabel;
     private javax.swing.JLabel totalIncomeLabel;
