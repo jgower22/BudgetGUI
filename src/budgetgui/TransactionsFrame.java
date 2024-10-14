@@ -24,6 +24,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -90,6 +92,32 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Hide Recurring Button
         makeRecurringButton.setVisible(false);
+
+        removeTransactionButton.setEnabled(false);
+        editDetailsSpendingButton.setEnabled(false);
+
+        transactionsList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    removeTransactionButton.setEnabled(true);
+                    editDetailsSpendingButton.setEnabled(true);
+                }
+            }
+        });
+
+        removeTransactionIncomeButton.setEnabled(false);
+        editDetailsIncomeButton.setEnabled(false);
+
+        incomeList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    removeTransactionIncomeButton.setEnabled(true);
+                    editDetailsIncomeButton.setEnabled(true);
+                }
+            }
+        });
 
     }
 
@@ -508,6 +536,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String marker = "1";
         addTransaction(month, date, description, amount, category, marker);
 
+        removeTransactionButton.setEnabled(false);
+        editDetailsSpendingButton.setEnabled(false);
     }//GEN-LAST:event_addTransactionButtonActionPerformed
 
     private void removeTransactionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeTransactionButtonActionPerformed
@@ -537,6 +567,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
             String lineToRemove = "#" + date + "\t" + description + "\t" + amount + "\t" + category + "\t" + "1";
             removeTransaction(lineToRemove);
+
+            removeTransactionButton.setEnabled(false);
+            editDetailsSpendingButton.setEnabled(false);
         }
 
     }//GEN-LAST:event_removeTransactionButtonActionPerformed
@@ -551,10 +584,10 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String year = monthInfo[1];
         String output = "Enter the Day of the Month: "
                 + "\n" + monthName + " _ " + year;
-        
+
         String date = "", description = "";
         double amount = 0.0;
-        
+
         //Ask for day of month until valid
         while (true) {
             String input = JOptionPane.showInputDialog(output);
@@ -609,7 +642,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Ask for amount until valid
         while (true) {
             String amountStr = JOptionPane.showInputDialog("Enter an Amount:");
-            
+
             if (amountStr == null) {
                 return;
             }
@@ -637,6 +670,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String formattedAmountStr = df.format(amount);
         amount = Double.parseDouble(formattedAmountStr);*/
         addTransaction(month, date, description, amount, category, marker);
+        
+        removeTransactionIncomeButton.setEnabled(false);
+        editDetailsIncomeButton.setEnabled(false);
     }//GEN-LAST:event_addTransactionIncomeButtonActionPerformed
 
     private void removeTransactionIncomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeTransactionIncomeButtonActionPerformed
@@ -659,6 +695,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
             removeTransaction(lineToRemove);
 
             updateIncomeList();
+
+            removeTransactionIncomeButton.setEnabled(false);
+            editDetailsIncomeButton.setEnabled(false);
         }
     }//GEN-LAST:event_removeTransactionIncomeButtonActionPerformed
 
@@ -1023,7 +1062,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Ask for amount until input is valid
         if (selectionStr.equals(optionsArr[2])) {
-            String amountStrCopy = amountStr;
+            String amountStrCopy = amountStr.replaceAll("[,\\.]", "");
             while (true) {
                 amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStrCopy);
 
@@ -1075,7 +1114,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
                 //If no categories have been added, make the transaction uncategorized
                 if (categories.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "ERROR: No categories have been added.");
+                    JOptionPane.showMessageDialog(null, "Error: No categories have been added.");
                     return;
                 } else {
                     //Convert categories array list to array
@@ -1096,7 +1135,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                             categoriesObjArr, categoriesObjArr[java.util.Arrays.asList(categoriesObjArr).indexOf(origCategory)]);
                     category = (String) selection2;
 
-                    if (category == null) {
+                    if (category == null || category.equals(origCategory)) {
                         return;
                     }
                 }
@@ -1112,6 +1151,14 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         String lineToRemove = "#" + origDate + "\t" + origDescription + "\t" + origAmountStr + "\t" + origCategory + "\t" + marker;
         removeTransaction(lineToRemove);
+
+        if (marker.equals("1")) {
+            removeTransactionButton.setEnabled(false);
+            editDetailsSpendingButton.setEnabled(false);
+        } else {
+            removeTransactionIncomeButton.setEnabled(false);
+            editDetailsIncomeButton.setEnabled(false);
+        }
 
     }
 
@@ -1196,6 +1243,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
             updateTransactionsList();
             updateIncomeList();
+
         } catch (FileNotFoundException ex) {
 
         }
