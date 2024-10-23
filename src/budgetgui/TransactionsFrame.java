@@ -1062,7 +1062,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Ask for amount until input is valid
         if (selectionStr.equals(optionsArr[2])) {
-            String amountStrCopy = amountStr.replaceAll("[,\\.]", "");
+            String amountStrCopy = amountStr.replaceAll("\\,", "");
+            //amountStrCopy = amountStrCopy.split("\\.")[0];
+            //This does not work if you change 5 to 500 because it gets rid of the two zeros at the end
             while (true) {
                 amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStrCopy);
 
@@ -1080,7 +1082,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 }
 
                 //If null or if value does not change
-                if (amountStr == null || tempFormatStr.equals(df.format(Double.parseDouble(origAmountStr)))) {
+                if (amountStr == null || tempFormatStr.equals(df.format(Double.parseDouble(origAmountStr.replaceAll("[,\\.]", ""))))) {
                     return;
                 }
 
