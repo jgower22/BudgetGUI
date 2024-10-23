@@ -5,6 +5,7 @@
  */
 package budgetgui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.RenderingHints.Key;
 import java.awt.Toolkit;
@@ -18,6 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  *
@@ -54,15 +61,52 @@ public class StatisticsFrame extends javax.swing.JFrame {
         //Ask for year
         //Or set year
         this.year = year;
+        
+        setLayout(new BorderLayout());
+        
         getStatistics();
+    }
+    
+    private void openBarChart() {
+        MonthlyData[] monthlyDataArr = getStatistics();
 
+        CategoryDataset dataset = createDataset(monthlyDataArr);
+
+        // Create a bar chart using the dataset
+        JFreeChart barChart = ChartFactory.createBarChart(
+                "Spending/Income per Month", // Chart title
+                "Month", // X-axis label
+                "Amount ($)", // Y-axis label
+                dataset, // Dataset
+                PlotOrientation.VERTICAL, // Orientation
+                true, // Include legend
+                true, // Tooltips
+                false // URLs
+        );
+        
+        ChartPanel chartPanel = new ChartPanel(barChart);
+        JFrame frame = new JFrame("Popup");
+        frame.getContentPane.add(chartPanel);
+    }
+
+    private CategoryDataset createDataset(MonthlyData[] arr) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Add data to the dataset
+        for (int i = 0; i < arr.length; i++) {
+            MonthlyData monthData = arr[i];
+            dataset.addValue(monthData.getSpending(), "Spending", monthData.getMonth());
+            dataset.addValue(monthData.getIncome(), "Income", monthData.getMonth());
+        }
+
+        return dataset;
     }
 
     /**
      * This method obtains all of the statistics for any given year Total Income
      * Total Spending Total Cash Flow Avg Spending/Month Avg Income/Month
      */
-    private void getStatistics() {
+    private MonthlyData[] getStatistics() {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
 
@@ -80,6 +124,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
             highestIncomeMonth = "N/A";
 
             ArrayList<String> monthsArrList = new ArrayList<>();
+            HashMap<String, Double> spendingPerMonth = new HashMap<>();
             HashMap<String, Double> incomePerMonth = new HashMap<>();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
@@ -92,7 +137,6 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
                 if (foundMonth) {
                     //Look at these lines
-                    System.out.println("FOUND LINE: " + line);
                     //Look at lines with marker 1 for spending
                     //Look at lines with marker 2 for income
                     String[] transactionInfo = line.split("\t");
@@ -105,12 +149,19 @@ public class StatisticsFrame extends javax.swing.JFrame {
                     amountStr = amountStr.replaceAll(",", "");
 
                     String tempAmountStr = amountStr.replaceAll(",", "");
+                    String curMonth = dateStr.substring(1, 4);
                     if (type.equals("1")) {
-                        totalSpending += Double.parseDouble(tempAmountStr);
+                        double spendingDouble = Double.parseDouble(tempAmountStr);
+                        totalSpending += spendingDouble;
+                        if (!spendingPerMonth.containsKey(curMonth)) {
+                            spendingPerMonth.put(curMonth, spendingDouble);
+                        } else {
+                            double prevSpendingForMonth = spendingPerMonth.get(curMonth);
+                            spendingPerMonth.put(curMonth, prevSpendingForMonth + spendingDouble);
+                        }
                     }
                     if (type.equals("2")) {
                         double incomeDouble = Double.parseDouble(tempAmountStr);
-                        String curMonth = dateStr.substring(1, 4);
                         totalIncome += incomeDouble;
                         if (!incomePerMonth.containsKey(curMonth)) {
                             incomePerMonth.put(curMonth, incomeDouble);
@@ -150,6 +201,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
                         String monthAndYear = foundMonthStr + " " + foundYear;
                         if (!(monthsArrList.contains(monthAndYear))) {
                             monthsArrList.add(monthAndYear);
+                            System.out.println("MONTHS ARR LIST: " + monthsArrList);
                         }
                     }
                 }
@@ -159,6 +211,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
             System.out.println("BUDGET SPENDING: " + budgetsSpending);
 
+            System.out.println("SPENDING PER MONTH: " + spendingPerMonth);
             System.out.println("INCOME PER MONTH: " + incomePerMonth);
 
             if (!incomePerMonth.isEmpty()) {
@@ -183,15 +236,28 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
             numMonths = monthsArrList.size();
             System.out.println("NUM MONTHS: " + numMonths);
+            MonthlyData[] monthlyDataArray = new MonthlyData[12];
+
+            int index = 0;
+            String[] allMonths = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+            for (String month : allMonths) {
+                System.out.println("MONTH HERE: " + month);
+                double spending = spendingPerMonth.getOrDefault(month, 0.0);
+                double income = incomePerMonth.getOrDefault(month, 0.0);
+                MonthlyData monthData = new MonthlyData(month, spending, income);
+                monthlyDataArray[index++] = monthData;
+            }
 
             updateSpendingSummary();
             updateAllLabels();
             System.out.println("LABELS UPDATED");
             System.out.println("TOTAL INCOME AFTER GET STATISTICS:" + totalIncome);
+            return monthlyDataArray;
         } catch (FileNotFoundException ex) {
-            JOptionPane.showMessageDialog(null, "Error 17.");
+            JOptionPane.showMessageDialog(null, "Error: File not found.");
             this.dispose();
         }
+        return null;
     }
 
     private void updateAllLabels() {
@@ -436,6 +502,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         summaryButton = new javax.swing.JButton();
         lowestIncomeLabel = new javax.swing.JLabel();
         highestIncomeLabel = new javax.swing.JLabel();
+        viewBarChartButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -515,6 +582,13 @@ public class StatisticsFrame extends javax.swing.JFrame {
         highestIncomeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         highestIncomeLabel.setText("Highest Income Month: June ($1700)");
 
+        viewBarChartButton.setText("View Bar Chart");
+        viewBarChartButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewBarChartButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -527,6 +601,8 @@ public class StatisticsFrame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(changeYearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(viewBarChartButton, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(highestIncomeLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
@@ -560,7 +636,9 @@ public class StatisticsFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(changeYearButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(changeYearButton)
+                    .addComponent(viewBarChartButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(totalSpendingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -647,6 +725,11 @@ public class StatisticsFrame extends javax.swing.JFrame {
             updateSpendingSummary();
         }
     }//GEN-LAST:event_summaryButtonActionPerformed
+
+    private void viewBarChartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewBarChartButtonActionPerformed
+        // TODO add your handling code here:
+        openBarChart();
+    }//GEN-LAST:event_viewBarChartButtonActionPerformed
 
     private void updateIncomeSummary() {
 
@@ -778,5 +861,6 @@ public class StatisticsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel totalCashFlowLabel;
     private javax.swing.JLabel totalIncomeLabel;
     private javax.swing.JLabel totalSpendingLabel;
+    private javax.swing.JButton viewBarChartButton;
     // End of variables declaration//GEN-END:variables
 }
