@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -74,7 +75,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
         // Create a bar chart using the dataset
         JFreeChart barChart = ChartFactory.createBarChart(
-                "Spending/Income per Month", // Chart title
+                "Spending/Income per Month (" + year + ")", // Chart title
                 "Month", // X-axis label
                 "Amount ($)", // Y-axis label
                 dataset, // Dataset
@@ -85,8 +86,12 @@ public class StatisticsFrame extends javax.swing.JFrame {
         );
         
         ChartPanel chartPanel = new ChartPanel(barChart);
-        JFrame frame = new JFrame("Popup");
-        frame.getContentPane.add(chartPanel);
+        JFrame frame = new JFrame("Spending/Income per Month (" + year + ")");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
+        frame.getContentPane().add(chartPanel); // Add the ChartPanel to the frame
+        frame.pack(); // Size the frame according to its content
+        frame.setLocationRelativeTo(null); // Center the frame on the screen
+        frame.setVisible(true); // Make the frame visible
     }
 
     private CategoryDataset createDataset(MonthlyData[] arr) {
