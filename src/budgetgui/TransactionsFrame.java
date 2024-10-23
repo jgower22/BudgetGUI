@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -395,6 +396,15 @@ public class TransactionsFrame extends javax.swing.JFrame {
         MainFrame mainFrame = new MainFrame(curYear);
     }//GEN-LAST:event_exitButtonActionPerformed
 
+    private boolean isValidFormat(String amount, DecimalFormat df) {
+        ParsePosition parsePosition = new ParsePosition(0);
+        df.setParseBigDecimal(true);
+        
+        df.parse(amount, parsePosition);
+        
+        return parsePosition.getIndex() == amount.length();
+    }
+    
     private void addTransactionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTransactionButtonActionPerformed
         // TODO add your handling code here:
 
@@ -410,7 +420,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Ask for date until valid
         while (true) {
-            input = JOptionPane.showInputDialog(output);
+            input = JOptionPane.showInputDialog(output, input);
 
             if (input == null) {
                 return;
@@ -442,7 +452,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Ask for description until valid
         String description = "";
         while (true) {
-            description = JOptionPane.showInputDialog("Enter a Description:");
+            description = JOptionPane.showInputDialog("Enter a Description:", description);
 
             if (description == null) {
                 return;
@@ -466,17 +476,30 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String amountStr = "";
         double amount = 0.0;
         while (true) {
-            amountStr = JOptionPane.showInputDialog("Enter an Amount:");
+            amountStr = JOptionPane.showInputDialog("Enter an Amount:", amountStr);
 
             if (amountStr == null) {
                 return;
             }
 
             try {
-                amount = Double.parseDouble(amountStr);
+                
+                //Check for valid DecimalFormat pattern
+                String pattern = "#,###.00";
+                DecimalFormat df = new DecimalFormat(pattern);
+                
+                boolean isValidAmount = isValidFormat(amountStr, df);
+                
+                if (!isValidAmount) {
+                    JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                    continue;
+                }
+                
+                Number number = df.parse(amountStr);
+                amount = number.doubleValue();
 
                 if (amount <= 0.0) {
-                    JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                    JOptionPane.showMessageDialog(null, "Invalid amount. Please enter a positive number.");
                     continue;
                 }
 
@@ -585,12 +608,12 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String output = "Enter the Day of the Month: "
                 + "\n" + monthName + " _ " + year;
 
-        String date = "", description = "";
+        String date = "", description = "", input = "";
         double amount = 0.0;
 
         //Ask for day of month until valid
         while (true) {
-            String input = JOptionPane.showInputDialog(output);
+            input = JOptionPane.showInputDialog(output, input);
 
             if (input == null) {
                 return;
@@ -620,7 +643,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Ask for description until valid
         while (true) {
-            description = JOptionPane.showInputDialog("Enter a Description:");
+            description = JOptionPane.showInputDialog("Enter a Description:", description);
 
             if (description == null) {
                 return;
@@ -640,8 +663,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
         }
 
         //Ask for amount until valid
+        String amountStr = "";
         while (true) {
-            String amountStr = JOptionPane.showInputDialog("Enter an Amount:");
+            amountStr = JOptionPane.showInputDialog("Enter an Amount:", amountStr);
 
             if (amountStr == null) {
                 return;
@@ -649,10 +673,22 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
             amount = 0.0;
             try {
-                amount = Double.parseDouble(amountStr);
+                //Check for valid DecimalFormat pattern
+                String pattern = "#,###.00";
+                DecimalFormat df = new DecimalFormat(pattern);
+                
+                boolean isValidAmount = isValidFormat(amountStr, df);
+                
+                if (!isValidAmount) {
+                    JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                    continue;
+                }
+                
+                Number number = df.parse(amountStr);
+                amount = number.doubleValue();
 
                 if (amount <= 0.0) {
-                    JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
+                    JOptionPane.showMessageDialog(null, "Invalid amount. Please enter a positive number.");
                     continue;
                 }
             } catch (Exception e) {
@@ -1065,38 +1101,49 @@ public class TransactionsFrame extends javax.swing.JFrame {
             String amountStrCopy = amountStr;
             while (true) {
                 amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStrCopy);
-
-                if (amountStr == null || amountStr.equals(amountStrCopy)) {
+                
+                //Check for valid DecimalFormat pattern
+                String pattern = "#,###.00";
+                DecimalFormat df = new DecimalFormat(pattern);
+                
+                //Can optimize by checking if orig amount is equal to new amount
+                /*System.out.println("ORIG AMOUNT: " + amountStrCopy);
+                System.out.println("NEW AMOUNT: " + amountStr);
+                String formattedOrigAmount = df.format(amountStrCopy);
+                String formattedNewAmount = df.format(amountStr);
+                
+                if (amountStr == null || formattedOrigAmount.equals(formattedNewAmount)) {
+                    System.out.println("DONT CHANGE");
+                    return;
+                }*/
+                
+                if (amountStr == null) {
                     return;
                 }
-
-                DecimalFormat df = new DecimalFormat("0.00");
-                String tempFormatStr = "";
-                try {
-                    tempFormatStr = df.format(Double.parseDouble(amountStr));
-                } catch (Exception e) {
+                
+                boolean isValidAmount = isValidFormat(amountStr, df);
+                
+                if (!isValidAmount) {
                     JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
                     continue;
                 }
-
-                //If null or if value does not change
-                if (amountStr == null || tempFormatStr.equals(df.format(Double.parseDouble(origAmountStr)))) {
-                    return;
-                }
-
-                double amount = 0.0;
+                
+                Number number;
                 try {
-                    amount = Double.parseDouble(amountStr);
-
-                    if (amount <= 0.0) {
-                        JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
-                        continue;
-                    }
-                    break;
-                } catch (Exception e) {
+                    number = df.parse(amountStr);
+                } catch (ParseException ex) {
                     JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
                     continue;
                 }
+                double amount = number.doubleValue();
+
+                if (amount <= 0.0) {
+                    JOptionPane.showMessageDialog(null, "Invalid amount. Please enter a positive number.");
+                    continue;
+                }
+                
+                System.out.println("YES CHANGE");
+                break;
             }
         }
 
