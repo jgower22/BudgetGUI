@@ -44,6 +44,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private double totalIncome = 0.0;
     private String curYear;
     private int indexOfMonth;
+    private static final int DESCRIPTION_LIMIT = 50;
 
     /**
      * Creates new form TransactionsFrame
@@ -399,12 +400,12 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private boolean isValidFormat(String amount, DecimalFormat df) {
         ParsePosition parsePosition = new ParsePosition(0);
         df.setParseBigDecimal(true);
-        
+
         df.parse(amount, parsePosition);
-        
+
         return parsePosition.getIndex() == amount.length();
     }
-    
+
     private void addTransactionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTransactionButtonActionPerformed
         // TODO add your handling code here:
 
@@ -458,6 +459,11 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 return;
             }
 
+            if (description.length() > DESCRIPTION_LIMIT) {
+                JOptionPane.showMessageDialog(null, "Input exceeds character limit of " + DESCRIPTION_LIMIT + ". Please try again.");
+                continue;
+            }
+
             if (description.equals("")) {
                 JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
                 continue;
@@ -483,18 +489,18 @@ public class TransactionsFrame extends javax.swing.JFrame {
             }
 
             try {
-                
+
                 //Check for valid DecimalFormat pattern
                 String pattern = "#,###.00";
                 DecimalFormat df = new DecimalFormat(pattern);
-                
+
                 boolean isValidAmount = isValidFormat(amountStr, df);
-                
+
                 if (!isValidAmount) {
                     JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
                     continue;
                 }
-                
+
                 Number number = df.parse(amountStr);
                 amount = number.doubleValue();
 
@@ -652,6 +658,10 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
                 continue;
             }
+            if (description.length() > DESCRIPTION_LIMIT) {
+                JOptionPane.showMessageDialog(null, "Input exceeds character limit of " + DESCRIPTION_LIMIT + ". Please try again.");
+                continue;
+            }
 
             //Check for --
             int indexOfForbiddenCharacters = description.indexOf("--");
@@ -676,14 +686,14 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 //Check for valid DecimalFormat pattern
                 String pattern = "#,###.00";
                 DecimalFormat df = new DecimalFormat(pattern);
-                
+
                 boolean isValidAmount = isValidFormat(amountStr, df);
-                
+
                 if (!isValidAmount) {
                     JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
                     continue;
                 }
-                
+
                 Number number = df.parse(amountStr);
                 amount = number.doubleValue();
 
@@ -706,7 +716,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String formattedAmountStr = df.format(amount);
         amount = Double.parseDouble(formattedAmountStr);*/
         addTransaction(month, date, description, amount, category, marker);
-        
+
         removeTransactionIncomeButton.setEnabled(false);
         editDetailsIncomeButton.setEnabled(false);
     }//GEN-LAST:event_addTransactionIncomeButtonActionPerformed
@@ -1071,10 +1081,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
         }
 
         //Ask for description until input is valid
-        String descCopy = description;
         if (selectionStr.equals(optionsArr[1])) {
             while (true) {
-                description = JOptionPane.showInputDialog(null, "Edit the Description:", descCopy);
+                description = JOptionPane.showInputDialog(null, "Edit the Description:", description);
 
                 //If null or if value does not change
                 if (description == null || description.equals(origDescription)) {
@@ -1083,6 +1092,11 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
                 if (description.equals("")) {
                     JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                    continue;
+                }
+
+                if (description.length() > DESCRIPTION_LIMIT) {
+                    JOptionPane.showMessageDialog(null, "Input exceeds character limit of " + DESCRIPTION_LIMIT + ". Please try again.");
                     continue;
                 }
 
@@ -1101,11 +1115,11 @@ public class TransactionsFrame extends javax.swing.JFrame {
             String amountStrCopy = amountStr;
             while (true) {
                 amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStrCopy);
-                
+
                 //Check for valid DecimalFormat pattern
                 String pattern = "#,###.00";
                 DecimalFormat df = new DecimalFormat(pattern);
-                
+
                 //Can optimize by checking if orig amount is equal to new amount
                 /*System.out.println("ORIG AMOUNT: " + amountStrCopy);
                 System.out.println("NEW AMOUNT: " + amountStr);
@@ -1116,18 +1130,17 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     System.out.println("DONT CHANGE");
                     return;
                 }*/
-                
                 if (amountStr == null) {
                     return;
                 }
-                
+
                 boolean isValidAmount = isValidFormat(amountStr, df);
-                
+
                 if (!isValidAmount) {
                     JOptionPane.showMessageDialog(null, "Invalid amount. Please try again.");
                     continue;
                 }
-                
+
                 Number number;
                 try {
                     number = df.parse(amountStr);
@@ -1141,7 +1154,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Invalid amount. Please enter a positive number.");
                     continue;
                 }
-                
+
                 System.out.println("YES CHANGE");
                 break;
             }
