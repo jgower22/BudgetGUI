@@ -80,7 +80,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
         // Create a bar chart using the dataset
         JFreeChart barChart = ChartFactory.createBarChart(
-                "Spending/Income per Month (" + year + ")", // Chart title
+                "Monthly Spending & Income (" + year + ")", // Chart title
                 "Month", // X-axis label
                 "Amount ($)", // Y-axis label
                 dataset, // Dataset
@@ -91,7 +91,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         );
 
         ChartPanel chartPanel = new ChartPanel(barChart);
-        JFrame frame = new JFrame("Spending/Income per Month (" + year + ")");
+        JFrame frame = new JFrame("Monthly Spending & Income (" + year + ")");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
         frame.getContentPane().add(chartPanel); // Add the ChartPanel to the frame
         frame.pack(); // Size the frame according to its content
@@ -116,7 +116,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         DefaultPieDataset dataset = createPieChartDataset(spendingPerCategory);
 
         JFreeChart pieChart = ChartFactory.createPieChart(
-                "Spending per Category (" + year + ")",
+                "Annual Spending Breakdown (" + year + ")",
                 dataset,
                 true,
                 true,
@@ -131,7 +131,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         // {0} - Category name, {1} - Formatted value, {2} - Formatted percentage
 
         ChartPanel chartPanel = new ChartPanel(pieChart);
-        JFrame frame = new JFrame("Spending per Category (" + year + ")");
+        JFrame frame = new JFrame("Annual Spending Breakdown (" + year + ")");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
         frame.getContentPane().add(chartPanel); // Add the ChartPanel to the frame
         frame.pack(); // Size the frame according to its content
