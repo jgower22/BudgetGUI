@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,9 +24,12 @@ import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 /**
  *
@@ -44,6 +48,8 @@ public class StatisticsFrame extends javax.swing.JFrame {
     private int indexOfYear = 0;
     private HashMap<String, Double> budgetsSpending = new HashMap<>();
     private boolean isShowingSpendingSummary;
+    private MonthlyData[] monthlyDataArray = new MonthlyData[12];
+    private HashMap<String, Double> spendingPerCategory = new HashMap<>();
 
     //Category -- Spending
     /**
@@ -62,16 +68,15 @@ public class StatisticsFrame extends javax.swing.JFrame {
         //Ask for year
         //Or set year
         this.year = year;
-        
-        setLayout(new BorderLayout());
-        
-        getStatistics();
-    }
-    
-    private void openBarChart() {
-        MonthlyData[] monthlyDataArr = getStatistics();
 
-        CategoryDataset dataset = createDataset(monthlyDataArr);
+        setLayout(new BorderLayout());
+
+        getStatistics();
+
+    }
+
+    private void openBarChart() {
+        CategoryDataset dataset = createBarChartDataset(monthlyDataArray);
 
         // Create a bar chart using the dataset
         JFreeChart barChart = ChartFactory.createBarChart(
@@ -84,7 +89,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
                 true, // Tooltips
                 false // URLs
         );
-        
+
         ChartPanel chartPanel = new ChartPanel(barChart);
         JFrame frame = new JFrame("Spending/Income per Month (" + year + ")");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
@@ -94,7 +99,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         frame.setVisible(true); // Make the frame visible
     }
 
-    private CategoryDataset createDataset(MonthlyData[] arr) {
+    private CategoryDataset createBarChartDataset(MonthlyData[] arr) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         // Add data to the dataset
@@ -107,11 +112,46 @@ public class StatisticsFrame extends javax.swing.JFrame {
         return dataset;
     }
 
+    private void openPieChart() {
+        DefaultPieDataset dataset = createPieChartDataset(spendingPerCategory);
+
+        JFreeChart pieChart = ChartFactory.createPieChart(
+                "Spending per Category (" + year + ")",
+                dataset,
+                true,
+                true,
+                false
+        );
+
+        PiePlot plot = (PiePlot) pieChart.getPlot();
+        DecimalFormat dollarFormat = new DecimalFormat("$#,##0.00");
+        DecimalFormat percentFormat = new DecimalFormat("0.0%"); // Format for percentages
+
+        plot.setLabelGenerator(new StandardPieSectionLabelGenerator("{0}: {1} ({2})", dollarFormat, percentFormat));
+        // {0} - Category name, {1} - Formatted value, {2} - Formatted percentage
+
+        ChartPanel chartPanel = new ChartPanel(pieChart);
+        JFrame frame = new JFrame("Spending per Category (" + year + ")");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
+        frame.getContentPane().add(chartPanel); // Add the ChartPanel to the frame
+        frame.pack(); // Size the frame according to its content
+        frame.setLocationRelativeTo(null); // Center the frame on the screen
+        frame.setVisible(true); // Make the frame visible
+    }
+
+    private DefaultPieDataset createPieChartDataset(HashMap<String, Double> map) {
+        DefaultPieDataset dataset = new DefaultPieDataset();
+        for (String key : map.keySet()) {
+            dataset.setValue(key, map.get(key));
+        }
+        return dataset;
+    }
+
     /**
      * This method obtains all of the statistics for any given year Total Income
      * Total Spending Total Cash Flow Avg Spending/Month Avg Income/Month
      */
-    private MonthlyData[] getStatistics() {
+    private void getStatistics() {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
 
@@ -155,8 +195,11 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
                     String tempAmountStr = amountStr.replaceAll(",", "");
                     String curMonth = dateStr.substring(1, 4);
+                    //1 = spending
+                    //2 = income
                     if (type.equals("1")) {
                         double spendingDouble = Double.parseDouble(tempAmountStr);
+                        spendingPerCategory.put(categoryName, spendingPerCategory.getOrDefault(categoryName, 0.0) + spendingDouble);
                         totalSpending += spendingDouble;
                         if (!spendingPerMonth.containsKey(curMonth)) {
                             spendingPerMonth.put(curMonth, spendingDouble);
@@ -218,6 +261,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
             System.out.println("SPENDING PER MONTH: " + spendingPerMonth);
             System.out.println("INCOME PER MONTH: " + incomePerMonth);
+            System.out.println("SPENDING PER CATEGORY: " + spendingPerCategory);
 
             if (!incomePerMonth.isEmpty()) {
                 Map.Entry<String, Double> min = Collections.min(incomePerMonth.entrySet(), new Comparator<Map.Entry<String, Double>>() {
@@ -240,13 +284,11 @@ public class StatisticsFrame extends javax.swing.JFrame {
             }
 
             numMonths = monthsArrList.size();
-            System.out.println("NUM MONTHS: " + numMonths);
-            MonthlyData[] monthlyDataArray = new MonthlyData[12];
 
+            //Array for bar chart
             int index = 0;
             String[] allMonths = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
             for (String month : allMonths) {
-                System.out.println("MONTH HERE: " + month);
                 double spending = spendingPerMonth.getOrDefault(month, 0.0);
                 double income = incomePerMonth.getOrDefault(month, 0.0);
                 MonthlyData monthData = new MonthlyData(month, spending, income);
@@ -255,14 +297,24 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
             updateSpendingSummary();
             updateAllLabels();
-            System.out.println("LABELS UPDATED");
-            System.out.println("TOTAL INCOME AFTER GET STATISTICS:" + totalIncome);
-            return monthlyDataArray;
+
+            //Bar chart/pie chart buttons
+            if (totalSpending == 0.0) {
+                viewPieChartButton.setEnabled(false);
+            } else {
+                viewPieChartButton.setEnabled(true);
+            }
+            
+            if (totalSpending != 0.0 || totalIncome != 0.0) {
+                viewBarChartButton.setEnabled(true);
+            } else {
+                viewBarChartButton.setEnabled(false);
+            }
+
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "Error: File not found.");
             this.dispose();
         }
-        return null;
     }
 
     private void updateAllLabels() {
@@ -508,6 +560,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         lowestIncomeLabel = new javax.swing.JLabel();
         highestIncomeLabel = new javax.swing.JLabel();
         viewBarChartButton = new javax.swing.JButton();
+        viewPieChartButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -587,10 +640,17 @@ public class StatisticsFrame extends javax.swing.JFrame {
         highestIncomeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         highestIncomeLabel.setText("Highest Income Month: June ($1700)");
 
-        viewBarChartButton.setText("View Bar Chart");
+        viewBarChartButton.setText("View Monthly Spending & Income");
         viewBarChartButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 viewBarChartButtonActionPerformed(evt);
+            }
+        });
+
+        viewPieChartButton.setText("View Annual Spending Breakdown");
+        viewPieChartButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewPieChartButtonActionPerformed(evt);
             }
         });
 
@@ -606,8 +666,6 @@ public class StatisticsFrame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(changeYearButton, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(viewBarChartButton, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(highestIncomeLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
@@ -633,6 +691,12 @@ public class StatisticsFrame extends javax.swing.JFrame {
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addComponent(lowestIncomeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(62, 62, 62)
+                .addComponent(viewBarChartButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(viewPieChartButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -641,10 +705,12 @@ public class StatisticsFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(changeYearButton)
+                .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(changeYearButton)
-                    .addComponent(viewBarChartButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(viewBarChartButton)
+                    .addComponent(viewPieChartButton))
+                .addGap(18, 18, 18)
                 .addComponent(totalSpendingLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(totalIncomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -735,6 +801,11 @@ public class StatisticsFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         openBarChart();
     }//GEN-LAST:event_viewBarChartButtonActionPerformed
+
+    private void viewPieChartButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewPieChartButtonActionPerformed
+        // TODO add your handling code here:
+        openPieChart();
+    }//GEN-LAST:event_viewPieChartButtonActionPerformed
 
     private void updateIncomeSummary() {
 
@@ -867,5 +938,6 @@ public class StatisticsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel totalIncomeLabel;
     private javax.swing.JLabel totalSpendingLabel;
     private javax.swing.JButton viewBarChartButton;
+    private javax.swing.JButton viewPieChartButton;
     // End of variables declaration//GEN-END:variables
 }

@@ -32,8 +32,6 @@
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="changeYearButton" min="-2" pref="166" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="viewBarChartButton" min="-2" pref="166" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                   <Component id="highestIncomeLabel" alignment="1" max="32767" attributes="0"/>
@@ -66,6 +64,13 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
+              <Component id="viewBarChartButton" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="viewPieChartButton" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -75,11 +80,13 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="titleLabel" min="-2" pref="49" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
+              <Component id="changeYearButton" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="changeYearButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="viewBarChartButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="viewPieChartButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="totalSpendingLabel" min="-2" pref="40" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="totalIncomeLabel" min="-2" pref="34" max="-2" attributes="0"/>
@@ -279,10 +286,18 @@
     </Component>
     <Component class="javax.swing.JButton" name="viewBarChartButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="View Bar Chart"/>
+        <Property name="text" type="java.lang.String" value="View Monthly Spending &amp; Income"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewBarChartButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="viewPieChartButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="View Annual Spending Breakdown"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewPieChartButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
