@@ -304,7 +304,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
             } else {
                 viewPieChartButton.setEnabled(true);
             }
-            
+
             if (totalSpending != 0.0 || totalIncome != 0.0) {
                 viewBarChartButton.setEnabled(true);
             } else {
@@ -464,36 +464,38 @@ public class StatisticsFrame extends javax.swing.JFrame {
         }
         System.out.println("EMPTY BUDGET GOALS: " + emptyBudgetGoals);
 
-        for (String s : budgetsSpending.keySet()) {
-            String formattedNumber = formatNumber(budgetsSpending.get(s));
+        if (budgetsSpending.size() != 0) {
+            for (String s : budgetsSpending.keySet()) {
+                String formattedNumber = formatNumber(budgetsSpending.get(s));
 
-            if (!emptyBudgetGoals) {
-                if (s.equalsIgnoreCase("uncategorized")) {
-                    arrList.add(s + ": $" + formattedNumber);
-                } else {
-                    double goalNum = budgetGoals.get(s) * numMonths;
-
-                    String tempFormattedNumber = formattedNumber.replaceAll(",", "");
-                    String budgetMetric = "";
-
-                    if (Double.parseDouble(tempFormattedNumber) > goalNum) {
-                        budgetMetric = "Over by $" + formatNumber(Double.parseDouble(tempFormattedNumber) - goalNum);
-                    } else if (Double.parseDouble(tempFormattedNumber) < goalNum) {
-                        budgetMetric = "Under by $" + formatNumber(goalNum - Double.parseDouble(tempFormattedNumber));
+                if (!emptyBudgetGoals) {
+                    if (s.equalsIgnoreCase("uncategorized")) {
+                        arrList.add(s + ": $" + formattedNumber);
                     } else {
-                        budgetMetric = "Met Goal";
+                        double goalNum = budgetGoals.get(s) * numMonths;
+
+                        String tempFormattedNumber = formattedNumber.replaceAll(",", "");
+                        String budgetMetric = "";
+
+                        if (Double.parseDouble(tempFormattedNumber) > goalNum) {
+                            budgetMetric = "Over by $" + formatNumber(Double.parseDouble(tempFormattedNumber) - goalNum);
+                        } else if (Double.parseDouble(tempFormattedNumber) < goalNum) {
+                            budgetMetric = "Under by $" + formatNumber(goalNum - Double.parseDouble(tempFormattedNumber));
+                        } else {
+                            budgetMetric = "Met Goal";
+                        }
+                        arrList.add(s + ": $" + formattedNumber + " -- (Goal: $" + formatNumber(goalNum) + ") -- " + budgetMetric);
                     }
-                    arrList.add(s + ": $" + formattedNumber + " -- (Goal: $" + formatNumber(goalNum) + ") -- " + budgetMetric);
+                } else {
+                    arrList.add(s + ": $" + formattedNumber);
                 }
-            } else {
-                arrList.add(s + ": $" + formattedNumber);
             }
+            Collections.sort(arrList);
+            arrList.add("----------------- ---------------------------------------------------------------------------------------");
+            arrList.add("Total Spending: $" + formatNumber(totalSpending));
+        } else {
+            arrList.add("You have no spending transactions!");
         }
-
-        Collections.sort(arrList);
-
-        arrList.add("--------------------------------------------------------------------------------------------------------");
-        arrList.add("Total Spending: $" + formatNumber(totalSpending));
 
         int index = 0;
         for (String s : arrList) {
@@ -821,6 +823,8 @@ public class StatisticsFrame extends javax.swing.JFrame {
             Collections.sort(arrList);
             arrList.add("--------------------------------------------------------------------------------------------------------");
             arrList.add("Total Income: $" + formatNumber(totalIncome));
+        } else {
+            arrList.add("You have no income transactions!");
         }
         String[] listArr = new String[groupedIncome.size() + 2];
         int index = 0;
