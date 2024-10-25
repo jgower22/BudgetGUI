@@ -407,8 +407,8 @@ public class SearchFrame extends javax.swing.JFrame {
         minField.setText("");
         maxField.setText("");
         searchTextField.setText("");
-        spendingButton.setSelected(false);
-        spendingSelected = false;
+        spendingButton.setSelected(true);
+        spendingSelected = true;
         incomeButton.setSelected(false);
         incomeSelected = false;
         yearComboBox.setSelectedIndex(0);
