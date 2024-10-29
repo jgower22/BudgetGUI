@@ -877,13 +877,13 @@ public class StatisticsFrame extends javax.swing.JFrame {
                         String amountStr = amount.replaceAll(",", "");
 
                         //Add to hashmap
-                        if (groupedIncome.containsKey(description)) {
+                        if (groupedIncome.containsKey(description.toLowerCase())) {
                             //Add income to existing key
-                            double updatedIncome = groupedIncome.get(description) + Double.parseDouble(amountStr);
-                            groupedIncome.replace(description, updatedIncome);
+                            double updatedIncome = groupedIncome.get(description.toLowerCase()) + Double.parseDouble(amountStr);
+                            groupedIncome.replace(description.toLowerCase(), updatedIncome);
                         } else {
                             //Create new key/value for new income group
-                            groupedIncome.put(description, Double.parseDouble(amountStr));
+                            groupedIncome.put(description.toLowerCase(), Double.parseDouble(amountStr));
                         }
                     }
                 }
