@@ -6,6 +6,7 @@
 package budgetgui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.RenderingHints.Key;
 import java.awt.Toolkit;
@@ -25,8 +26,10 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
@@ -90,6 +93,13 @@ public class StatisticsFrame extends javax.swing.JFrame {
                 false // URLs
         );
 
+        //Colors
+        CategoryPlot catPlot = barChart.getCategoryPlot();
+        BarRenderer renderer = (BarRenderer) catPlot.getRenderer();
+        renderer.setSeriesPaint(0, new Color(244, 67, 54));
+        renderer.setSeriesPaint(1, new Color(76, 175, 80));
+        
+        
         ChartPanel chartPanel = new ChartPanel(barChart);
         JFrame frame = new JFrame("Monthly Spending & Income (" + year + ")");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
