@@ -5,8 +5,11 @@
  */
 package budgetgui;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -16,6 +19,7 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,9 +28,20 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.RectangleInsets;
 
 /**
  *
@@ -807,54 +822,58 @@ public class TransactionsFrame extends javax.swing.JFrame {
             }
         }
 
-        //Format JOptionPane Message Dialog
-        String output = "";
-
-        ArrayList<String> sortedOutput = new ArrayList<>();
-        //Look at hashmap for category spending first
-        //Then category limits
-        for (String s : categorySpending.keySet()) {
-            String budgetMetric = "";
-            if (categorySpending.get(s) > categoryLimits.get(s)) {
-                budgetMetric = " (OVER)";
-            }
-
-            DecimalFormat df = new DecimalFormat("#,##0.00");
-            String formattedCategorySpending = df.format(categorySpending.get(s));
-
-            sortedOutput.add(s + ": $" + formattedCategorySpending + " of $" + df.format(categoryLimits.get(s))
-                    + budgetMetric);
+        ArrayList<MonthlyBudget> budgetList = new ArrayList<>();
+        for (String category : categorySpending.keySet()) {
+            MonthlyBudget budget = new MonthlyBudget(category, categorySpending.get(category), categoryLimits.get(category));
+            budgetList.add(budget);
         }
+        Collections.sort(budgetList, (budget1, budget2) -> budget1.getCategory().compareTo(budget2.getCategory()));
 
-        Collections.sort(sortedOutput);
+        DefaultCategoryDataset dataset = createDataset(budgetList);
 
-        int maxCategoriesPerDialogBox = 5;
-        int indexTracker = 0;
-        int numDialogBoxes = sortedOutput.size() / maxCategoriesPerDialogBox;
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Budget vs Actual Spending (" + month.split("\t")[0] + " " + curYear + ")", 
+                "Category", 
+                "Amount ($)", 
+                dataset, 
+                PlotOrientation.VERTICAL, 
+                true, 
+                true, 
+                false 
+        );
 
-        if (((double) sortedOutput.size() / (double) maxCategoriesPerDialogBox) % 2 == 0.0) {
-            numDialogBoxes--;
-        }
-        for (int i = 0; i <= numDialogBoxes; i++) {
-            output = "";
-            //output += "--------------------\n";
-            try {
-                for (int j = 0; j < maxCategoriesPerDialogBox; j++) {
-                    output += sortedOutput.get(indexTracker) + "\n";
+        CategoryPlot catPlot = chart.getCategoryPlot();
+        //Rotate labels
+        CategoryAxis domainAxis = catPlot.getDomainAxis();
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
 
-                    if (j < maxCategoriesPerDialogBox - 1 && indexTracker != sortedOutput.size() - 1) {
-                        output += "--------------------\n";
-                    }
-                    indexTracker++;
-                }
-            } catch (IndexOutOfBoundsException e) {
+        //Change color of bars
+        BarRenderer renderer = (BarRenderer) catPlot.getRenderer();
+        renderer.setSeriesPaint(0, new Color(74, 144, 226));
+        renderer.setSeriesPaint(1, new Color(255, 165, 0));
 
-            }
-            JOptionPane.showMessageDialog(null, output, "Budgets (" + (i + 1) + " of " + (numDialogBoxes + 1) + "):", JOptionPane.INFORMATION_MESSAGE);
-        }
-
+        ChartPanel chartPanel = new ChartPanel(chart);
+        JFrame frame = new JFrame("Budget vs Actual Spending (" + month.split("\t")[0] + " " + curYear + ")");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
+        frame.getContentPane().add(chartPanel); // Add the ChartPanel to the frame
+        frame.pack(); // Size the frame according to its content
+        frame.setLocationRelativeTo(null); // Center the frame on the screen
+        frame.setVisible(true); // Make the frame visible
 
     }//GEN-LAST:event_viewBudgetsButtonActionPerformed
+
+    private DefaultCategoryDataset createDataset(ArrayList<MonthlyBudget> budgetList) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        for (MonthlyBudget budget : budgetList) {
+            if (budget.getActualSpending() >= 0.0) {
+                dataset.addValue(budget.getActualSpending(), "Actual", budget.getCategory());
+                dataset.addValue(budget.getBudgetedSpending(), "Budget", budget.getCategory());
+            }
+        }
+
+        return dataset;
+    }
 
     private void makeRecurringButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_makeRecurringButtonActionPerformed
         // TODO add your handling code here:
