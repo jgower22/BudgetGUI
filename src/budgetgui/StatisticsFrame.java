@@ -71,6 +71,11 @@ public class StatisticsFrame extends javax.swing.JFrame {
         //Ask for year
         //Or set year
         this.year = year;
+        
+        ArrayList<String> savedYears = getSavedYears();
+        if (savedYears.size() <= 1) {
+            changeYearButton.setEnabled(false);
+        }
 
         setLayout(new BorderLayout());
 
@@ -177,6 +182,8 @@ public class StatisticsFrame extends javax.swing.JFrame {
             highestIncomeAmount = 0.0;
             lowestIncomeMonth = "N/A";
             highestIncomeMonth = "N/A";
+            spendingPerCategory.clear();
+            monthlyDataArray = new MonthlyData[12];
 
             ArrayList<String> monthsArrList = new ArrayList<>();
             HashMap<String, Double> spendingPerMonth = new HashMap<>();
