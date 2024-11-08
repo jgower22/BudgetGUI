@@ -746,8 +746,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
             //Remove $ from amount
             amount = amount.substring(1, amount.length());
 
-            String lineToRemove = "#" + date + "\t" + description + "\t" + amount + "\t" + category + "\t" + "2";
-            removeTransaction(lineToRemove);
+            //String lineToRemove = "#" + date + "\t" + description + "\t" + amount + "\t" + category + "\t" + "2";
+            String uuid = income.get(incomeList.getSelectedIndex()).split("--")[4].trim();
+            removeTransaction(uuid);
 
             updateIncomeList();
 
