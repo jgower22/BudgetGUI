@@ -5,8 +5,6 @@
  */
 package budgetgui;
 
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.FlatDarkLaf;
 import java.util.prefs.Preferences;
 
 /**

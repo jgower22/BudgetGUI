@@ -5,6 +5,7 @@
  */
 package budgetgui;
 
+import static budgetgui.UUIDGenerator.generateUUID;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -26,6 +27,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -596,21 +598,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
             String description = lineInfo[1].trim();
             String amount = lineInfo[2].trim();
             String category = lineInfo[3].trim();
-            try {
-                String recurringMarker = lineInfo[4].trim();
-                amount = amount.substring(1, amount.length());
-
-                String lineToRemove = "#" + date + "\t" + description + "\t" + amount + "\t" + category + "\t" + recurringMarker + "\t" + "1";
-                removeTransaction(lineToRemove);
-                return;
-            } catch (Exception e) {
-            }
 
             //Remove $ from amount
             amount = amount.substring(1, amount.length());
 
-            String lineToRemove = "#" + date + "\t" + description + "\t" + amount + "\t" + category + "\t" + "1";
-            removeTransaction(lineToRemove);
+            //String lineToRemove = "#" + date + "\t" + description + "\t" + amount + "\t" + category + "\t" + "1";
+            String uuid = transactions.get(transactionsList.getSelectedIndex()).split("--")[4].trim();
+            removeTransaction(uuid);
 
             removeTransactionButton.setEnabled(false);
             editDetailsSpendingButton.setEnabled(false);
@@ -832,14 +826,14 @@ public class TransactionsFrame extends javax.swing.JFrame {
         DefaultCategoryDataset dataset = createDataset(budgetList);
 
         JFreeChart chart = ChartFactory.createBarChart(
-                "Budget vs Actual Spending (" + month.split("\t")[0] + " " + curYear + ")", 
-                "Category", 
-                "Amount ($)", 
-                dataset, 
-                PlotOrientation.VERTICAL, 
-                true, 
-                true, 
-                false 
+                "Budget vs Actual Spending (" + month.split("\t")[0] + " " + curYear + ")",
+                "Category",
+                "Amount ($)",
+                dataset,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                false
         );
 
         CategoryPlot catPlot = chart.getCategoryPlot();
@@ -1225,11 +1219,11 @@ public class TransactionsFrame extends javax.swing.JFrame {
         DecimalFormat df = new DecimalFormat("0.00");
         String tempAmountStr = amountStr.replaceAll(",", "");
         String formattedAmountStr = df.format(Double.parseDouble(tempAmountStr));
+        
+        String uuid = transactions.get(transactionsList.getSelectedIndex()).split("--")[4].trim();
+        removeTransaction(uuid);
 
         addTransaction(month, date, description, Double.parseDouble(formattedAmountStr), category, marker);
-
-        String lineToRemove = "#" + origDate + "\t" + origDescription + "\t" + origAmountStr + "\t" + origCategory + "\t" + marker;
-        removeTransaction(lineToRemove);
 
         if (marker.equals("1")) {
             removeTransactionButton.setEnabled(false);
@@ -1244,7 +1238,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private void addTransaction(String month, String date, String description,
             double amount, String category, String marker) {
         DecimalFormat df = new DecimalFormat("#,##0.00");
-        String newTransaction = "#" + date + "\t" + description + "\t" + df.format(amount) + "\t" + category + "\t" + marker;
+        String newTransaction = "#" + date + "\t" + description + "\t" + df.format(amount) + "\t" + category + "\t" + marker + "\t" + generateUUID();
         try {
             Scanner sc = new Scanner(new File("months.txt"));
 
@@ -1291,22 +1285,31 @@ public class TransactionsFrame extends javax.swing.JFrame {
         }
     }
 
-    private void removeTransaction(String lineToRemove) {
+    private void removeTransaction(String uuid) {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
 
+            System.out.println("UUID TO REMOVE: " + uuid);
             ArrayList<String> lines = new ArrayList<>();
-            boolean removedLine = false;
+            UUID uuidToRemove = UUID.fromString(uuid.trim());
             while (sc.hasNextLine()) {
                 String line = sc.nextLine();
+                UUID foundUUID = null;
 
-                if (line.equals(lineToRemove)) {
-                    if (removedLine) {
-                        lines.add(line);
-                    }
-                    removedLine = true;
+                if (line.charAt(0) == '#') {
+                    foundUUID = UUID.fromString(line.split("\t")[5].trim());
+                    //System.out.println("FOUND UUID: " + foundUUID);
                 } else {
                     lines.add(line);
+                    continue;
+                }
+
+                if (foundUUID != null) {
+                    if (!foundUUID.equals(uuidToRemove)) {
+                        lines.add(line);
+                    } else {
+                        System.out.println("FOUND UUID. DONT ADD LINE HERE");
+                    }
                 }
             }
 
@@ -1375,7 +1378,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         int index = 0;
         for (String s : transactions) {
-            listArr[index] = s;
+            //Remove uuid
+            int lastSeparatorIndex = s.lastIndexOf("--");
+            listArr[index] = s.substring(0, lastSeparatorIndex);
             index++;
         }
 
@@ -1406,7 +1411,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         int index = 0;
         for (String s : income) {
-            listArr[index] = s;
+            int lastSeparatorIndex = s.lastIndexOf("--");
+            listArr[index] = s.substring(0, lastSeparatorIndex);
             index++;
         }
 
@@ -1445,14 +1451,14 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     String date = lineInfo[0];
                     String description = lineInfo[1];
                     String amount = lineInfo[2];
-                    //t);
                     String category = lineInfo[3];
                     String marker = lineInfo[4];
+                    String uuid = lineInfo[5];
 
                     //1 is spending
                     //2 is income
                     //Add --
-                    formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category;
+                    formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid;
 
                     if (marker.equals("1")) {
                         //Remove commas from amount
@@ -1504,11 +1510,12 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     String amount = lineInfo[2];
                     String category = lineInfo[3];
                     String marker = lineInfo[4];
+                    String uuid = lineInfo[5];
 
                     //1 is spending
                     //2 is income
                     //Add --
-                    formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category;
+                    formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid;
 
                     if (marker.equals("2")) {
                         String amountStr = amount.replaceAll(",", "");
