@@ -641,14 +641,16 @@ public class SettingsFrame extends javax.swing.JFrame {
                 //Look at lines with #
                 if (line.charAt(0) == '#') {
                     //If the transaction is already added
-                    if (transactions.contains(line)) {
+                    String subLine = line.substring(0, line.length() - 36);
+                    if (transactions.contains(subLine)) {
                         //Add to duplicate transactions
 
-                        //Remove # and end of line marker
-                        String formattedLine = line.substring(1, line.length() - 1);
+                        //Remove #, end of line marker, UUID
+                        String formattedLine = line.substring(1, line.length() - 38);
                         duplicateTransactions.add(formattedLine.replaceAll("\t", " "));
                     } else {
-                        transactions.add(line);
+                        transactions.add(subLine);
+                        System.out.println(subLine);
                     }
                 }
             }
