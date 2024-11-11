@@ -104,7 +104,6 @@ public class StatisticsFrame extends javax.swing.JFrame {
         renderer.setSeriesPaint(0, new Color(244, 67, 54));
         renderer.setSeriesPaint(1, new Color(76, 175, 80));
         
-        
         ChartPanel chartPanel = new ChartPanel(barChart);
         JFrame frame = new JFrame("Monthly Spending & Income (" + year + ")");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application

@@ -7,6 +7,7 @@ package budgetgui;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
@@ -19,10 +20,19 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  *
@@ -64,11 +74,13 @@ public class SettingsFrame extends javax.swing.JFrame {
 
     /**
      * Placeholder for SettingsFrame, does nothing
+     *
      * @param isFrameVisible
      */
     public SettingsFrame(boolean isFrameVisible) {
-        this.isFrameVisible= isFrameVisible;
+        this.isFrameVisible = isFrameVisible;
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -346,7 +358,9 @@ public class SettingsFrame extends javax.swing.JFrame {
             return;
         }
 
-        double totalBudgetLimit = 0.0;
+        openBarChart();
+        
+        /*double totalBudgetLimit = 0.0;
 
         //Add $ symbol
         ArrayList<String> categoryLimitsOutput = new ArrayList<>();
@@ -374,8 +388,52 @@ public class SettingsFrame extends javax.swing.JFrame {
             output += s + "\n";
         }
 
-        JOptionPane.showMessageDialog(null, output);
+        JOptionPane.showMessageDialog(null, output);*/
     }//GEN-LAST:event_viewLimitsButtonActionPerformed
+
+    private void openBarChart() {
+        CategoryDataset dataset = createBarChartDataset(categoryLimits);
+
+        // Create a bar chart using the dataset
+        JFreeChart barChart = ChartFactory.createBarChart(
+                "Category Limits", // Chart title
+                "Category", // X-axis label
+                "Amount ($)", // Y-axis label
+                dataset, // Dataset
+                PlotOrientation.HORIZONTAL, // Orientation
+                true, // Include legend
+                true, // Tooltips
+                false // URLs
+        );
+
+        //Colors
+        CategoryPlot catPlot = barChart.getCategoryPlot();
+        BarRenderer renderer = (BarRenderer) catPlot.getRenderer();
+        renderer.setSeriesPaint(0, new Color(244, 67, 54));
+        //renderer.setSeriesPaint(1, new Color(76, 175, 80));
+
+        ChartPanel chartPanel = new ChartPanel(barChart);
+        JFrame frame = new JFrame("Category Limits");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
+        frame.getContentPane().add(chartPanel); // Add the ChartPanel to the frame
+        frame.pack(); // Size the frame according to its content
+        frame.setLocationRelativeTo(null); // Center the frame on the screen
+        frame.setVisible(true); // Make the frame visible
+    }
+
+    private CategoryDataset createBarChartDataset(ArrayList<String> arrList) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Add data to the dataset
+        for (String s: arrList) {
+            String[] lineInfo = s.split("\t");
+            String categoryName = lineInfo[0];
+            double categoryLimit = Double.parseDouble(lineInfo[1]);
+            dataset.addValue(categoryLimit, "Limit", categoryName);
+        }
+
+        return dataset;
+    }
 
     private void editLimitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editLimitButtonActionPerformed
         // TODO add your handling code here:
@@ -437,8 +495,9 @@ public class SettingsFrame extends javax.swing.JFrame {
                 while (true) {
                     String message = "Enter a new limit for " + categoryName + "\nCurrent Limit: " + df1.format(Double.valueOf(limit));
                     String input = JOptionPane.showInputDialog(message);
-                    if (input == null)
+                    if (input == null) {
                         return;
+                    }
                     String tempFormatStr = "";
                     try {
                         tempFormatStr = df1.format(Double.parseDouble(input));
@@ -611,8 +670,9 @@ public class SettingsFrame extends javax.swing.JFrame {
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
             SwingUtilities.updateComponentTreeUI(this);
-            if (isFrameVisible)
+            if (isFrameVisible) {
                 lightDarkModeButton.setText("Dark Mode");
+            }
         } catch (UnsupportedLookAndFeelException ex) {
             Logger.getLogger(SettingsFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -622,8 +682,9 @@ public class SettingsFrame extends javax.swing.JFrame {
         try {
             UIManager.setLookAndFeel(new FlatDarkLaf());
             SwingUtilities.updateComponentTreeUI(this);
-            if (isFrameVisible)
+            if (isFrameVisible) {
                 lightDarkModeButton.setText("Light Mode");
+            }
         } catch (UnsupportedLookAndFeelException ex) {
             Logger.getLogger(SettingsFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
