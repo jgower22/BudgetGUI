@@ -71,7 +71,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         //Ask for year
         //Or set year
         this.year = year;
-        
+
         ArrayList<String> savedYears = getSavedYears();
         if (savedYears.size() <= 1) {
             changeYearButton.setEnabled(false);
@@ -79,7 +79,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
         setLayout(new BorderLayout());
 
-        getStatistics();
+        getStatistics(false);
 
     }
 
@@ -103,7 +103,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         BarRenderer renderer = (BarRenderer) catPlot.getRenderer();
         renderer.setSeriesPaint(0, new Color(244, 67, 54));
         renderer.setSeriesPaint(1, new Color(76, 175, 80));
-        
+
         ChartPanel chartPanel = new ChartPanel(barChart);
         JFrame frame = new JFrame("Monthly Spending & Income (" + year + ")");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
@@ -165,7 +165,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
      * This method obtains all of the statistics for any given year Total Income
      * Total Spending Total Cash Flow Avg Spending/Month Avg Income/Month
      */
-    private void getStatistics() {
+    private void getStatistics(boolean getAllYears) {
         try {
             Scanner sc = new Scanner(new File("months.txt"));
 
@@ -182,7 +182,9 @@ public class StatisticsFrame extends javax.swing.JFrame {
             lowestIncomeMonth = "N/A";
             highestIncomeMonth = "N/A";
             spendingPerCategory.clear();
-            monthlyDataArray = new MonthlyData[12];
+            if (!getAllYears) {
+                monthlyDataArray = new MonthlyData[12];
+            }
 
             ArrayList<String> monthsArrList = new ArrayList<>();
             HashMap<String, Double> spendingPerMonth = new HashMap<>();
@@ -194,9 +196,22 @@ public class StatisticsFrame extends javax.swing.JFrame {
                 //ONLY TRANSACTIONS HAVE MARKERS
                 if (line.charAt(0) != '#') {
                     foundMonth = false;
+                    //Skip over these lines when getAllYears is true
+                    if (getAllYears) {
+                        String[] lineInfo = line.split("\t");
+                        String foundMonthStr = lineInfo[0].trim();
+                        String foundYear = lineInfo[1].trim();
+
+                        String monthAndYear = foundMonthStr + " " + foundYear;
+                        if (!monthsArrList.contains(monthAndYear)) {
+                            monthsArrList.add(monthAndYear);
+                        }
+                        continue;
+                    }
                 }
 
-                if (foundMonth) {
+                //Get all transactions if getAllYears is true
+                if (foundMonth || getAllYears) {
                     //Look at these lines
                     //Look at lines with marker 1 for spending
                     //Look at lines with marker 2 for income
@@ -259,11 +274,11 @@ public class StatisticsFrame extends javax.swing.JFrame {
                     String foundMonthStr = lineInfo[0].trim();
                     String foundYear = lineInfo[1].trim();
 
-                    if (foundYear.equals(year)) {
+                    if (foundYear.equals(year) || getAllYears) {
                         foundMonth = true;
 
                         String monthAndYear = foundMonthStr + " " + foundYear;
-                        if (!(monthsArrList.contains(monthAndYear))) {
+                        if (!(monthsArrList.contains(monthAndYear)) || getAllYears) {
                             monthsArrList.add(monthAndYear);
                             System.out.println("MONTHS ARR LIST: " + monthsArrList);
                         }
@@ -366,7 +381,9 @@ public class StatisticsFrame extends javax.swing.JFrame {
             updateAverageCashFlowLabel(averageCashFlow);
         }
 
-        if (numMonths > 0 && numMonths <= 12) {
+        if (year.equals("All Years")) {
+            projectedIncomeLabel.setText("Projected Income: N/A");
+        } else if (numMonths > 0 && numMonths <= 12) {
             double averageIncome = totalIncome / numMonths;
             double projectedIncome = averageIncome * 12;
             updateProjectedIncomeLabel(projectedIncome);
@@ -765,7 +782,12 @@ public class StatisticsFrame extends javax.swing.JFrame {
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        MainFrame mainFrame = new MainFrame(year);
+        if (year.equals("All Years")) {
+            YearFrame yearFrame = new YearFrame();
+        } else {
+            MainFrame mainFrame = new MainFrame(year);
+        }
+
     }//GEN-LAST:event_exitButtonActionPerformed
 
     private void changeYearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeYearButtonActionPerformed
@@ -773,8 +795,10 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
         //Ask for year
         ArrayList<String> yearsArrList = getSavedYears();
-        String[] yearsArr = new String[yearsArrList.size()];
+        String[] yearsArr = new String[yearsArrList.size() + 1];
         int index = 0;
+        yearsArr[0] = "All Years";
+        index++;
         for (String s : yearsArrList) {
             yearsArr[index] = s;
             index++;
@@ -801,8 +825,14 @@ public class StatisticsFrame extends javax.swing.JFrame {
             year = (String) selection;
         }
 
-        if (year != null) {
-            getStatistics();
+        if (year == null) {
+            return;
+        }
+
+        if (year.equals("All Years")) {
+            getStatistics(true);
+        } else {
+            getStatistics(false);
         }
     }//GEN-LAST:event_changeYearButtonActionPerformed
 
@@ -862,6 +892,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
             String line = "";
             boolean foundYear = false;
+            boolean getAllYears = year.equals("All Years");
 
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
@@ -908,7 +939,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
                     //Remove month from line
                     String[] lineInfo = line.split("\t");
                     String yearInFile = lineInfo[1];
-                    if (yearInFile.equals(year)) {
+                    if (yearInFile.equals(year) || getAllYears) {
                         foundYear = true;
                         System.out.println("FOUND YEAR");
                     }
