@@ -437,6 +437,8 @@ public class SettingsFrame extends javax.swing.JFrame {
                 while (true) {
                     String message = "Enter a new limit for " + categoryName + "\nCurrent Limit: " + df1.format(Double.valueOf(limit));
                     String input = JOptionPane.showInputDialog(message);
+                    if (input == null)
+                        return;
                     String tempFormatStr = "";
                     try {
                         tempFormatStr = df1.format(Double.parseDouble(input));
