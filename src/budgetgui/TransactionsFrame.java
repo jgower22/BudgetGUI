@@ -840,7 +840,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         CategoryPlot catPlot = chart.getCategoryPlot();
         //Rotate labels
         CategoryAxis domainAxis = catPlot.getDomainAxis();
-        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_90);
+        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
 
         //Change color of bars
         BarRenderer renderer = (BarRenderer) catPlot.getRenderer();
