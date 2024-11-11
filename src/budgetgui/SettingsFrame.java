@@ -359,36 +359,7 @@ public class SettingsFrame extends javax.swing.JFrame {
         }
 
         openBarChart();
-        
-        /*double totalBudgetLimit = 0.0;
-
-        //Add $ symbol
-        ArrayList<String> categoryLimitsOutput = new ArrayList<>();
-
-        DecimalFormat df = new DecimalFormat("#,##0.00");
-
-        for (String s : categoryLimits) {
-            String[] lineInfo = s.split("\t");
-            String categoryName = lineInfo[0];
-            double categoryLimit = Double.parseDouble(lineInfo[1]);
-
-            totalBudgetLimit += categoryLimit;
-
-            categoryLimitsOutput.add(categoryName + " --  $" + df.format(categoryLimit));
-        }
-
-        Collections.sort(categoryLimitsOutput);
-
-        categoryLimitsOutput.add("----------");
-        categoryLimitsOutput.add("Total: $" + df.format(totalBudgetLimit));
-
-        String output = "";
-
-        for (String s : categoryLimitsOutput) {
-            output += s + "\n";
-        }
-
-        JOptionPane.showMessageDialog(null, output);*/
+     
     }//GEN-LAST:event_viewLimitsButtonActionPerformed
 
     private void openBarChart() {
@@ -869,11 +840,11 @@ public class SettingsFrame extends javax.swing.JFrame {
      * This method retrieves the limits for each category
      */
     private void getCategoryLimits() {
+        categoryLimits.clear();
         try {
             Scanner sc = new Scanner(new File("categorylimits.txt"));
 
             String line = "";
-            categoryLimits.clear();
             while (sc.hasNextLine()) {
                 line = sc.nextLine();
                 categoryLimits.add(line);
