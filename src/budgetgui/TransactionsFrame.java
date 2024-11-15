@@ -1169,7 +1169,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     continue;
                 }
 
-                System.out.println("YES CHANGE");
                 break;
             }
         }
@@ -1221,7 +1220,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String tempAmountStr = amountStr.replaceAll(",", "");
         String formattedAmountStr = df.format(Double.parseDouble(tempAmountStr));
         
-        String uuid = transactions.get(transactionsList.getSelectedIndex()).split("--")[4].trim();
+        String uuid = null;
+        System.out.println("MARKER: " + marker);
+        if (marker.equals("1")) {
+            uuid = transactions.get(transactionsList.getSelectedIndex()).split("--")[4].trim();
+        } else {
+            uuid = income.get(incomeList.getSelectedIndex()).split("--")[4].trim();
+        }
         removeTransaction(uuid);
 
         addTransaction(month, date, description, Double.parseDouble(formattedAmountStr), category, marker);
