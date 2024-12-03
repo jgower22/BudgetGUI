@@ -565,8 +565,10 @@ public class SearchFrame extends javax.swing.JFrame {
             //Monthly subtotals
             //Month headers
             //Total amount at bottom
+            //Average at bottom
             int currentIndex = 0;
             int currentYear = 0;
+            int numMonths = 1;
             String currentMonth = "";
 
             DecimalFormat df = new DecimalFormat("#,##0.00");
@@ -618,6 +620,7 @@ public class SearchFrame extends javax.swing.JFrame {
                         returnedTransactionsCopy.add(monthDivider);
                     }
                     currentMonth = foundMonth;
+                    numMonths++;
 
                 }
                 monthlyTotal += amount;
@@ -642,10 +645,14 @@ public class SearchFrame extends javax.swing.JFrame {
             }
             if (addDividers && !returnedTransactionsCopy.isEmpty()) {
                 returnedTransactionsCopy.add("Total " + totalStr + ": $" + df.format(transactionTotal));
+                if (numMonths >= 2) {
+                    returnedTransactionsCopy.add("Average per Month: $" + df.format(transactionTotal / numMonths));
+                }
             }
 
+            System.out.println("NUM MONTHS: " + numMonths);
             return returnedTransactionsCopy;
-
+            
         } catch (FileNotFoundException ex) {
 
         }
