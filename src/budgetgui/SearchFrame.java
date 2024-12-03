@@ -163,6 +163,7 @@ public class SearchFrame extends javax.swing.JFrame {
         subtotalsCheckBox = new javax.swing.JCheckBox();
         monthLabel = new javax.swing.JLabel();
         monthsComboBox = new javax.swing.JComboBox<>();
+        numTransactionsLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -232,6 +233,10 @@ public class SearchFrame extends javax.swing.JFrame {
         monthLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         monthLabel.setText("Month");
 
+        numTransactionsLabel.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
+        numTransactionsLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        numTransactionsLabel.setText("# Transactions: 0");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -283,7 +288,8 @@ public class SearchFrame extends javax.swing.JFrame {
                             .addComponent(exitButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jScrollPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(numTransactionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(exportButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -320,7 +326,9 @@ public class SearchFrame extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(exportButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(exportButton)
+                    .addComponent(numTransactionsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(10, Short.MAX_VALUE))
         );
 
@@ -432,6 +440,7 @@ public class SearchFrame extends javax.swing.JFrame {
         transactionsList.setListData(emptyArr);
         subtotalsCheckBox.setSelected(true);
         exportButton.setEnabled(false);
+        numTransactionsLabel.setText("# Transactions: 0");
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
@@ -650,7 +659,7 @@ public class SearchFrame extends javax.swing.JFrame {
                 }
             }
 
-            System.out.println("NUM MONTHS: " + numMonths);
+            numTransactionsLabel.setText("# Transactions: " + returnedTransactions.size());
             return returnedTransactionsCopy;
             
         } catch (FileNotFoundException ex) {
@@ -726,6 +735,7 @@ public class SearchFrame extends javax.swing.JFrame {
     private javax.swing.JLabel minLabel;
     private javax.swing.JLabel monthLabel;
     private javax.swing.JComboBox<String> monthsComboBox;
+    private javax.swing.JLabel numTransactionsLabel;
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JRadioButton spendingButton;
