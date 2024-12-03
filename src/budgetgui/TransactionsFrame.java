@@ -1063,7 +1063,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 String monthName = dateArr[0];
                 String dayOfMonth = dateArr[1];
                 String year = dateArr[2];
-                String output = "Edit the Day of the Month: "
+                String output = "Edit the Day of the Month for: "
+                        + "\n" + description 
                         + "\n" + monthName + " _ " + year;
                 String input = JOptionPane.showInputDialog(null, output, dayOfMonth);
 
@@ -1097,7 +1098,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Ask for description until input is valid
         if (selectionStr.equals(optionsArr[1])) {
             while (true) {
-                description = JOptionPane.showInputDialog(null, "Edit the Description:", description);
+                description = JOptionPane.showInputDialog(null, "Edit the Description for: \n" + description, description);
 
                 //If null or if value does not change
                 if (description == null || description.equals(origDescription)) {
@@ -1128,7 +1129,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         if (selectionStr.equals(optionsArr[2])) {
             String amountStrCopy = amountStr;
             while (true) {
-                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount:", amountStrCopy);
+                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount for: \n" + description, amountStrCopy);
 
                 //Check for valid DecimalFormat pattern
                 String pattern = "#,###.00";
@@ -1203,7 +1204,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     //Ask for category
                     Object[] categoriesObjArr = categoriesArr;
                     Object selection2 = JOptionPane.showInputDialog(null,
-                            "Select a Category", "Categories",
+                            "Edit the category for: \n" + description, "Categories",
                             JOptionPane.INFORMATION_MESSAGE, null,
                             categoriesObjArr, categoriesObjArr[java.util.Arrays.asList(categoriesObjArr).indexOf(origCategory)]);
                     category = (String) selection2;
