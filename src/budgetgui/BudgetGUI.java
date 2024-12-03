@@ -6,6 +6,7 @@
 package budgetgui;
 
 import java.util.prefs.Preferences;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -26,14 +27,20 @@ public class BudgetGUI {
     }
 
     public static void main(String[] args) {
-        BudgetGUI budgetGUI = new BudgetGUI();
-        SettingsFrame settings = new SettingsFrame(false);
-        if (budgetGUI.isDarkMode) {
-            settings.displayDarkMode();
+        SingleInstanceChecker checker = new SingleInstanceChecker();
+        if (checker.isAppRunning()) {
+            JOptionPane.showMessageDialog(null, "Application is already running.");
+            System.exit(1);
         } else {
-            settings.displayLightMode();
+            BudgetGUI budgetGUI = new BudgetGUI();
+            SettingsFrame settings = new SettingsFrame(false);
+            if (budgetGUI.isDarkMode) {
+                settings.displayDarkMode();
+            } else {
+                settings.displayLightMode();
+            }
+            YearFrame yearFrame = new YearFrame();
         }
-        YearFrame yearFrame = new YearFrame();
     }
 
 }
