@@ -39,17 +39,19 @@ public class SearchFrame extends javax.swing.JFrame {
     private boolean spendingSelected;
     private boolean incomeSelected;
     private String curYear;
+    private ArrayList<String> foundYears = new ArrayList<>();
 
     /**
      * Creates new form SearchFrame
      */
-    public SearchFrame(String curYear, boolean prefillYear) {
+    public SearchFrame(String curYear, boolean prefillYear, ArrayList<String> foundYears) {
         initComponents();
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
 
         this.curYear = curYear;
+        this.foundYears = foundYears;
 
         this.setVisible(true);
         this.setTitle("Search Transactions");
@@ -339,7 +341,7 @@ public class SearchFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.dispose();
         if (curYear != null) {
-            MainFrame mainFrame = new MainFrame(curYear);
+            MainFrame mainFrame = new MainFrame(curYear, foundYears);
         } else {
             YearFrame yearFrame = new YearFrame();
         }

@@ -467,7 +467,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void viewYearlyStatisticsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewYearlyStatisticsButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        StatisticsFrame stats = new StatisticsFrame(curYear);
+        StatisticsFrame stats = new StatisticsFrame(curYear, foundYears);
     }//GEN-LAST:event_viewYearlyStatisticsButtonActionPerformed
 
     private void importTransactionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importTransactionsButtonActionPerformed
@@ -490,7 +490,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        SearchFrame searchFrame = new SearchFrame(curYear, true);
+        SearchFrame searchFrame = new SearchFrame(curYear, true, foundYears);
     }//GEN-LAST:event_searchButtonActionPerformed
 
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed

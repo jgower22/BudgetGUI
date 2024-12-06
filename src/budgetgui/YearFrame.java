@@ -26,6 +26,7 @@ import javax.swing.event.ListSelectionListener;
 public class YearFrame extends javax.swing.JFrame {
 
     private ArrayList<String> textFileNames = new ArrayList<>();
+    private ArrayList<String> foundYears = new ArrayList<>();
 
     /**
      * Creates new form YearFrame
@@ -52,6 +53,8 @@ public class YearFrame extends javax.swing.JFrame {
 
         removeYearButton.setEnabled(false);
         viewYearButton.setEnabled(false);
+        
+        this.foundYears = getUniqueYearsFromTransactions();
 
         yearsList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -269,7 +272,6 @@ public class YearFrame extends javax.swing.JFrame {
             return;
         }
         this.dispose();
-        ArrayList<String> foundYears = getUniqueYearsFromTransactions();
         MainFrame mainFrame = new MainFrame(yearsList.getSelectedValue(), foundYears);
     }//GEN-LAST:event_viewYearButtonActionPerformed
 
@@ -282,7 +284,7 @@ public class YearFrame extends javax.swing.JFrame {
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        SearchFrame searchFrame = new SearchFrame(null, false);
+        SearchFrame searchFrame = new SearchFrame(null, false, foundYears);
     }//GEN-LAST:event_searchButtonActionPerformed
 
     private void updateList() {

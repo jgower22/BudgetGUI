@@ -53,12 +53,13 @@ public class StatisticsFrame extends javax.swing.JFrame {
     private boolean isShowingSpendingSummary;
     private MonthlyData[] monthlyDataArray = new MonthlyData[12];
     private HashMap<String, Double> spendingPerCategory = new HashMap<>();
+    private ArrayList<String> foundYears = new ArrayList<>();
 
     //Category -- Spending
     /**
      * Creates new form StatisticsFrame
      */
-    public StatisticsFrame(String year) {
+    public StatisticsFrame(String year, ArrayList<String> foundYears) {
         initComponents();
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -71,6 +72,8 @@ public class StatisticsFrame extends javax.swing.JFrame {
         //Ask for year
         //Or set year
         this.year = year;
+        
+        this.foundYears = foundYears;
 
         ArrayList<String> savedYears = getSavedYears();
         if (savedYears.size() <= 1) {
@@ -785,7 +788,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
         if (year.equals("All Years")) {
             YearFrame yearFrame = new YearFrame();
         } else {
-            MainFrame mainFrame = new MainFrame(year);
+            MainFrame mainFrame = new MainFrame(year, foundYears);
         }
 
     }//GEN-LAST:event_exitButtonActionPerformed
