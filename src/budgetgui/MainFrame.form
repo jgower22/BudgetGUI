@@ -25,20 +25,31 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                  <Component id="jScrollPane1" pref="378" max="32767" attributes="0"/>
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
-                      <Component id="numMonthsLabel" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jScrollPane1" pref="378" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                              <Component id="numMonthsLabel" max="32767" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
-                  <Component id="titleLabel" alignment="0" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="prevYearButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="titleLabel" max="32767" attributes="0"/>
+                      <EmptySpace min="-2" pref="9" max="-2" attributes="0"/>
+                      <Component id="nextYearButton" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="addMonthButton" max="32767" attributes="0"/>
                   <Component id="removeMonthButton" max="32767" attributes="0"/>
                   <Component id="viewTransactionsButton" alignment="0" max="32767" attributes="0"/>
-                  <Component id="viewYearlyStatistics" alignment="0" pref="256" max="32767" attributes="0"/>
+                  <Component id="viewYearlyStatisticsButton" alignment="0" pref="250" max="32767" attributes="0"/>
                   <Component id="autoCompleteYearButton" alignment="0" max="32767" attributes="0"/>
                   <Component id="importTransactionsButton" alignment="1" max="32767" attributes="0"/>
                   <Component id="searchButton" alignment="0" max="32767" attributes="0"/>
@@ -55,6 +66,8 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="exitButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="titleLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="prevYearButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="nextYearButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -65,7 +78,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="viewTransactionsButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
-                      <Component id="viewYearlyStatistics" min="-2" max="-2" attributes="0"/>
+                      <Component id="viewYearlyStatisticsButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="autoCompleteYearButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -147,12 +160,12 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewTransactionsButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="viewYearlyStatistics">
+    <Component class="javax.swing.JButton" name="viewYearlyStatisticsButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="View Yearly Statistics"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewYearlyStatisticsActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewYearlyStatisticsButtonActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="autoCompleteYearButton">
@@ -185,6 +198,22 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exitButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="prevYearButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Prev Year"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="prevYearButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="nextYearButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Next Year"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nextYearButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

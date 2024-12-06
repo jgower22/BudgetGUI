@@ -269,7 +269,8 @@ public class YearFrame extends javax.swing.JFrame {
             return;
         }
         this.dispose();
-        MainFrame mainFrame = new MainFrame(yearsList.getSelectedValue());
+        ArrayList<String> foundYears = getUniqueYearsFromTransactions();
+        MainFrame mainFrame = new MainFrame(yearsList.getSelectedValue(), foundYears);
     }//GEN-LAST:event_viewYearButtonActionPerformed
 
     private void settingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsButtonActionPerformed

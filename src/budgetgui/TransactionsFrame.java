@@ -55,6 +55,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private ArrayList<String> months = new ArrayList<>();
     private ArrayList<String> transactions = new ArrayList<>();
     private ArrayList<String> income = new ArrayList<>();
+    private ArrayList<String> foundYears = new ArrayList<>();
     private HashMap<String, Double> categoryLimits = new HashMap<>();
     private HashMap<String, Double> categorySpending = new HashMap<>();
     private double totalSpending = 0.0;
@@ -66,7 +67,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
     /**
      * Creates new form TransactionsFrame
      */
-    public TransactionsFrame(String month, String curYear) {
+    public TransactionsFrame(String month, String curYear, ArrayList<String> foundYears) {
         initComponents();
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -74,6 +75,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         this.month = month;
         this.curYear = curYear;
+        this.foundYears = foundYears;
 
         this.setVisible(true);
         this.setResizable(false);
@@ -406,7 +408,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
-        MainFrame mainFrame = new MainFrame(curYear);
+        MainFrame mainFrame = new MainFrame(curYear, foundYears);
     }//GEN-LAST:event_exitButtonActionPerformed
 
     private boolean isValidFormat(String amount, DecimalFormat df) {
@@ -906,7 +908,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         curYear = months.get(indexOfMonth).split("\t")[1];
 
         this.dispose();
-        TransactionsFrame transactionsFrame = new TransactionsFrame(months.get(indexOfMonth), curYear);
+        TransactionsFrame transactionsFrame = new TransactionsFrame(months.get(indexOfMonth), curYear, foundYears);
     }//GEN-LAST:event_prevMonthButtonActionPerformed
 
     private void nextMonthButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextMonthButtonActionPerformed
@@ -917,7 +919,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         curYear = months.get(indexOfMonth).split("\t")[1];
 
         this.dispose();
-        TransactionsFrame transactionsFrame = new TransactionsFrame(months.get(indexOfMonth), curYear);
+        TransactionsFrame transactionsFrame = new TransactionsFrame(months.get(indexOfMonth), curYear, foundYears);
     }//GEN-LAST:event_nextMonthButtonActionPerformed
 
     private void updateRecurringTransactionOnList(String transactionLine, boolean makeRecurring) {
