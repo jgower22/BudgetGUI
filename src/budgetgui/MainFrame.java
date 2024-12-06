@@ -35,7 +35,10 @@ import javax.swing.event.ListSelectionListener;
 public class MainFrame extends javax.swing.JFrame {
 
     private ArrayList<String> months = new ArrayList<>();
+    private ArrayList<String> foundYears = new ArrayList<>();
     private String curYear;
+    private String prevYear = null;
+    private String nextYear = null;
 
     /**
      * Creates new form MainFrame
@@ -44,7 +47,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     }
 
-    public MainFrame(String year) {
+    public MainFrame(String year, ArrayList<String> foundYears) {
         initComponents();
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -59,6 +62,23 @@ public class MainFrame extends javax.swing.JFrame {
 
         removeMonthButton.setEnabled(false);
         viewTransactionsButton.setEnabled(false);
+
+        //Set prev/next year buttons
+        Collections.sort(foundYears);
+        int yearIndex = foundYears.indexOf(year);
+        if (yearIndex >= 1) {
+            prevYear = foundYears.get(yearIndex - 1);
+        }
+        if (yearIndex < foundYears.size() - 1) {
+            nextYear = foundYears.get(yearIndex + 1);
+        }
+        if (prevYear == null) {
+            prevYearButton.setEnabled(false);
+        }
+        if (nextYear == null) {
+            nextYearButton.setEnabled(false);
+        }
+        this.foundYears = foundYears;
 
         monthsList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -89,11 +109,13 @@ public class MainFrame extends javax.swing.JFrame {
         removeMonthButton = new javax.swing.JButton();
         numMonthsLabel = new javax.swing.JLabel();
         viewTransactionsButton = new javax.swing.JButton();
-        viewYearlyStatistics = new javax.swing.JButton();
+        viewYearlyStatisticsButton = new javax.swing.JButton();
         autoCompleteYearButton = new javax.swing.JButton();
         importTransactionsButton = new javax.swing.JButton();
         searchButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
+        prevYearButton = new javax.swing.JButton();
+        nextYearButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -129,10 +151,10 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        viewYearlyStatistics.setText("View Yearly Statistics");
-        viewYearlyStatistics.addActionListener(new java.awt.event.ActionListener() {
+        viewYearlyStatisticsButton.setText("View Yearly Statistics");
+        viewYearlyStatisticsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewYearlyStatisticsActionPerformed(evt);
+                viewYearlyStatisticsButtonActionPerformed(evt);
             }
         });
 
@@ -164,24 +186,46 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        prevYearButton.setText("Prev Year");
+        prevYearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                prevYearButtonActionPerformed(evt);
+            }
+        });
+
+        nextYearButton.setText("Next Year");
+        nextYearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextYearButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(numMonthsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 378, Short.MAX_VALUE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(numMonthsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(prevYearButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(titleLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(9, 9, 9)
+                        .addComponent(nextYearButton)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(addMonthButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(removeMonthButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(viewTransactionsButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(viewYearlyStatistics, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
+                    .addComponent(viewYearlyStatisticsButton, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
                     .addComponent(autoCompleteYearButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(importTransactionsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(searchButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -194,7 +238,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(exitButton)
-                    .addComponent(titleLabel))
+                    .addComponent(titleLabel)
+                    .addComponent(prevYearButton)
+                    .addComponent(nextYearButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
@@ -204,7 +250,7 @@ public class MainFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(viewTransactionsButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(viewYearlyStatistics)
+                        .addComponent(viewYearlyStatisticsButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(autoCompleteYearButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -373,7 +419,7 @@ public class MainFrame extends javax.swing.JFrame {
             System.out.println("SELECTED MONTH: " + selectedMonth);
 
             this.dispose();
-            TransactionsFrame transactionsFrame = new TransactionsFrame(selectedMonth, curYear);
+            TransactionsFrame transactionsFrame = new TransactionsFrame(selectedMonth, curYear, foundYears);
         }
     }//GEN-LAST:event_viewTransactionsButtonActionPerformed
 
@@ -418,11 +464,11 @@ public class MainFrame extends javax.swing.JFrame {
         autoCompleteYearButton.setEnabled(false);
     }//GEN-LAST:event_autoCompleteYearButtonActionPerformed
 
-    private void viewYearlyStatisticsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewYearlyStatisticsActionPerformed
+    private void viewYearlyStatisticsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewYearlyStatisticsButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
         StatisticsFrame stats = new StatisticsFrame(curYear);
-    }//GEN-LAST:event_viewYearlyStatisticsActionPerformed
+    }//GEN-LAST:event_viewYearlyStatisticsButtonActionPerformed
 
     private void importTransactionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importTransactionsButtonActionPerformed
         // TODO add your handling code here:
@@ -452,6 +498,18 @@ public class MainFrame extends javax.swing.JFrame {
         this.dispose();
         YearFrame yearFrame = new YearFrame();
     }//GEN-LAST:event_exitButtonActionPerformed
+
+    private void prevYearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prevYearButtonActionPerformed
+        // TODO add your handling code here:
+        MainFrame mainFrame = new MainFrame(prevYear, foundYears);
+        this.dispose();
+    }//GEN-LAST:event_prevYearButtonActionPerformed
+
+    private void nextYearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextYearButtonActionPerformed
+        // TODO add your handling code here:
+        MainFrame mainFrame = new MainFrame(nextYear, foundYears);
+        this.dispose();
+    }//GEN-LAST:event_nextYearButtonActionPerformed
 
     private ArrayList<String> getCurrentTransactions() {
         try {
@@ -911,11 +969,13 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton importTransactionsButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<String> monthsList;
+    private javax.swing.JButton nextYearButton;
     private javax.swing.JLabel numMonthsLabel;
+    private javax.swing.JButton prevYearButton;
     private javax.swing.JButton removeMonthButton;
     private javax.swing.JButton searchButton;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JButton viewTransactionsButton;
-    private javax.swing.JButton viewYearlyStatistics;
+    private javax.swing.JButton viewYearlyStatisticsButton;
     // End of variables declaration//GEN-END:variables
 }
