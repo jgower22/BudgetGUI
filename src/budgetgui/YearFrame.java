@@ -54,7 +54,7 @@ public class YearFrame extends javax.swing.JFrame {
         removeYearButton.setEnabled(false);
         viewYearButton.setEnabled(false);
         
-        this.foundYears = getUniqueYearsFromTransactions();
+        this.foundYears = getSavedYears();
 
         yearsList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -227,6 +227,7 @@ public class YearFrame extends javax.swing.JFrame {
             ArrayList<String> savedYears = getSavedYears();
             if (!savedYears.contains(Integer.toString(year))) {
                 addYearToYearsFile(Integer.toString(year));
+                this.foundYears = getSavedYears();
                 JOptionPane.showMessageDialog(null, year + " successfully added.");
                 break;
             } else {
@@ -258,6 +259,8 @@ public class YearFrame extends javax.swing.JFrame {
             removeYearFromYearsFile(selectedYear);
             //Update list
             updateList();
+            //Update foundYears
+            this.foundYears = getSavedYears();
 
             //Disable remove/view year buttons since nothing on list will be selected
             removeYearButton.setEnabled(false);
@@ -288,15 +291,7 @@ public class YearFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_searchButtonActionPerformed
 
     private void updateList() {
-        ArrayList<String> foundYears = getUniqueYearsFromTransactions();
         ArrayList<String> savedYears = getSavedYears();
-        for (String s : foundYears) {
-            if (!savedYears.contains(s)) {
-                addYearToYearsFile(s);
-            }
-        }
-
-        savedYears = getSavedYears();
         Collections.sort(savedYears);
         int index = 0;
         String[] listArr = new String[savedYears.size()];
@@ -305,32 +300,6 @@ public class YearFrame extends javax.swing.JFrame {
             index++;
         }
         yearsList.setListData(listArr);
-    }
-
-    private ArrayList<String> getUniqueYearsFromTransactions() {
-        try {
-            Scanner sc = new Scanner(new File("months.txt"));
-
-            String line = "";
-            ArrayList<String> uniqueYears = new ArrayList<>();
-            while (sc.hasNextLine()) {
-                line = sc.nextLine();
-                //Look at lines without #
-                if (line.charAt(0) != '#') {
-                    String[] lineInfo = line.split("\t");
-                    String year = lineInfo[1];
-                    if (!uniqueYears.contains(year)) {
-                        uniqueYears.add(year);
-                    }
-                }
-            }
-            System.out.println(uniqueYears);
-            sc.close();
-            return uniqueYears;
-        } catch (FileNotFoundException e) {
-
-        }
-        return null;
     }
 
     private ArrayList<String> getSavedYears() {
