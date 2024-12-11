@@ -228,28 +228,33 @@ public class StatisticsFrame extends javax.swing.JFrame {
                     amountStr = amountStr.replaceAll(",", "");
 
                     String tempAmountStr = amountStr.replaceAll(",", "");
-                    String curMonth = dateStr.substring(1, 4);
+                    String[] dateInfo = dateStr.split(" ");
+                    String curMonth = dateInfo[0].substring(1);
+                    String curYear = dateInfo[2];
+                    System.out.println("CUR MONTH: " + curMonth);
+                    System.out.println("CUR YEAR: " + curYear);
                     //1 = spending
                     //2 = income
                     if (type.equals("1")) {
                         double spendingDouble = Double.parseDouble(tempAmountStr);
                         spendingPerCategory.put(categoryName, spendingPerCategory.getOrDefault(categoryName, 0.0) + spendingDouble);
                         totalSpending += spendingDouble;
-                        if (!spendingPerMonth.containsKey(curMonth)) {
-                            spendingPerMonth.put(curMonth, spendingDouble);
+                        System.out.println("CUR MONTH: " + curMonth);
+                        if (!spendingPerMonth.containsKey(curMonth + " " + curYear)) {
+                            spendingPerMonth.put(curMonth + " " + curYear, spendingDouble);
                         } else {
-                            double prevSpendingForMonth = spendingPerMonth.get(curMonth);
-                            spendingPerMonth.put(curMonth, prevSpendingForMonth + spendingDouble);
+                            double prevSpendingForMonth = spendingPerMonth.get(curMonth + " " + curYear);
+                            spendingPerMonth.put(curMonth + " " + curYear, prevSpendingForMonth + spendingDouble);
                         }
                     }
                     if (type.equals("2")) {
                         double incomeDouble = Double.parseDouble(tempAmountStr);
                         totalIncome += incomeDouble;
-                        if (!incomePerMonth.containsKey(curMonth)) {
-                            incomePerMonth.put(curMonth, incomeDouble);
+                        if (!incomePerMonth.containsKey(curMonth + " " + curYear)) {
+                            incomePerMonth.put(curMonth + " " + curYear, incomeDouble);
                         } else {
-                            double prevIncomeForMonth = incomePerMonth.get(curMonth);
-                            incomePerMonth.put(curMonth, prevIncomeForMonth + incomeDouble);
+                            double prevIncomeForMonth = incomePerMonth.get(curMonth + " " + curYear);
+                            incomePerMonth.put(curMonth + " " + curYear, prevIncomeForMonth + incomeDouble);
                         }
                     }
 
