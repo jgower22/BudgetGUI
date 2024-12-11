@@ -88,7 +88,7 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
     private void openBarChart() {
         CategoryDataset dataset = createBarChartDataset(monthlyDataArray);
-
+        
         // Create a bar chart using the dataset
         JFreeChart barChart = ChartFactory.createBarChart(
                 "Monthly Spending & Income (" + year + ")", // Chart title
@@ -328,8 +328,8 @@ public class StatisticsFrame extends javax.swing.JFrame {
             int index = 0;
             String[] allMonths = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
             for (String month : allMonths) {
-                double spending = spendingPerMonth.getOrDefault(month, 0.0);
-                double income = incomePerMonth.getOrDefault(month, 0.0);
+                double spending = spendingPerMonth.getOrDefault(month + " " + year, 0.0);
+                double income = incomePerMonth.getOrDefault(month + " " + year, 0.0);
                 MonthlyData monthData = new MonthlyData(month, spending, income);
                 monthlyDataArray[index++] = monthData;
             }
@@ -839,8 +839,10 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
         if (year.equals("All Years")) {
             getStatistics(true);
+            viewBarChartButton.setEnabled(false);
         } else {
             getStatistics(false);
+            viewBarChartButton.setEnabled(true);
         }
     }//GEN-LAST:event_changeYearButtonActionPerformed
 
