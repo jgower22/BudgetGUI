@@ -1095,7 +1095,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Ask for description until input is valid
         if (selectionStr.equals(optionsArr[1])) {
             while (true) {
-                description = JOptionPane.showInputDialog(null, "Edit the Description for: \n" + description, description);
+                description = JOptionPane.showInputDialog(null, "Edit the Description for: \n" + date + " -- " + origDescription, origDescription);
 
                 //If null or if value does not change
                 if (description == null || description.equals(origDescription)) {
@@ -1126,7 +1126,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         if (selectionStr.equals(optionsArr[2])) {
             String amountStrCopy = amountStr;
             while (true) {
-                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount for: \n" + description, amountStrCopy);
+                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount for: \n" + date + " -- " + description, amountStrCopy);
 
                 //Check for valid DecimalFormat pattern
                 String pattern = "#,###.00";
@@ -1201,7 +1201,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     //Ask for category
                     Object[] categoriesObjArr = categoriesArr;
                     Object selection2 = JOptionPane.showInputDialog(null,
-                            "Edit the category for: \n" + description, "Categories",
+                            "Edit the category for: \n" + date + " -- " + description, "Categories",
                             JOptionPane.INFORMATION_MESSAGE, null,
                             categoriesObjArr, categoriesObjArr[java.util.Arrays.asList(categoriesObjArr).indexOf(origCategory)]);
                     category = (String) selection2;
