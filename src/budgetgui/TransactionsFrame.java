@@ -1127,7 +1127,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         if (selectionStr.equals(optionsArr[2])) {
             String amountStrCopy = amountStr;
             while (true) {
-                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount for: \n" + date + " -- " + description, amountStrCopy);
+                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount for: \n" + date + " -- " + description + " -- $" + origAmountStr, amountStrCopy);
 
                 //Check for valid DecimalFormat pattern
                 String pattern = "#,###.00";
