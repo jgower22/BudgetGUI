@@ -1061,7 +1061,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 String dayOfMonth = dateArr[1];
                 String year = dateArr[2];
                 String output = "Edit the Day of the Month for: "
-                        + "\n" + description 
+                        + "\n" + description
                         + "\n" + monthName + " _ " + year;
                 String input = JOptionPane.showInputDialog(null, output, dayOfMonth);
 
@@ -1095,7 +1095,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Ask for description until input is valid
         if (selectionStr.equals(optionsArr[1])) {
             while (true) {
-                description = JOptionPane.showInputDialog(null, "Edit the Description for: \n" + date + " -- " + origDescription, origDescription);
+                description = JOptionPane.showInputDialog(null, "Edit the Description for: \n" + date + " -- " + origDescription + " -- $" + origAmountStr, origDescription);
 
                 //If null or if value does not change
                 if (description == null || description.equals(origDescription)) {

@@ -27,8 +27,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+//import org.apache.poi.ss.usermodel.*;
+//import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -447,7 +447,7 @@ public class SearchFrame extends javax.swing.JFrame {
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
         // TODO add your handling code here:
-        exportTransactions();
+        //exportTransactions();
     }//GEN-LAST:event_exportButtonActionPerformed
 
     private void updateList(String input, double min, double max) {
@@ -671,6 +671,7 @@ public class SearchFrame extends javax.swing.JFrame {
         return null;
     }
 
+    /*
     private void exportTransactions() {
         //Export transcations from transactionsList
         
@@ -722,6 +723,7 @@ public class SearchFrame extends javax.swing.JFrame {
 
         JOptionPane.showMessageDialog(null, "Excel file created successfully!");
     }
+    */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> categoriesComboBox;
