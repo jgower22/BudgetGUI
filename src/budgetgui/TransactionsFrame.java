@@ -1062,6 +1062,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 String year = dateArr[2];
                 String output = "Edit the Day of the Month for: "
                         + "\n" + description
+                        + "\n$" + amountStr
                         + "\n" + monthName + " _ " + year;
                 String input = JOptionPane.showInputDialog(null, output, dayOfMonth);
 
