@@ -467,7 +467,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Ask for description until valid
         String description = "";
         while (true) {
-            description = JOptionPane.showInputDialog("Enter a Description:", description);
+            description = JOptionPane.showInputDialog("Date: " + date + "\n" + "Enter a Description:", description);
 
             if (description == null) {
                 return;
@@ -496,7 +496,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String amountStr = "";
         double amount = 0.0;
         while (true) {
-            amountStr = JOptionPane.showInputDialog("Enter an Amount:", amountStr);
+            amountStr = JOptionPane.showInputDialog("Date: " + date + "\n"
+                    + "Description: " + description + "\n"
+                    + "Enter an Amount:", amountStr);
 
             if (amountStr == null) {
                 return;
@@ -553,10 +555,17 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 index++;
             }
 
+            //Format amount for dialog output
+            DecimalFormat df = new DecimalFormat("#,##0.00");
+            String formattedAmountStr = df.format(amount);
+
             //Ask for category
             Object[] categoriesObjArr = categoriesArr;
+            String dialogOutput = "Date: " + date + "\n"
+                    + "Description: " + description + "\n"
+                    + "Amount: $" + formattedAmountStr;
             Object selection = JOptionPane.showInputDialog(null,
-                    "Select a Category", "Categories",
+                    dialogOutput, "Categories",
                     JOptionPane.INFORMATION_MESSAGE, null,
                     categoriesObjArr, categoriesObjArr[0]);
             category = (String) selection;
@@ -565,16 +574,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 return;
             }
         }
-
-        /*
-               escription);
-        );
-        gory);*/
-        //Format amount
-        DecimalFormat df = new DecimalFormat("#,##0.00");
-        String tempFormattedAmountStr = Double.toString(amount);
-        String formattedAmountStr = df.format(amount);
-        amount = Double.parseDouble(tempFormattedAmountStr);
 
         String marker = "1";
         addTransaction(month, date, description, amount, category, marker);
@@ -655,7 +654,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         //Ask for description until valid
         while (true) {
-            description = JOptionPane.showInputDialog("Enter a Description:", description);
+            description = JOptionPane.showInputDialog("Date: " + date + "\n"
+                    + "Enter a Description:", description);
 
             if (description == null) {
                 return;
@@ -681,7 +681,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Ask for amount until valid
         String amountStr = "";
         while (true) {
-            amountStr = JOptionPane.showInputDialog("Enter an Amount:", amountStr);
+            amountStr = JOptionPane.showInputDialog("Date: " + date + "\n"
+                    + "Description: " + description + "\n"
+                    + "Enter an Amount:", amountStr);
 
             if (amountStr == null) {
                 return;
@@ -1218,7 +1220,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         DecimalFormat df = new DecimalFormat("0.00");
         String tempAmountStr = amountStr.replaceAll(",", "");
         String formattedAmountStr = df.format(Double.parseDouble(tempAmountStr));
-        
+
         String uuid = null;
         System.out.println("MARKER: " + marker);
         if (marker.equals("1")) {
