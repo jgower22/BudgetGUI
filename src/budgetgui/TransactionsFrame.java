@@ -175,6 +175,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         makeRecurringButton = new javax.swing.JButton();
         prevMonthButton = new javax.swing.JButton();
         nextMonthButton = new javax.swing.JButton();
+        searchMonthButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -295,6 +296,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
             }
         });
 
+        searchMonthButton.setText("Search This Month");
+        searchMonthButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchMonthButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -343,7 +351,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
                             .addComponent(editDetailsSpendingButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(editDetailsIncomeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(makeRecurringButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(viewBudgetsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(viewBudgetsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(searchMonthButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
@@ -360,11 +369,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     .addComponent(nextMonthButton)
                     .addComponent(prevMonthButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(monthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(viewBudgetsButton))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(monthLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(viewBudgetsButton, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(searchMonthButton))
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -923,6 +934,11 @@ public class TransactionsFrame extends javax.swing.JFrame {
         this.dispose();
         TransactionsFrame transactionsFrame = new TransactionsFrame(months.get(indexOfMonth), curYear, foundYears);
     }//GEN-LAST:event_nextMonthButtonActionPerformed
+
+    private void searchMonthButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchMonthButtonActionPerformed
+        // TODO add your handling code here:
+        SearchFrame searchFrame = new SearchFrame(curYear, month.split("\t")[0], foundYears);
+    }//GEN-LAST:event_searchMonthButtonActionPerformed
 
     private void updateRecurringTransactionOnList(String transactionLine, boolean makeRecurring) {
         //Add back transaction with recurring marker (-- ***)
@@ -1607,6 +1623,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private javax.swing.JButton prevMonthButton;
     private javax.swing.JButton removeTransactionButton;
     private javax.swing.JButton removeTransactionIncomeButton;
+    private javax.swing.JButton searchMonthButton;
     private javax.swing.JLabel totalIncomeLabel;
     private javax.swing.JLabel totalLabel;
     private javax.swing.JList<String> transactionsList;

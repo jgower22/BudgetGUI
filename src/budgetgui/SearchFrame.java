@@ -38,6 +38,7 @@ public class SearchFrame extends javax.swing.JFrame {
 
     private boolean spendingSelected;
     private boolean incomeSelected;
+    private boolean shouldReturnToFrame = true;
     private String curYear;
     private ArrayList<String> foundYears = new ArrayList<>();
 
@@ -83,6 +84,110 @@ public class SearchFrame extends javax.swing.JFrame {
         if (prefillYear) {
             yearComboBox.setSelectedIndex(java.util.Arrays.asList(yearsArr).indexOf(curYear));
         }
+
+        ArrayList<String> categoriesArrList = getCategories();
+        categoriesArrList.add("UNCATEGORIZED");
+        Collections.sort(categoriesArrList);
+        String[] categoriesArr = new String[categoriesArrList.size() + 1];
+        index = 1;
+        categoriesArr[0] = "All";
+        for (String s : categoriesArrList) {
+            categoriesArr[index] = s;
+            index++;
+        }
+
+        DefaultComboBoxModel<String> model2 = new DefaultComboBoxModel<>(categoriesArr);
+        categoriesComboBox.setModel(model2);
+    }
+    
+    /**
+     * Creates new form SearchFrame when opening from specific month/year on Transaction Frame
+     */
+    public SearchFrame(String curYear, String curMonth, ArrayList<String> foundYears) {
+        initComponents();
+
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width / 2 - this.getSize().width / 2, dim.height / 2 - this.getSize().height / 2);
+
+        this.curYear = curYear;
+        this.foundYears = foundYears;
+        this.shouldReturnToFrame = false;
+
+        this.setVisible(true);
+        this.setTitle("Search Transactions");
+        this.setResizable(false);
+
+        spendingButton.setSelected(true);
+        spendingSelected = true;
+        incomeSelected = false;
+        subtotalsCheckBox.setSelected(true);
+        exportButton.setEnabled(false);
+
+        ArrayList<String> yearsArrList = getSavedYears();
+        String[] yearsArr = new String[yearsArrList.size() + 1];
+        int index = 1;
+        yearsArr[0] = "All";
+        for (String s : yearsArrList) {
+            yearsArr[index] = s;
+            index++;
+        }
+        
+        //Add all months to monthsComboBox
+        String[] monthsArr = {"All", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        DefaultComboBoxModel<String> monthsModel = new DefaultComboBoxModel<>(monthsArr);
+        monthsComboBox.setModel(monthsModel);
+        
+        DefaultComboBoxModel<String> yearsModel = new DefaultComboBoxModel<>(yearsArr);
+        yearComboBox.setModel(yearsModel);
+        //Prefill year and month
+        yearComboBox.setSelectedIndex(java.util.Arrays.asList(yearsArr).indexOf(curYear));
+        
+        
+        System.out.println("CUR MONTH: " + curMonth);
+        
+        int monthIndex = 0;
+        switch (curMonth) {
+            case "Jan":
+                monthIndex = 1;
+                break;
+            case "Feb":
+                monthIndex = 2;
+                break;
+            case "Mar":
+                monthIndex = 3;
+                break;
+            case "Apr":
+                monthIndex = 4;
+                break;
+            case "May":
+                monthIndex = 5;
+                break;
+            case "Jun":
+                monthIndex = 6;
+                break;
+            case "Jul":
+                monthIndex = 7;
+                break;
+            case "Aug":
+                monthIndex = 8;
+                break;
+            case "Sep":
+                monthIndex = 9;
+                break;
+            case "Oct":
+                monthIndex = 10;
+                break;
+            case "Nov":
+                monthIndex = 11;
+                break;
+            case "Dec":
+                monthIndex = 12;
+                break;
+        }
+        
+        System.out.println("MONTH INDEX: " + monthIndex);
+        
+        monthsComboBox.setSelectedIndex(monthIndex);
 
         ArrayList<String> categoriesArrList = getCategories();
         categoriesArrList.add("UNCATEGORIZED");
@@ -340,6 +445,9 @@ public class SearchFrame extends javax.swing.JFrame {
     private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
         // TODO add your handling code here:
         this.dispose();
+        if (!shouldReturnToFrame) {
+            return;
+        }
         if (curYear != null) {
             MainFrame mainFrame = new MainFrame(curYear, foundYears);
         } else {
