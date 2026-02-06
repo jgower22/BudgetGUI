@@ -142,9 +142,6 @@ public class SearchFrame extends javax.swing.JFrame {
         //Prefill year and month
         yearComboBox.setSelectedIndex(java.util.Arrays.asList(yearsArr).indexOf(curYear));
         
-        
-        System.out.println("CUR MONTH: " + curMonth);
-        
         int monthIndex = 0;
         switch (curMonth) {
             case "Jan":
