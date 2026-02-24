@@ -54,6 +54,8 @@ public class StatisticsFrame extends javax.swing.JFrame {
     private MonthlyData[] monthlyDataArray = new MonthlyData[12];
     private HashMap<String, Double> spendingPerCategory = new HashMap<>();
     private ArrayList<String> foundYears = new ArrayList<>();
+    private YearlyData[] yearlyDataArray;
+    private boolean isAllYears = false;
 
     //Category -- Spending
     /**
@@ -72,8 +74,10 @@ public class StatisticsFrame extends javax.swing.JFrame {
         //Ask for year
         //Or set year
         this.year = year;
-        
+        isAllYears = (this.year.equals("All Years"));
+
         this.foundYears = foundYears;
+        yearlyDataArray = new YearlyData[foundYears.size()];
 
         ArrayList<String> savedYears = getSavedYears();
         if (savedYears.size() <= 1) {
@@ -87,43 +91,88 @@ public class StatisticsFrame extends javax.swing.JFrame {
     }
 
     private void openBarChart() {
-        CategoryDataset dataset = createBarChartDataset(monthlyDataArray);
-        
-        // Create a bar chart using the dataset
-        JFreeChart barChart = ChartFactory.createBarChart(
-                "Monthly Spending & Income (" + year + ")", // Chart title
-                "Month", // X-axis label
-                "Amount ($)", // Y-axis label
-                dataset, // Dataset
-                PlotOrientation.VERTICAL, // Orientation
-                true, // Include legend
-                true, // Tooltips
-                false // URLs
-        );
 
-        //Colors
-        CategoryPlot catPlot = barChart.getCategoryPlot();
-        BarRenderer renderer = (BarRenderer) catPlot.getRenderer();
-        renderer.setSeriesPaint(0, new Color(244, 67, 54));
-        renderer.setSeriesPaint(1, new Color(76, 175, 80));
+        if (!isAllYears) {
+            CategoryDataset dataset = createBarChartDataset(monthlyDataArray);
 
-        ChartPanel chartPanel = new ChartPanel(barChart);
-        JFrame frame = new JFrame("Monthly Spending & Income (" + year + ")");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
-        frame.getContentPane().add(chartPanel); // Add the ChartPanel to the frame
-        frame.pack(); // Size the frame according to its content
-        frame.setLocationRelativeTo(null); // Center the frame on the screen
-        frame.setVisible(true); // Make the frame visible
+            // Create a bar chart using the dataset
+            JFreeChart barChart = ChartFactory.createBarChart(
+                    "Monthly Spending & Income (" + year + ")", // Chart title
+                    "Month", // X-axis label
+                    "Amount ($)", // Y-axis label
+                    dataset, // Dataset
+                    PlotOrientation.VERTICAL, // Orientation
+                    true, // Include legend
+                    true, // Tooltips
+                    false // URLs
+            );
+
+            //Colors
+            CategoryPlot catPlot = barChart.getCategoryPlot();
+            BarRenderer renderer = (BarRenderer) catPlot.getRenderer();
+            renderer.setSeriesPaint(0, new Color(244, 67, 54));
+            renderer.setSeriesPaint(1, new Color(76, 175, 80));
+
+            ChartPanel chartPanel = new ChartPanel(barChart);
+            JFrame frame = new JFrame("Monthly Spending & Income (" + year + ")");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
+            frame.getContentPane().add(chartPanel); // Add the ChartPanel to the frame
+            frame.pack(); // Size the frame according to its content
+            frame.setLocationRelativeTo(null); // Center the frame on the screen
+            frame.setVisible(true); // Make the frame visible
+
+        } else {
+            CategoryDataset dataset = createBarChartDatasetAllYears(yearlyDataArray);
+
+            // Create a bar chart using the dataset
+            JFreeChart barChart = ChartFactory.createBarChart(
+                    "Annual Spending & Income", // Chart title
+                    "Year", // X-axis label
+                    "Amount ($)", // Y-axis label
+                    dataset, // Dataset
+                    PlotOrientation.VERTICAL, // Orientation
+                    true, // Include legend
+                    true, // Tooltips
+                    false // URLs
+            );
+
+            //Colors
+            CategoryPlot catPlot = barChart.getCategoryPlot();
+            BarRenderer renderer = (BarRenderer) catPlot.getRenderer();
+            renderer.setSeriesPaint(0, new Color(244, 67, 54));
+            renderer.setSeriesPaint(1, new Color(76, 175, 80));
+
+            ChartPanel chartPanel = new ChartPanel(barChart);
+            JFrame frame = new JFrame("Annual Spending & Income");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close the popup without exiting the application
+            frame.getContentPane().add(chartPanel); // Add the ChartPanel to the frame
+            frame.pack(); // Size the frame according to its content
+            frame.setLocationRelativeTo(null); // Center the frame on the screen
+            frame.setVisible(true); // Make the frame visible*/
+        }
     }
 
-    private CategoryDataset createBarChartDataset(MonthlyData[] arr) {
+    private CategoryDataset createBarChartDataset(MonthlyData[] data) {
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         // Add data to the dataset
-        for (int i = 0; i < arr.length; i++) {
-            MonthlyData monthData = arr[i];
+        for (int i = 0; i < data.length; i++) {
+            MonthlyData monthData = data[i];
             dataset.addValue(monthData.getSpending(), "Spending", monthData.getMonth());
             dataset.addValue(monthData.getIncome(), "Income", monthData.getMonth());
+        }
+
+        return dataset;
+    }
+
+    private CategoryDataset createBarChartDatasetAllYears(YearlyData[] data) {
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        // Add data to the dataset
+        for (int i = 0; i < data.length; i++) {
+            YearlyData yearData = data[i];
+            dataset.addValue(yearData.getSpending(), "Spending", yearData.getYear());
+            dataset.addValue(yearData.getIncome(), "Income", yearData.getYear());
         }
 
         return dataset;
@@ -165,8 +214,9 @@ public class StatisticsFrame extends javax.swing.JFrame {
     }
 
     /**
-     * This method obtains all of the statistics for any given year Total Income
-     * Total Spending Total Cash Flow Avg Spending/Month Avg Income/Month
+     * This method obtains all of the statistics for any given year - Total
+     * Income Total Spending, Total Cash Flow, Avg Spending/Month, Avg
+     * Income/Month
      */
     private void getStatistics(boolean getAllYears) {
         try {
@@ -231,15 +281,15 @@ public class StatisticsFrame extends javax.swing.JFrame {
                     String[] dateInfo = dateStr.split(" ");
                     String curMonth = dateInfo[0].substring(1);
                     String curYear = dateInfo[2];
-                    System.out.println("CUR MONTH: " + curMonth);
-                    System.out.println("CUR YEAR: " + curYear);
+                    //System.out.println("CUR MONTH: " + curMonth);
+                    //System.out.println("CUR YEAR: " + curYear);
                     //1 = spending
                     //2 = income
                     if (type.equals("1")) {
                         double spendingDouble = Double.parseDouble(tempAmountStr);
                         spendingPerCategory.put(categoryName, spendingPerCategory.getOrDefault(categoryName, 0.0) + spendingDouble);
                         totalSpending += spendingDouble;
-                        System.out.println("CUR MONTH: " + curMonth);
+                        //System.out.println("CUR MONTH: " + curMonth);
                         if (!spendingPerMonth.containsKey(curMonth + " " + curYear)) {
                             spendingPerMonth.put(curMonth + " " + curYear, spendingDouble);
                         } else {
@@ -296,11 +346,11 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
             sc.close();
 
-            System.out.println("BUDGET SPENDING: " + budgetsSpending);
+            //System.out.println("BUDGET SPENDING: " + budgetsSpending);
 
-            System.out.println("SPENDING PER MONTH: " + spendingPerMonth);
-            System.out.println("INCOME PER MONTH: " + incomePerMonth);
-            System.out.println("SPENDING PER CATEGORY: " + spendingPerCategory);
+            //System.out.println("SPENDING PER MONTH: " + spendingPerMonth);
+            //System.out.println("INCOME PER MONTH: " + incomePerMonth);
+            //System.out.println("SPENDING PER CATEGORY: " + spendingPerCategory);
 
             if (!incomePerMonth.isEmpty()) {
                 Map.Entry<String, Double> min = Collections.min(incomePerMonth.entrySet(), new Comparator<Map.Entry<String, Double>>() {
@@ -324,14 +374,31 @@ public class StatisticsFrame extends javax.swing.JFrame {
 
             numMonths = monthsArrList.size();
 
-            //Array for bar chart
-            int index = 0;
             String[] allMonths = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-            for (String month : allMonths) {
-                double spending = spendingPerMonth.getOrDefault(month + " " + year, 0.0);
-                double income = incomePerMonth.getOrDefault(month + " " + year, 0.0);
-                MonthlyData monthData = new MonthlyData(month, spending, income);
-                monthlyDataArray[index++] = monthData;
+            //Array for bar chart for monthly data
+            if (isAllYears) {
+                int index = 0;
+                for (String year: foundYears) {
+                    double totalSpending = 0.0;
+                    double totalIncome = 0.0;
+                    
+                    for (String month: allMonths) {
+                        String key = month + " " + year;
+                        totalSpending += spendingPerMonth.getOrDefault(key, 0.0);
+                        totalIncome += incomePerMonth.getOrDefault(key, 0.0);
+                    }
+                    YearlyData yearData = new YearlyData(year, totalSpending, totalIncome);
+                    yearlyDataArray[index++] = yearData;
+                }
+                
+            } else {
+                int index = 0;
+                for (String month : allMonths) {
+                    double spending = spendingPerMonth.getOrDefault(month + " " + year, 0.0);
+                    double income = incomePerMonth.getOrDefault(month + " " + year, 0.0);
+                    MonthlyData monthData = new MonthlyData(month, spending, income);
+                    monthlyDataArray[index++] = monthData;
+                }
             }
 
             updateSpendingSummary();
@@ -838,11 +905,15 @@ public class StatisticsFrame extends javax.swing.JFrame {
         }
 
         if (year.equals("All Years")) {
+            isAllYears = true;
             getStatistics(true);
-            viewBarChartButton.setEnabled(false);
+            //viewBarChartButton.setEnabled(true);
+            viewBarChartButton.setText("View Annual Spending & Income");
         } else {
+            isAllYears = false;
             getStatistics(false);
-            viewBarChartButton.setEnabled(true);
+            //viewBarChartButton.setEnabled(true);
+            viewBarChartButton.setText("View Monthly Spending & Income");
         }
     }//GEN-LAST:event_changeYearButtonActionPerformed
 

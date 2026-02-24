@@ -26,6 +26,8 @@ import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 //import org.apache.poi.ss.usermodel.*;
 //import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -98,6 +100,24 @@ public class SearchFrame extends javax.swing.JFrame {
 
         DefaultComboBoxModel<String> model2 = new DefaultComboBoxModel<>(categoriesArr);
         categoriesComboBox.setModel(model2);
+        
+        viewMonthButton.setEnabled(false);
+        
+        transactionsList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    //If a valid transaction is selected, then enable the viewMonthButton
+                    String selectedLine = transactionsList.getSelectedValue();
+                    
+                    if (selectedLine.startsWith("-----") || selectedLine.startsWith("Subtotal")) {
+                        viewMonthButton.setEnabled(false);
+                    } else {
+                        viewMonthButton.setEnabled(true);
+                    }
+                }
+            }
+        });
     }
     
     /**
@@ -122,6 +142,8 @@ public class SearchFrame extends javax.swing.JFrame {
         incomeSelected = false;
         subtotalsCheckBox.setSelected(true);
         exportButton.setEnabled(false);
+        
+        viewMonthButton.setEnabled(false);
 
         ArrayList<String> yearsArrList = getSavedYears();
         String[] yearsArr = new String[yearsArrList.size() + 1];
@@ -268,6 +290,7 @@ public class SearchFrame extends javax.swing.JFrame {
         monthLabel = new javax.swing.JLabel();
         monthsComboBox = new javax.swing.JComboBox<>();
         numTransactionsLabel = new javax.swing.JLabel();
+        viewMonthButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -341,6 +364,13 @@ public class SearchFrame extends javax.swing.JFrame {
         numTransactionsLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         numTransactionsLabel.setText("# Transactions: 0");
 
+        viewMonthButton.setText("View Month");
+        viewMonthButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewMonthButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -394,7 +424,10 @@ public class SearchFrame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(numTransactionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
-                        .addComponent(exportButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(exportButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(viewMonthButton, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -433,7 +466,9 @@ public class SearchFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(exportButton)
                     .addComponent(numTransactionsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(10, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(viewMonthButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -548,12 +583,27 @@ public class SearchFrame extends javax.swing.JFrame {
         subtotalsCheckBox.setSelected(true);
         exportButton.setEnabled(false);
         numTransactionsLabel.setText("# Transactions: 0");
+        viewMonthButton.setEnabled(false);
     }//GEN-LAST:event_clearButtonActionPerformed
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
         // TODO add your handling code here:
         //exportTransactions();
     }//GEN-LAST:event_exportButtonActionPerformed
+
+    private void viewMonthButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewMonthButtonActionPerformed
+        // TODO add your handling code here:
+        
+        //Extract date from transaction -- a valid transaction is already selected
+        String selectedTransaction = transactionsList.getSelectedValue();
+        String date = selectedTransaction.split("--")[0];
+        String month = date.split(" ")[0];
+        String year = date.split(" ")[2];
+        
+        //Open selected month
+        TransactionsFrame transactionsFrame = new TransactionsFrame(month + "\t" + year, year, foundYears);
+        this.dispose();
+    }//GEN-LAST:event_viewMonthButtonActionPerformed
 
     private void updateList(String input, double min, double max) {
         boolean isSubtotalSelected = subtotalsCheckBox.isSelected();
@@ -850,6 +900,7 @@ public class SearchFrame extends javax.swing.JFrame {
     private javax.swing.JRadioButton spendingButton;
     private javax.swing.JCheckBox subtotalsCheckBox;
     private javax.swing.JList<String> transactionsList;
+    private javax.swing.JButton viewMonthButton;
     private javax.swing.JComboBox<String> yearComboBox;
     private javax.swing.JLabel yearLabel;
     // End of variables declaration//GEN-END:variables

@@ -11,8 +11,8 @@ package budgetgui;
  */
 public class MonthlyData {
     private String month;
-    private double spending;
-    private double income;
+    public double spending;
+    public double income;
     
     public MonthlyData(String month, double spending, double income) {
         this.month = month;

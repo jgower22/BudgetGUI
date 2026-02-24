@@ -773,9 +773,10 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Change Date, Change Description, Change Amount, Change Category
 
         //If something is selected
+        boolean hasNote = false;
         if (!(transactionsList.isSelectionEmpty())) {
             String selectedLine = transactionsList.getSelectedValue();
-            editTransaction("1", selectedLine);
+            editTransaction("1", selectedLine, hasNote);
         }
 
     }//GEN-LAST:event_editDetailsSpendingButtonActionPerformed
@@ -784,9 +785,10 @@ public class TransactionsFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         //If something is selected
+        boolean hasNote = false;
         if (!(incomeList.isSelectionEmpty())) {
             String selectedLine = incomeList.getSelectedValue();
-            editTransaction("2", selectedLine);
+            editTransaction("2", selectedLine, hasNote);
         }
     }//GEN-LAST:event_editDetailsIncomeButtonActionPerformed
 
@@ -1029,19 +1031,29 @@ public class TransactionsFrame extends javax.swing.JFrame {
         }
     }
 
-    private void editTransaction(String marker, String selectedLine) {
+    private void editTransaction(String marker, String selectedLine, boolean hasNote) {
 
         //Ask what user wants to edit for the transaction
-        String[] optionsArr = new String[5 - Integer.parseInt(marker)];
+        String[] optionsArr = new String[6 - Integer.parseInt(marker)];
         if (marker.equals("1")) {
             optionsArr[0] = "Change Date";
             optionsArr[1] = "Change Description";
             optionsArr[2] = "Change Amount";
             optionsArr[3] = "Change Category";
+            if (!hasNote) {
+                optionsArr[4] = "Add Note";
+            } else {
+                optionsArr[4] = "Edit Note";
+            } 
         } else if (marker.equals("2")) {
             optionsArr[0] = "Change Date";
             optionsArr[1] = "Change Description";
             optionsArr[2] = "Change Amount";
+            if (!hasNote) {
+                optionsArr[3] = "Add Note";
+            } else {
+                optionsArr[3] = "Edit Note";
+            } 
         }
 
         Object[] options = optionsArr;
@@ -1240,6 +1252,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 }
             }
         }
+        
+        //Add Note/Edit Note
+        
 
         //Format amount
         DecimalFormat df = new DecimalFormat("0.00");
