@@ -81,7 +81,8 @@
                           <Component id="makeRecurringButton" alignment="0" max="32767" attributes="0"/>
                           <Component id="viewBudgetsButton" alignment="1" max="32767" attributes="0"/>
                           <Component id="searchMonthButton" alignment="0" max="32767" attributes="0"/>
-                          <Component id="viewNoteButton" alignment="1" max="32767" attributes="0"/>
+                          <Component id="viewNoteSpendingButton" alignment="1" max="32767" attributes="0"/>
+                          <Component id="viewNoteIncomeButton" alignment="1" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -125,7 +126,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="editDetailsSpendingButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                      <Component id="viewNoteButton" min="-2" max="-2" attributes="0"/>
+                      <Component id="viewNoteSpendingButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="makeRecurringButton" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -146,6 +147,8 @@
                       <Component id="removeTransactionIncomeButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="editDetailsIncomeButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="viewNoteIncomeButton" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -382,12 +385,20 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchMonthButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="viewNoteButton">
+    <Component class="javax.swing.JButton" name="viewNoteSpendingButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="View Note"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewNoteButtonActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewNoteSpendingButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="viewNoteIncomeButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="View Note"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewNoteIncomeButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

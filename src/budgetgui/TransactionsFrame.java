@@ -117,7 +117,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         removeTransactionButton.setEnabled(false);
         editDetailsSpendingButton.setEnabled(false);
-        viewNoteButton.setEnabled(false);
+        viewNoteSpendingButton.setEnabled(false);
 
         transactionsList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -126,20 +126,20 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     if (transactionsList.getSelectedIndices().length > 1) {
                         removeTransactionButton.setEnabled(false);
                         editDetailsSpendingButton.setEnabled(false);
-                        viewNoteButton.setEnabled(false);
+                        viewNoteSpendingButton.setEnabled(false);
                         return;
                     }
-                    
+
                     removeTransactionButton.setEnabled(true);
                     editDetailsSpendingButton.setEnabled(true);
 
                     String transaction = transactionsList.getSelectedValue();
                     try {
                         String note = transaction.split("--")[4];
-                        viewNoteButton.setEnabled(true);
+                        viewNoteSpendingButton.setEnabled(true);
                     } catch (Exception ex) {
                         //No note added
-                        viewNoteButton.setEnabled(false);
+                        viewNoteSpendingButton.setEnabled(false);
                     }
                 }
             }
@@ -154,6 +154,15 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 if (!e.getValueIsAdjusting()) {
                     removeTransactionIncomeButton.setEnabled(true);
                     editDetailsIncomeButton.setEnabled(true);
+                    
+                    String transaction = incomeList.getSelectedValue();
+                    try {
+                        String note = transaction.split("--")[4];
+                        viewNoteIncomeButton.setEnabled(true);
+                    } catch (Exception ex) {
+                        //No note added
+                        viewNoteIncomeButton.setEnabled(false);
+                    }
                 }
             }
         });
@@ -194,7 +203,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
         prevMonthButton = new javax.swing.JButton();
         nextMonthButton = new javax.swing.JButton();
         searchMonthButton = new javax.swing.JButton();
-        viewNoteButton = new javax.swing.JButton();
+        viewNoteSpendingButton = new javax.swing.JButton();
+        viewNoteIncomeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -322,10 +332,17 @@ public class TransactionsFrame extends javax.swing.JFrame {
             }
         });
 
-        viewNoteButton.setText("View Note");
-        viewNoteButton.addActionListener(new java.awt.event.ActionListener() {
+        viewNoteSpendingButton.setText("View Note");
+        viewNoteSpendingButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                viewNoteButtonActionPerformed(evt);
+                viewNoteSpendingButtonActionPerformed(evt);
+            }
+        });
+
+        viewNoteIncomeButton.setText("View Note");
+        viewNoteIncomeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewNoteIncomeButtonActionPerformed(evt);
             }
         });
 
@@ -379,7 +396,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
                             .addComponent(makeRecurringButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(viewBudgetsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(searchMonthButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(viewNoteButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(viewNoteSpendingButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(viewNoteIncomeButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
@@ -413,7 +431,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(editDetailsSpendingButton)
                         .addGap(3, 3, 3)
-                        .addComponent(viewNoteButton)
+                        .addComponent(viewNoteSpendingButton)
                         .addGap(18, 18, 18)
                         .addComponent(makeRecurringButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -430,7 +448,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(removeTransactionIncomeButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(editDetailsIncomeButton)))
+                        .addComponent(editDetailsIncomeButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(viewNoteIncomeButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(numTransactionsIncomeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -826,6 +846,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
         boolean hasNote = false;
         if (!(incomeList.isSelectionEmpty())) {
             String selectedLine = incomeList.getSelectedValue();
+            try {
+                String str = selectedLine.split("--")[4];
+                hasNote = true;
+            } catch (Exception e) {
+
+            }
+            System.out.println("HAS NOTE: " + hasNote);
             editTransaction("2", selectedLine, hasNote);
         }
     }//GEN-LAST:event_editDetailsIncomeButtonActionPerformed
@@ -980,11 +1007,17 @@ public class TransactionsFrame extends javax.swing.JFrame {
         SearchFrame searchFrame = new SearchFrame(curYear, month.split("\t")[0], foundYears);
     }//GEN-LAST:event_searchMonthButtonActionPerformed
 
-    private void viewNoteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewNoteButtonActionPerformed
+    private void viewNoteSpendingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewNoteSpendingButtonActionPerformed
         // TODO add your handling code here:
         String note = transactions.get(transactionsList.getSelectedIndex()).split("--")[5].trim();
         JOptionPane.showMessageDialog(null, note);
-    }//GEN-LAST:event_viewNoteButtonActionPerformed
+    }//GEN-LAST:event_viewNoteSpendingButtonActionPerformed
+
+    private void viewNoteIncomeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewNoteIncomeButtonActionPerformed
+        // TODO add your handling code here:
+        String note = income.get(incomeList.getSelectedIndex()).split("--")[5].trim();
+        JOptionPane.showMessageDialog(null, note);
+    }//GEN-LAST:event_viewNoteIncomeButtonActionPerformed
 
     private void updateRecurringTransactionOnList(String transactionLine, boolean makeRecurring) {
         //Add back transaction with recurring marker (-- ***)
@@ -1121,7 +1154,10 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String category = transactionInfo[3].trim();
         String note = null;
         try {
-            note = transactions.get(transactionsList.getSelectedIndex()).split("--")[5].trim();
+            if (marker.equals("1")) 
+                note = transactions.get(transactionsList.getSelectedIndex()).split("--")[5].trim();
+            else if (marker.equals("2"))
+                note = income.get(incomeList.getSelectedIndex()).split("--")[5].trim();
         } catch (Exception e) {
             //No note added
         }
@@ -1135,7 +1171,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         if (hasNote) {
             origNote = note;
         }
-        
+
         //Ask for date until input is valid
         if (selectionStr.equals(optionsArr[0])) {
             while (true) {
@@ -1308,72 +1344,43 @@ public class TransactionsFrame extends javax.swing.JFrame {
             }
         }
 
-        //Add Note for spending transactions until note is valid
-        if (marker.equals("1")) {
-            if (!hasNote) {
-                if (selectionStr.equals(optionsArr[4])) {
-                    while (true) {
-                        note = JOptionPane.showInputDialog(null, "Add a Note for: \n"
-                                + origDescription + "\n$"
-                                + origAmountStr + "\n"
-                                + date, null);
+        //Add or Edit Note for spending transactions until note is valid
+        if ((marker.equals("1") && selectionStr.equals(optionsArr[4])) || (marker.equals("2") && selectionStr.equals(optionsArr[3]))) {
+            boolean isNewNote = !hasNote;
+            String dialogTitle = isNewNote ? "Add a Note for:" : "Edit the Note for:";
+            String prefilledNote = isNewNote ? null : origNote;
+            String successVerb = isNewNote ? "added" : "edited";
 
-                        if (note == null) {
-                            return;
-                        }
+            while (true) {
+                note = JOptionPane.showInputDialog(
+                        null,
+                        dialogTitle + "\n" + origDescription + "\n$" + origAmountStr + "\n" + date,
+                        prefilledNote
+                );
 
-                        if (note.equals("")) {
-                            JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
-                            continue;
-                        }
-
-                        if (note.length() > NOTE_LIMIT) {
-                            JOptionPane.showMessageDialog(null, "Input exceeds character limit of " + NOTE_LIMIT + ". Please try again.");
-                            continue;
-                        }
-
-                        //Check for --
-                        int indexOfForbiddenCharacters = note.indexOf("--");
-                        if (indexOfForbiddenCharacters != -1) {
-                            JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
-                            continue;
-                        }
-                        JOptionPane.showMessageDialog(null, "Note added successfully!\nNote: \n" + note);
-                        break;
-                    }
+                if (note == null) {
+                    return;
                 }
-            } else {
-                if (selectionStr.equals(optionsArr[4])) {
-                    while (true) {
-                        note = JOptionPane.showInputDialog(null, "Edit the Note for: \n"
-                                + origDescription + "\n$"
-                                + origAmountStr + "\n"
-                                + date, origNote);
 
-                        if (note == null) {
-                            return;
-                        }
-
-                        if (note.equals("")) {
-                            JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
-                            continue;
-                        }
-
-                        if (note.length() > NOTE_LIMIT) {
-                            JOptionPane.showMessageDialog(null, "Input exceeds character limit of " + NOTE_LIMIT + ". Please try again.");
-                            continue;
-                        }
-
-                        //Check for --
-                        int indexOfForbiddenCharacters = note.indexOf("--");
-                        if (indexOfForbiddenCharacters != -1) {
-                            JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
-                            continue;
-                        }
-                        JOptionPane.showMessageDialog(null, "Note edited successfully!\nNote: \n" + note);
-                        break;
-                    }
+                if (note.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                    continue;
                 }
+
+                if (note.length() > NOTE_LIMIT) {
+                    JOptionPane.showMessageDialog(null,
+                            "Input exceeds character limit of " + NOTE_LIMIT + ". Please try again.");
+                    continue;
+                }
+
+                if (note.contains("--")) {
+                    JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
+                    continue;
+                }
+
+                JOptionPane.showMessageDialog(null,
+                        "Note " + successVerb + " successfully!\nNote:\n" + note);
+                break;
             }
         }
 
@@ -1595,10 +1602,32 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Convert array list to array
         String[] listArr = new String[income.size()];
 
-        int index = 0;
+        /*int index = 0;
         for (String s : income) {
             int lastSeparatorIndex = s.lastIndexOf("--");
             listArr[index] = s.substring(0, lastSeparatorIndex);
+            index++;
+        }*/
+        int index = 0;
+        for (String s : income) {
+            //formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid + " -- " + note;
+            //Only want to show date, description, amount and category
+            int lastSeparatorIndex = s.lastIndexOf("--");
+            int secondLastSeparatorIndex = s.lastIndexOf("--", lastSeparatorIndex - 1);
+
+            listArr[index] = s.substring(0, secondLastSeparatorIndex);
+            //Add star if transaction has a note added
+            String note = null;
+            try {
+                note = s.split("--")[5];
+            } catch (Exception e) {
+                //No note added
+            }
+
+            if (note != null) {
+                listArr[index] += "-- 📝";
+            }
+
             index++;
         }
 
@@ -1707,11 +1736,21 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     String category = lineInfo[3];
                     String marker = lineInfo[4];
                     String uuid = lineInfo[5];
+                    String note = null;
+                    try {
+                        note = lineInfo[6];
+                    } catch (Exception e) {
+                        //No note found
+                    }
 
                     //1 is spending
                     //2 is income
                     //Add --
-                    formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid;
+                    if (note != null) {
+                        formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid + " -- " + note;
+                    } else {
+                        formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid + " --";
+                    }
 
                     if (marker.equals("2")) {
                         String amountStr = amount.replaceAll(",", "");
@@ -1801,6 +1840,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel totalLabel;
     private javax.swing.JList<String> transactionsList;
     private javax.swing.JButton viewBudgetsButton;
-    private javax.swing.JButton viewNoteButton;
+    private javax.swing.JButton viewNoteIncomeButton;
+    private javax.swing.JButton viewNoteSpendingButton;
     // End of variables declaration//GEN-END:variables
 }
