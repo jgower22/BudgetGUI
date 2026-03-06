@@ -63,6 +63,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private String curYear;
     private int indexOfMonth;
     private static final int DESCRIPTION_LIMIT = 50;
+    private static final int NOTE_LIMIT = 100;
 
     /**
      * Creates new form TransactionsFrame
@@ -116,13 +117,30 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         removeTransactionButton.setEnabled(false);
         editDetailsSpendingButton.setEnabled(false);
+        viewNoteButton.setEnabled(false);
 
         transactionsList.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
+                    if (transactionsList.getSelectedIndices().length > 1) {
+                        removeTransactionButton.setEnabled(false);
+                        editDetailsSpendingButton.setEnabled(false);
+                        viewNoteButton.setEnabled(false);
+                        return;
+                    }
+                    
                     removeTransactionButton.setEnabled(true);
                     editDetailsSpendingButton.setEnabled(true);
+
+                    String transaction = transactionsList.getSelectedValue();
+                    try {
+                        String note = transaction.split("--")[4];
+                        viewNoteButton.setEnabled(true);
+                    } catch (Exception ex) {
+                        //No note added
+                        viewNoteButton.setEnabled(false);
+                    }
                 }
             }
         });
@@ -176,6 +194,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         prevMonthButton = new javax.swing.JButton();
         nextMonthButton = new javax.swing.JButton();
         searchMonthButton = new javax.swing.JButton();
+        viewNoteButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -303,6 +322,13 @@ public class TransactionsFrame extends javax.swing.JFrame {
             }
         });
 
+        viewNoteButton.setText("View Note");
+        viewNoteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewNoteButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -352,7 +378,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
                             .addComponent(editDetailsIncomeButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(makeRecurringButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(viewBudgetsButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(searchMonthButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(searchMonthButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(viewNoteButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
@@ -385,7 +412,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
                         .addComponent(removeTransactionButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(editDetailsSpendingButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(3, 3, 3)
+                        .addComponent(viewNoteButton)
+                        .addGap(18, 18, 18)
                         .addComponent(makeRecurringButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -587,7 +616,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
         }
 
         String marker = "1";
-        addTransaction(month, date, description, amount, category, marker);
+        //No notes can be added here
+        String note = null;
+        addTransaction(month, date, description, amount, category, note, marker);
 
         removeTransactionButton.setEnabled(false);
         editDetailsSpendingButton.setEnabled(false);
@@ -734,7 +765,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
         /*DecimalFormat df = new DecimalFormat("#,##0.00");
         String formattedAmountStr = df.format(amount);
         amount = Double.parseDouble(formattedAmountStr);*/
-        addTransaction(month, date, description, amount, category, marker);
+        String note = null;
+        addTransaction(month, date, description, amount, category, note, marker);
 
         removeTransactionIncomeButton.setEnabled(false);
         editDetailsIncomeButton.setEnabled(false);
@@ -776,6 +808,12 @@ public class TransactionsFrame extends javax.swing.JFrame {
         boolean hasNote = false;
         if (!(transactionsList.isSelectionEmpty())) {
             String selectedLine = transactionsList.getSelectedValue();
+            try {
+                String str = selectedLine.split("--")[4];
+                hasNote = true;
+            } catch (Exception e) {
+
+            }
             editTransaction("1", selectedLine, hasNote);
         }
 
@@ -942,6 +980,12 @@ public class TransactionsFrame extends javax.swing.JFrame {
         SearchFrame searchFrame = new SearchFrame(curYear, month.split("\t")[0], foundYears);
     }//GEN-LAST:event_searchMonthButtonActionPerformed
 
+    private void viewNoteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewNoteButtonActionPerformed
+        // TODO add your handling code here:
+        String note = transactions.get(transactionsList.getSelectedIndex()).split("--")[5].trim();
+        JOptionPane.showMessageDialog(null, note);
+    }//GEN-LAST:event_viewNoteButtonActionPerformed
+
     private void updateRecurringTransactionOnList(String transactionLine, boolean makeRecurring) {
         //Add back transaction with recurring marker (-- ***)
         //Get current details
@@ -967,7 +1011,8 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String tempAmountStr = amountStr.replaceAll(",", "");
         String formattedAmountStr = df.format(Double.parseDouble(tempAmountStr));
 
-        addTransaction(month, date, description, Double.parseDouble(formattedAmountStr), category, "1");
+        String note = null;
+        addTransaction(month, date, description, Double.parseDouble(formattedAmountStr), category, note, "1");
 
         String lineToRemove = "#" + origDate + "\t" + origDescription + "\t" + origAmountStr + "\t" + origCategory + "\t" + 1;
         removeTransaction(lineToRemove);
@@ -1044,7 +1089,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 optionsArr[4] = "Add Note";
             } else {
                 optionsArr[4] = "Edit Note";
-            } 
+            }
         } else if (marker.equals("2")) {
             optionsArr[0] = "Change Date";
             optionsArr[1] = "Change Description";
@@ -1053,7 +1098,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 optionsArr[3] = "Add Note";
             } else {
                 optionsArr[3] = "Edit Note";
-            } 
+            }
         }
 
         Object[] options = optionsArr;
@@ -1074,13 +1119,23 @@ public class TransactionsFrame extends javax.swing.JFrame {
         String description = transactionInfo[1].trim();
         String amountStr = transactionInfo[2].trim().replaceAll("\\$", "");
         String category = transactionInfo[3].trim();
+        String note = null;
+        try {
+            note = transactions.get(transactionsList.getSelectedIndex()).split("--")[5].trim();
+        } catch (Exception e) {
+            //No note added
+        }
 
         //Copy of current details
         String origDate = transactionInfo[0].trim();
         String origDescription = transactionInfo[1].trim();
         String origAmountStr = transactionInfo[2].trim().replaceAll("\\$", "");
         String origCategory = transactionInfo[3].trim();
-
+        String origNote = null;
+        if (hasNote) {
+            origNote = note;
+        }
+        
         //Ask for date until input is valid
         if (selectionStr.equals(optionsArr[0])) {
             while (true) {
@@ -1126,9 +1181,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
         //Ask for description until input is valid
         if (selectionStr.equals(optionsArr[1])) {
             while (true) {
-                description = JOptionPane.showInputDialog(null, "Edit the Description for: \n" 
+                description = JOptionPane.showInputDialog(null, "Edit the Description for: \n"
                         + origDescription + "\n$"
-                        + origAmountStr + "\n"  
+                        + origAmountStr + "\n"
                         + date, origDescription);
 
                 //If null or if value does not change
@@ -1160,9 +1215,9 @@ public class TransactionsFrame extends javax.swing.JFrame {
         if (selectionStr.equals(optionsArr[2])) {
             String amountStrCopy = amountStr;
             while (true) {
-                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount for: \n" 
+                amountStr = JOptionPane.showInputDialog(null, "Edit the Amount for: \n"
                         + origDescription + "\n$"
-                        + origAmountStr + "\n"  
+                        + origAmountStr + "\n"
                         + date, amountStrCopy);
 
                 //Check for valid DecimalFormat pattern
@@ -1234,14 +1289,14 @@ public class TransactionsFrame extends javax.swing.JFrame {
                         categoriesArr[index] = s;
                         index++;
                     }
-                    
+
                     //Ask for category
                     Object[] categoriesObjArr = categoriesArr;
                     Object selection2 = JOptionPane.showInputDialog(null,
-                            "Edit the category for: \n" + 
-                                    description + "\n$" +
-                                    origAmountStr + "\n" +
-                                    date, "Categories",
+                            "Edit the category for: \n"
+                            + description + "\n$"
+                            + origAmountStr + "\n"
+                            + date, "Categories",
                             JOptionPane.INFORMATION_MESSAGE, null,
                             categoriesObjArr, categoriesObjArr[java.util.Arrays.asList(categoriesObjArr).indexOf(origCategory)]);
                     category = (String) selection2;
@@ -1252,9 +1307,75 @@ public class TransactionsFrame extends javax.swing.JFrame {
                 }
             }
         }
-        
-        //Add Note/Edit Note
-        
+
+        //Add Note for spending transactions until note is valid
+        if (marker.equals("1")) {
+            if (!hasNote) {
+                if (selectionStr.equals(optionsArr[4])) {
+                    while (true) {
+                        note = JOptionPane.showInputDialog(null, "Add a Note for: \n"
+                                + origDescription + "\n$"
+                                + origAmountStr + "\n"
+                                + date, null);
+
+                        if (note == null) {
+                            return;
+                        }
+
+                        if (note.equals("")) {
+                            JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                            continue;
+                        }
+
+                        if (note.length() > NOTE_LIMIT) {
+                            JOptionPane.showMessageDialog(null, "Input exceeds character limit of " + NOTE_LIMIT + ". Please try again.");
+                            continue;
+                        }
+
+                        //Check for --
+                        int indexOfForbiddenCharacters = note.indexOf("--");
+                        if (indexOfForbiddenCharacters != -1) {
+                            JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
+                            continue;
+                        }
+                        JOptionPane.showMessageDialog(null, "Note added successfully!\nNote: \n" + note);
+                        break;
+                    }
+                }
+            } else {
+                if (selectionStr.equals(optionsArr[4])) {
+                    while (true) {
+                        note = JOptionPane.showInputDialog(null, "Edit the Note for: \n"
+                                + origDescription + "\n$"
+                                + origAmountStr + "\n"
+                                + date, origNote);
+
+                        if (note == null) {
+                            return;
+                        }
+
+                        if (note.equals("")) {
+                            JOptionPane.showMessageDialog(null, "Invalid input. Please try again.");
+                            continue;
+                        }
+
+                        if (note.length() > NOTE_LIMIT) {
+                            JOptionPane.showMessageDialog(null, "Input exceeds character limit of " + NOTE_LIMIT + ". Please try again.");
+                            continue;
+                        }
+
+                        //Check for --
+                        int indexOfForbiddenCharacters = note.indexOf("--");
+                        if (indexOfForbiddenCharacters != -1) {
+                            JOptionPane.showMessageDialog(null, "Error: -- is not allowed to be used.");
+                            continue;
+                        }
+                        JOptionPane.showMessageDialog(null, "Note edited successfully!\nNote: \n" + note);
+                        break;
+                    }
+                }
+            }
+        }
 
         //Format amount
         DecimalFormat df = new DecimalFormat("0.00");
@@ -1270,7 +1391,7 @@ public class TransactionsFrame extends javax.swing.JFrame {
         }
         removeTransaction(uuid);
 
-        addTransaction(month, date, description, Double.parseDouble(formattedAmountStr), category, marker);
+        addTransaction(month, date, description, Double.parseDouble(formattedAmountStr), category, note, marker);
 
         if (marker.equals("1")) {
             removeTransactionButton.setEnabled(false);
@@ -1283,9 +1404,12 @@ public class TransactionsFrame extends javax.swing.JFrame {
     }
 
     private void addTransaction(String month, String date, String description,
-            double amount, String category, String marker) {
+            double amount, String category, String note, String marker) {
         DecimalFormat df = new DecimalFormat("#,##0.00");
         String newTransaction = "#" + date + "\t" + description + "\t" + df.format(amount) + "\t" + category + "\t" + marker + "\t" + generateUUID();
+        if (note != null) {
+            newTransaction += "\t" + note;
+        }
         try {
             Scanner sc = new Scanner(new File("months.txt"));
 
@@ -1425,9 +1549,24 @@ public class TransactionsFrame extends javax.swing.JFrame {
 
         int index = 0;
         for (String s : transactions) {
-            //Remove uuid
+            //formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid + " -- " + note;
+            //Only want to show date, description, amount and category
             int lastSeparatorIndex = s.lastIndexOf("--");
-            listArr[index] = s.substring(0, lastSeparatorIndex);
+            int secondLastSeparatorIndex = s.lastIndexOf("--", lastSeparatorIndex - 1);
+
+            listArr[index] = s.substring(0, secondLastSeparatorIndex);
+            //Add star if transaction has a note added
+            String note = null;
+            try {
+                note = s.split("--")[5];
+            } catch (Exception e) {
+                //No note added
+            }
+
+            if (note != null) {
+                listArr[index] += "-- 📝";
+            }
+
             index++;
         }
 
@@ -1501,11 +1640,21 @@ public class TransactionsFrame extends javax.swing.JFrame {
                     String category = lineInfo[3];
                     String marker = lineInfo[4];
                     String uuid = lineInfo[5];
+                    String note = null;
+                    try {
+                        note = lineInfo[6];
+                    } catch (Exception e) {
+                        //No note found
+                    }
 
                     //1 is spending
                     //2 is income
                     //Add --
-                    formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid;
+                    if (note != null) {
+                        formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid + " -- " + note;
+                    } else {
+                        formattedLine = date + " -- " + description + " -- $" + amount + " -- " + category + " -- " + uuid + " --";
+                    }
 
                     if (marker.equals("1")) {
                         //Remove commas from amount
@@ -1652,5 +1801,6 @@ public class TransactionsFrame extends javax.swing.JFrame {
     private javax.swing.JLabel totalLabel;
     private javax.swing.JList<String> transactionsList;
     private javax.swing.JButton viewBudgetsButton;
+    private javax.swing.JButton viewNoteButton;
     // End of variables declaration//GEN-END:variables
 }

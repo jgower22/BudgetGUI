@@ -81,6 +81,7 @@
                           <Component id="makeRecurringButton" alignment="0" max="32767" attributes="0"/>
                           <Component id="viewBudgetsButton" alignment="1" max="32767" attributes="0"/>
                           <Component id="searchMonthButton" alignment="0" max="32767" attributes="0"/>
+                          <Component id="viewNoteButton" alignment="1" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -123,7 +124,9 @@
                       <Component id="removeTransactionButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="editDetailsSpendingButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
+                      <Component id="viewNoteButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="makeRecurringButton" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -377,6 +380,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="searchMonthButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="viewNoteButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="View Note"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewNoteButtonActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
